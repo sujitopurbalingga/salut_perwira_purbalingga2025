@@ -7,19 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Upload, 
   Save, 
   Eye, 
   Trash2, 
-  Plus, 
   Image as ImageIcon,
   Sparkles,
   CheckCircle,
   AlertCircle,
   Loader2,
-  X,
   RefreshCw
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -28,7 +26,6 @@ import { supabase, Character3D, LandingSettings } from '@/lib/supabase';
 const AdminCharacter3D = () => {
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [previewCharacter, setPreviewCharacter] = useState<Character3D | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
@@ -68,17 +65,17 @@ const AdminCharacter3D = () => {
   });
 
   // Fetch current active character
-  const { data: landingSettings, error: landingError } = useQuery({
+  const { data: landingSettings } = useQuery({
     queryKey: ['landing-settings'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('landing_settings')
         .select('*')
-        .single();
+        .maybeSingle(); // Use maybeSingle to avoid errors if no data
       
       if (error) {
         console.error('Error fetching landing settings:', error);
-        throw error;
+        return null; // Return null if error
       }
       
       return data as LandingSettings;
@@ -93,8 +90,6 @@ const AdminCharacter3D = () => {
     setErrorMessage('');
     
     try {
-      console.log('Starting upload for file:', file.name);
-      
       // Validate file type
       if (!file.type.startsWith('image/')) {
         const errorMsg = 'Harap upload file gambar (JPG, PNG, GIF)';
@@ -125,8 +120,6 @@ const AdminCharacter3D = () => {
       const fileName = `character-${Date.now()}.${fileExt}`;
       const filePath = `characters/${fileName}`;
 
-      console.log('Uploading to path:', filePath);
-
       // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from('images')
@@ -134,8 +127,6 @@ const AdminCharacter3D = () => {
           cacheControl: '3600',
           upsert: false
         });
-
-      console.log('Upload response:', { data, error: uploadError });
 
       if (uploadError) {
         console.error('Upload error details:', uploadError);
@@ -146,8 +137,6 @@ const AdminCharacter3D = () => {
       const { data: { publicUrl } } = supabase.storage
         .from('images')
         .getPublicUrl(filePath);
-
-      console.log('Public URL:', publicUrl);
 
       setFormData(prev => ({ ...prev, thumbnail_url: publicUrl }));
       setMessage('Thumbnail berhasil diupload');
@@ -174,8 +163,6 @@ const AdminCharacter3D = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    console.log('File selected:', file);
-
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -193,8 +180,6 @@ const AdminCharacter3D = () => {
     const file = event.dataTransfer.files[0];
     
     if (!file) return;
-
-    console.log('File dropped:', file);
 
     // Create preview
     const reader = new FileReader();
@@ -214,7 +199,6 @@ const AdminCharacter3D = () => {
   // Add new character
   const addCharacterMutation = useMutation({
     mutationFn: async (data: Omit<typeof formData, 'model_url'>) => {
-      console.log('Adding character:', data);
       const { error } = await supabase
         .from('characters_3d')
         .insert({
@@ -227,7 +211,6 @@ const AdminCharacter3D = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['characters-3d'] });
       setMessage('Karakter 3D berhasil ditambahkan');
-      setIsAddDialogOpen(false);
       resetForm();
       setTimeout(() => setMessage(''), 3000);
     },
@@ -354,36 +337,25 @@ const AdminCharacter3D = () => {
   ];
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Kelola Karakter 3D</h1>
           <p className="text-gray-500 mt-1">Atur karakter 3D untuk halaman utama</p>
         </div>
-        <div className="flex space-x-3">
-          <Button 
-            variant="outline" 
-            onClick={() => refetchCharacters()} 
-            disabled={isLoading}
-            className="space-x-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </Button>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="space-x-2">
-                <Plus className="w-4 h-4" />
-                <span>Tambah Karakter</span>
-              </Button>
-            </DialogTrigger>
-            {/* Dialog content remains the same... */}
-          </Dialog>
-        </div>
+        <Button 
+          variant="outline" 
+          onClick={() => refetchCharacters()} 
+          disabled={isLoading}
+          className="space-x-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <span>Refresh</span>
+        </Button>
       </div>
 
-      {message && !isAddDialogOpen && (
+      {message && (
         <Alert className={message.includes('berhasil') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
           {message.includes('berhasil') ? (
             <CheckCircle className="h-4 w-4" />
@@ -393,6 +365,103 @@ const AdminCharacter3D = () => {
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}
+
+      {/* Upload Form - Directly visible */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Sparkles className="w-5 h-5 text-indigo-600" />
+            <span>Upload Karakter 3D Baru</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {errorMessage && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="name">Nama Karakter</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Masukkan nama karakter"
+                className="mt-2"
+              />
+            </div>
+            <div>
+              <Label htmlFor="animation_type">Tipe Animasi</Label>
+              <select
+                id="animation_type"
+                value={formData.animation_type}
+                onChange={(e) => setFormData(prev => ({ ...prev, animation_type: e.target.value }))}
+                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {animationTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <Label>Thumbnail Karakter</Label>
+            <div
+              className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {thumbnailPreview ? (
+                <div className="space-y-4">
+                  <img
+                    src={thumbnailPreview}
+                    alt="Preview"
+                    className="mx-auto h-32 w-32 object-cover rounded-lg"
+                  />
+                  <p className="text-sm text-gray-600">Klik atau drag untuk mengganti gambar</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="text-sm text-gray-600">
+                    <p>Klik untuk upload atau drag and drop</p>
+                    <p>PNG, JPG, GIF hingga 5MB</p>
+                  </div>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              onClick={handleAddCharacter}
+              disabled={addCharacterMutation.isPending || uploadingThumbnail}
+              className="space-x-2"
+            >
+              {addCharacterMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              <span>Simpan Karakter</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Current Active Character */}
       {landingSettings && characters && (
@@ -436,120 +505,151 @@ const AdminCharacter3D = () => {
         </Card>
       )}
 
-      {/* Characters Grid */}
-      {isLoading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-          <span className="ml-2 text-gray-600">Memuat karakter...</span>
-        </div>
-      ) : charactersError ? (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-6 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Gagal Memuat Karakter</h3>
-            <p className="text-gray-600 mb-4">
-              {charactersError instanceof Error ? charactersError.message : 'Terjadi kesalahan saat memuat data karakter'}
-            </p>
-            <Button onClick={() => refetchCharacters()} variant="outline">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Coba Lagi
-            </Button>
-          </CardContent>
-        </Card>
-      ) : characters && characters.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {characters.map((character) => (
-            <Card key={character.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {/* Thumbnail */}
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center overflow-hidden">
-                    {character.thumbnail_url ? (
-                      <img 
-                        src={character.thumbnail_url} 
-                        alt={character.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <ImageIcon className="w-16 h-16 text-gray-400" />
-                    )}
-                  </div>
+      {/* Characters List */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Daftar Karakter</h2>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            <span className="ml-2 text-gray-600">Memuat karakter...</span>
+          </div>
+        ) : charactersError ? (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-6 text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Gagal Memuat Karakter</h3>
+              <p className="text-gray-600 mb-4">
+                {charactersError instanceof Error ? charactersError.message : 'Terjadi kesalahan saat memuat data karakter'}
+              </p>
+              <Button onClick={() => refetchCharacters()} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Coba Lagi
+              </Button>
+            </CardContent>
+          </Card>
+        ) : characters && characters.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {characters.map((character) => (
+              <Card key={character.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {/* Thumbnail */}
+                    <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center overflow-hidden">
+                      {character.thumbnail_url ? (
+                        <img 
+                          src={character.thumbnail_url} 
+                          alt={character.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="w-16 h-16 text-gray-400" />
+                      )}
+                    </div>
 
-                  {/* Info */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{character.name}</h3>
-                    <p className="text-sm text-gray-600">Animasi: {character.animation_type}</p>
-                  </div>
+                    {/* Info */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{character.name}</h3>
+                      <p className="text-sm text-gray-600">Animasi: {character.animation_type}</p>
+                    </div>
 
-                  {/* Status */}
-                  <div className="flex items-center justify-between">
-                    <Badge 
-                      variant={character.is_active ? "default" : "secondary"}
-                      className={character.is_active ? "bg-green-100 text-green-800" : ""}
-                    >
-                      {character.is_active ? "Aktif" : "Tidak Aktif"}
-                    </Badge>
-                  </div>
+                    {/* Status */}
+                    <div className="flex items-center justify-between">
+                      <Badge 
+                        variant={character.is_active ? "default" : "secondary"}
+                        className={character.is_active ? "bg-green-100 text-green-800" : ""}
+                      >
+                        {character.is_active ? "Aktif" : "Tidak Aktif"}
+                      </Badge>
+                    </div>
 
-                  {/* Actions */}
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPreviewCharacter(character)}
-                      className="flex-1"
-                    >
-                      <Eye className="w-4 h-4 mr-1" />
-                      Preview
-                    </Button>
-                    {!character.is_active && (
+                    {/* Actions */}
+                    <div className="flex space-x-2">
                       <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => handleActivateCharacter(character.id)}
-                        disabled={updateActiveMutation.isPending}
+                        onClick={() => setPreviewCharacter(character)}
                         className="flex-1"
                       >
-                        {updateActiveMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                        )}
-                        Aktifkan
+                        <Eye className="w-4 h-4 mr-1" />
+                        Preview
                       </Button>
-                    )}
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteCharacter(character.id)}
-                      disabled={deleteCharacterMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                      {!character.is_active && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleActivateCharacter(character.id)}
+                          disabled={updateActiveMutation.isPending}
+                          className="flex-1"
+                        >
+                          {updateActiveMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                          )}
+                          Aktifkan
+                        </Button>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteCharacter(character.id)}
+                        disabled={deleteCharacterMutation.isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-12 text-center">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-10 h-10 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Belum Ada Karakter</h3>
-            <p className="text-gray-600 mb-6">
-              Mulai dengan menambahkan karakter 3D pertama Anda
-            </p>
-            <Button onClick={() => setIsAddDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Tambah Karakter Pertama
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-12 text-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ImageIcon className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Belum Ada Karakter</h3>
+              <p className="text-gray-600">
+                Upload karakter 3D pertama Anda menggunakan form di atas
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
-      {/* Preview Dialog and Add Dialog remain the same... */}
+      {/* Preview Dialog */}
+      <Dialog open={!!previewCharacter} onOpenChange={() => setPreviewCharacter(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Preview Karakter</DialogTitle>
+          </DialogHeader>
+          {previewCharacter && (
+            <div className="space-y-4">
+              <div className="aspect-square bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+                {previewCharacter.thumbnail_url ? (
+                  <img 
+                    src={previewCharacter.thumbnail_url} 
+                    alt={previewCharacter.name}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <ImageIcon className="w-24 h-24 text-gray-400" />
+                )}
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">{previewCharacter.name}</h3>
+                <p className="text-gray-600">Animasi: {previewCharacter.animation_type}</p>
+                <Badge 
+                  variant={previewCharacter.is_active ? "default" : "secondary"}
+                  className={previewCharacter.is_active ? "bg-green-100 text-green-800" : ""}
+                >
+                  {previewCharacter.is_active ? "Aktif" : "Tidak Aktif"}
+                </Badge>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
