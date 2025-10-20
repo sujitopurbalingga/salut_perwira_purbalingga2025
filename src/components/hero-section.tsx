@@ -10,28 +10,28 @@ const HeroSection = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+          src="https://salutwonomulyo.com/wp-content/uploads/2023/12/WhatsApp-Image-2023-12-28-at-14.31.18-1.jpeg"
           alt="Hero Background"
           className="w-full h-full object-cover"
         />
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in leading-tight">
           Selamat Datang di Salut Wonomulyo
         </h1>
-        <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-200 animate-slide-up">
+        <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-200 animate-slide-up leading-relaxed">
           Mengabdi dan Berinovasi untuk Kemajuan Masyarakat Wonomulyo
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="bg-blue-900 hover:bg-blue-800 text-white">
+          <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4">
             Jelajahi Berita
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900">
+          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600 font-bold px-8 py-4">
             Hubungi Kami
           </Button>
         </div>

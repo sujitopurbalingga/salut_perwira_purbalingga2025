@@ -33,12 +33,13 @@ const Footer = () => {
           {/* Company Info */}
           <div className="md:col-span-1">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
-              </div>
-              <span className="ml-3 text-xl font-bold">Salut Wonomulyo</span>
+              <img 
+                src="https://salutwonomulyo.com/wp-content/uploads/2023/12/Logo-Salut-300x169.png" 
+                alt="Salut Wonomulyo" 
+                className="h-10 w-auto"
+              />
             </div>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-400 mb-4 leading-relaxed">
               Mengabdi dan berinovasi untuk kemajuan masyarakat Wonomulyo.
             </p>
             <div className="flex space-x-4">
@@ -46,7 +47,7 @@ const Footer = () => {
                 <a
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-900 transition-colors"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors"
                 >
                   <social.icon className="w-5 h-5" />
                 </a>
@@ -56,13 +57,13 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Link Cepat</h3>
+            <h3 className="text-lg font-bold mb-4">Link Cepat</h3>
             <ul className="space-y-2">
               {footerLinks.quickLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-400 hover:text-green-600 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -73,7 +74,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Kontak</h3>
+            <h3 className="text-lg font-bold mb-4">Kontak</h3>
             <div className="space-y-3">
               <div className="flex items-center text-gray-400">
                 <MapPin className="w-5 h-5 mr-2" />
@@ -92,7 +93,7 @@ const Footer = () => {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
+            <h3 className="text-lg font-bold mb-4">Newsletter</h3>
             <p className="text-gray-400 mb-4">
               Dapatkan informasi terbaru dari kami
             </p>
@@ -100,9 +101,9 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Email Anda"
-                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-blue-900 text-white"
+                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-green-600 text-white"
               />
-              <button className="px-4 py-2 bg-blue-900 hover:bg-blue-800 rounded-r-lg transition-colors">
+              <button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-r-lg transition-colors font-bold">
                 Subscribe
               </button>
             </div>
@@ -120,7 +121,7 @@ const Footer = () => {
                 <a
                   key={index}
                   href={link.href}
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                  className="text-gray-400 hover:text-green-600 text-sm transition-colors"
                 >
                   {link.name}
                 </a>

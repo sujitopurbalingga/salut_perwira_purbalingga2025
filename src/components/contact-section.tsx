@@ -73,25 +73,25 @@ const ContactSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Hubungi Kami
           </h2>
-          <div className="w-20 h-1 bg-blue-900 mx-auto mb-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <div className="w-20 h-1 bg-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Kami siap membantu dan menjawab pertanyaan Anda
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-2 border-gray-200">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="w-5 h-5 mr-2 text-blue-900" />
+              <CardTitle className="flex items-center text-xl font-bold">
+                <MessageSquare className="w-5 h-5 mr-2 text-green-600" />
                 Kirim Pesan
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Nama Lengkap</Label>
+                  <Label htmlFor="name" className="font-semibold">Nama Lengkap</Label>
                   <Input
                     id="name"
                     name="name"
@@ -100,10 +100,11 @@ const ContactSection = () => {
                     onChange={handleChange}
                     required
                     placeholder="Masukkan nama Anda"
+                    className="border-gray-300 focus:border-green-600"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="font-semibold">Email</Label>
                   <Input
                     id="email"
                     name="email"
@@ -112,10 +113,11 @@ const ContactSection = () => {
                     onChange={handleChange}
                     required
                     placeholder="email@example.com"
+                    className="border-gray-300 focus:border-green-600"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="message">Pesan</Label>
+                  <Label htmlFor="message" className="font-semibold">Pesan</Label>
                   <Textarea
                     id="message"
                     name="message"
@@ -124,11 +126,12 @@ const ContactSection = () => {
                     required
                     placeholder="Tulis pesan Anda di sini..."
                     rows={4}
+                    className="border-gray-300 focus:border-green-600"
                   />
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-900 hover:bg-blue-800"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -149,13 +152,13 @@ const ContactSection = () => {
             {/* Contact Cards */}
             <div className="space-y-4">
               {contactInfo.map((item, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
+                <Card key={index} className="hover:shadow-md transition-shadow border-2 border-gray-200">
                   <CardContent className="p-4 flex items-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                      <item.icon className="w-6 h-6 text-blue-900" />
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                      <item.icon className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">{item.label}</h4>
+                      <h4 className="font-bold text-gray-900">{item.label}</h4>
                       <p className="text-gray-600">{item.value}</p>
                     </div>
                   </CardContent>
@@ -164,9 +167,9 @@ const ContactSection = () => {
             </div>
 
             {/* Social Media */}
-            <Card>
+            <Card className="border-2 border-gray-200">
               <CardHeader>
-                <CardTitle>Ikuti Kami</CardTitle>
+                <CardTitle className="text-xl font-bold">Ikuti Kami</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex space-x-4">
@@ -174,7 +177,7 @@ const ContactSection = () => {
                     <a
                       key={index}
                       href={social.url}
-                      className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-blue-900 hover:text-white transition-colors"
+                      className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-green-600 hover:text-white transition-colors"
                       title={social.name}
                     >
                       <span className="font-bold">{social.icon}</span>
@@ -185,18 +188,18 @@ const ContactSection = () => {
             </Card>
 
             {/* Map Placeholder */}
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden border-2 border-gray-200">
               <CardContent className="p-0">
                 <div className="relative h-64 bg-gray-200">
                   <img
-                    src="https://images.unsplash.com/photo-1569336415962-4c0f0e1c6a3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    src="https://salutwonomulyo.com/wp-content/uploads/2023/12/map-placeholder.jpg"
                     alt="Map"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-blue-900 bg-opacity-20 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-green-600 bg-opacity-20 flex items-center justify-center">
                     <div className="text-white text-center">
                       <MapPin className="w-8 h-8 mx-auto mb-2" />
-                      <p className="font-semibold">Lokasi Kami</p>
+                      <p className="font-bold">Lokasi Kami</p>
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { X, ZoomIn } from 'lucide-react';
 
@@ -11,32 +12,32 @@ const GallerySection = () => {
   const galleryImages = [
     {
       id: 1,
-      src: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg",
       alt: "Kegiatan Pelatihan"
     },
     {
       id: 2,
-      src: "https://images.unsplash.com/photo-1515378791036-0648a814d6b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-2-768x1024.jpeg",
       alt: "Rapat Koordinasi"
     },
     {
       id: 3,
-      src: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-3-768x1024.jpeg",
       alt: "Bakti Sosial"
     },
     {
       id: 4,
-      src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2023/12/WhatsApp-Image-2023-12-28-at-14.31.18-1.jpeg",
       alt: "Seminar Nasional"
     },
     {
       id: 5,
-      src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2023/12/WhatsApp-Image-2023-12-28-at-14.31.18-2.jpeg",
       alt: "Workshop Digital"
     },
     {
       id: 6,
-      src: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      src: "https://salutwonomulyo.com/wp-content/uploads/2023/12/WhatsApp-Image-2023-12-28-at-14.31.18-3.jpeg",
       alt: "Kunjungan Kerja"
     }
   ];
@@ -48,15 +49,15 @@ const GallerySection = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Galeri Foto
           </h2>
-          <div className="w-20 h-1 bg-blue-900 mx-auto mb-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <div className="w-20 h-1 bg-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Dokumentasi kegiatan dan momen berharga bersama masyarakat
           </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {galleryImages.map((image) => (
-            <Card key={image.id} className="overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300">
+            <Card key={image.id} className="overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 border-gray-200 hover:border-green-600">
               <CardContent className="p-0 relative">
                 <img
                   src={image.src}
@@ -73,9 +74,9 @@ const GallerySection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg transition-colors">
+          <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3">
             Lihat Semua Foto
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -85,7 +86,7 @@ const GallerySection = () => {
           <div className="relative">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
             >
               <X className="w-8 h-8" />
             </button>

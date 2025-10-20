@@ -23,11 +23,11 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'Tentang', href: '#about' },
-    { name: 'Berita', href: '#news' },
-    { name: 'Galeri', href: '#gallery' },
-    { name: 'Kontak', href: '#contact' },
+    { name: 'BERANDA', href: '#home' },
+    { name: 'TENTANG', href: '#about' },
+    { name: 'BERITA', href: '#news' },
+    { name: 'GALERI', href: '#gallery' },
+    { name: 'KONTAK', href: '#contact' },
   ];
 
   return (
@@ -38,29 +38,26 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
-              </div>
-              <span className={`ml-3 text-xl font-bold ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                Salut Wonomulyo
-              </span>
-            </div>
+            <a href="#home" className="flex items-center">
+              <img 
+                src="https://salutwonomulyo.com/wp-content/uploads/2023/12/Logo-Salut-300x169.png" 
+                alt="Salut Wonomulyo" 
+                className="h-10 w-auto"
+              />
+            </a>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-baseline space-x-6">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 text-sm font-bold transition-colors ${
                     isScrolled 
-                      ? 'text-gray-700 hover:text-blue-900' 
-                      : 'text-white hover:text-blue-200'
+                      ? 'text-gray-700 hover:text-green-600' 
+                      : 'text-white hover:text-green-300'
                   }`}
                 >
                   {item.name}
@@ -68,8 +65,10 @@ const Navbar = () => {
               ))}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Admin
+                  <Button variant="ghost" size="sm" className={`font-bold ${
+                    isScrolled ? 'text-gray-700 hover:text-green-600' : 'text-white hover:text-green-300'
+                  }`}>
+                    ADMIN
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -103,7 +102,7 @@ const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-700 hover:text-blue-900 block px-3 py-2 rounded-md text-base font-medium"
+                  className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-bold"
                 >
                   {item.name}
                 </a>
@@ -111,7 +110,7 @@ const Navbar = () => {
               <div className="border-t pt-2">
                 <a
                   href="/admin/login"
-                  className="text-gray-700 hover:text-blue-900 block px-3 py-2 rounded-md text-base font-medium"
+                  className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-bold"
                 >
                   Login Admin
                 </a>
