@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Shield } from 'lucide-react';
+import { Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/components/admin/auth-provider';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('sujitopurbalinga@gmail.com');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -36,6 +37,22 @@ const AdminLogin = () => {
     setIsLoading(false);
   };
 
+  const handleResetPassword = async () => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) {
+        setError('Gagal mengirim reset password');
+      } else {
+        setError('Link reset password telah dikirim ke email Anda');
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan saat mengirim reset password');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -55,6 +72,7 @@ const AdminLogin = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
@@ -101,9 +119,19 @@ const AdminLogin = () => {
               </Button>
             </form>
             
-            <div className="mt-6 text-center text-sm text-gray-600">
+            <div className="mt-6 text-center text-sm text-gray-600 space-y-2">
               <p>
-                Default admin: admin@salutwonomulyo.com / admin123
+                Lupa password?{' '}
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Reset di sini
+                </button>
+              </p>
+              <p className="text-xs">
+                Email: sujitopurbalinga@gmail.com
               </p>
             </div>
           </CardContent>
