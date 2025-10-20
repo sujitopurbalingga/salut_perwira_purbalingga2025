@@ -6,11 +6,11 @@ import AdminSidebar from '@/components/admin/sidebar';
 
 const AdminLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="flex h-screen">
         <AdminSidebar />
-        <main className="flex-1 lg:ml-64">
-          <div className="py-6">
+        <main className="flex-1 overflow-y-auto">
+          <div className="h-full">
             <Outlet />
           </div>
         </main>

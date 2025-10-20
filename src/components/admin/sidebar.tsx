@@ -1,138 +1,206 @@
 "use client";
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Info, 
   Briefcase, 
-  GraduationCap, 
+  Building2, 
   Newspaper, 
   Users, 
-  FileText,
-  LogOut,
-  Menu,
-  X
+  FileText, 
+  LogOut, 
+  Menu, 
+  X,
+  ChevronDown
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useAuth } from './auth-provider';
-import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+interface MenuItem {
+  title: string;
+  icon: React.ReactNode;
+  path: string;
+  badge?: string;
+}
+
+const menuItems: MenuItem[] = [
+  {
+    title: 'Dashboard',
+    icon: <LayoutDashboard className="w-5 h-5" />,
+    path: '/admin/dashboard',
+  },
+  {
+    title: 'Tentang',
+    icon: <Info className="w-5 h-5" />,
+    path: '/admin/about',
+  },
+  {
+    title: 'Layanan',
+    icon: <Briefcase className="w-5 h-5" />,
+    path: '/admin/services',
+  },
+  {
+    title: 'Fakultas',
+    icon: <Building2 className="w-5 h-5" />,
+    path: '/admin/faculties',
+  },
+  {
+    title: 'Berita',
+    icon: <Newspaper className="w-5 h-5" />,
+    path: '/admin/news',
+  },
+  {
+    title: 'Pendaftaran',
+    icon: <Users className="w-5 h-5" />,
+    path: '/admin/registrations',
+    badge: 'Baru',
+  },
+  {
+    title: 'Brosur',
+    icon: <FileText className="w-5 h-5" />,
+    path: '/admin/brochure',
+  },
+];
 
 const AdminSidebar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const menuItems = [
-    {
-      title: 'Dashboard',
-      icon: LayoutDashboard,
-      path: '/admin/dashboard',
-    },
-    {
-      title: 'Tentang',
-      icon: Info,
-      path: '/admin/about',
-    },
-    {
-      title: 'Layanan',
-      icon: Briefcase,
-      path: '/admin/services',
-    },
-    {
-      title: 'Fakultas',
-      icon: GraduationCap,
-      path: '/admin/faculties',
-    },
-    {
-      title: 'Berita',
-      icon: Newspaper,
-      path: '/admin/news',
-    },
-    {
-      title: 'Pendaftaran',
-      icon: Users,
-      path: '/admin/registrations',
-    },
-    {
-      title: 'Brosur',
-      icon: FileText,
-      path: '/admin/brochure',
-    },
-  ];
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login');
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path || 
+           (path !== '/admin/dashboard' && location.pathname.startsWith(path));
+  };
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="bg-white shadow-lg"
         >
-          {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
       </div>
 
       {/* Sidebar */}
-      <div className={`
-        fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+      <div className={cn(
+        "fixed lg:static inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6 border-b">
-            <h1 className="text-2xl font-bold text-blue-900">Admin Panel</h1>
-            <p className="text-sm text-gray-600 mt-1">
-              {user?.email}
-            </p>
+          {/* Header */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <LayoutDashboard className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+                <p className="text-xs text-gray-500">Management System</p>
+              </div>
+            </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`
-                    flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
-                    ${isActive 
-                      ? 'bg-blue-100 text-blue-900' 
-                      : 'text-gray-700 hover:bg-gray-100'
-                    }
-                  `}
-                >
-                  <Icon className="w-5 h-5" />
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            {menuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={cn(
+                  "flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group",
+                  isActive(item.path)
+                    ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={cn(
+                    "transition-colors",
+                    isActive(item.path) ? "text-white" : "text-gray-400 group-hover:text-gray-600"
+                  )}>
+                    {item.icon}
+                  </div>
                   <span className="font-medium">{item.title}</span>
-                </Link>
-              );
-            })}
+                </div>
+                {item.badge && (
+                  <span className={cn(
+                    "px-2 py-1 text-xs font-semibold rounded-full",
+                    isActive(item.path)
+                      ? "bg-white/20 text-white"
+                      : "bg-indigo-100 text-indigo-600"
+                  )}>
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-gray-700 hover:text-red-600"
-              onClick={logout}
-            >
-              <LogOut className="w-5 h-5 mr-3" />
-              Keluar
-            </Button>
+          {/* User Profile */}
+          <div className="p-4 border-t border-gray-100">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="w-full justify-start p-3 hover:bg-gray-50"
+              >
+                <div className="flex items-center space-x-3 w-full">
+                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user?.email}
+                    </p>
+                    <p className="text-xs text-gray-500">Administrator</p>
+                  </div>
+                  <ChevronDown className={cn(
+                    "w-4 h-4 text-gray-400 transition-transform",
+                    isProfileOpen && "rotate-180"
+                  )} />
+                </div>
+              </Button>
+
+              {isProfileOpen && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                    className="w-full justify-start px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Keluar
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Overlay for mobile */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setIsOpen(false)}
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
     </>
