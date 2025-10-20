@@ -40,17 +40,23 @@ const validateUrl = (url: string | undefined): string => {
   return trimmedUrl
 }
 
+// Create the client outside of try-catch to avoid export issues
+let supabaseClient: any = null
+
 try {
   const validatedUrl = validateUrl(supabaseUrl)
   console.log('✅ Supabase URL is valid:', validatedUrl)
   
-  export const supabase = createClient(validatedUrl, supabaseAnonKey)
+  supabaseClient = createClient(validatedUrl, supabaseAnonKey)
   console.log('✅ Supabase client created successfully')
 } catch (error) {
   console.error('❌ Failed to create Supabase client:', error)
   // Re-throw the error so the app will still fail, but with a clearer message
   throw error
 }
+
+// Export the client after it's created
+export const supabase = supabaseClient
 
 // Types for 3D Character
 export interface Character3D {
