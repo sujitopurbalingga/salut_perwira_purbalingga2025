@@ -33,11 +33,11 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#home" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">SP</span>
+            <a href="#home" className="flex items-center space-x-2"> {/* Mengurangi jarak antar elemen logo */}
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"> {/* Memperbesar ukuran ikon */}
+                <span className="text-white font-bold text-xl">SP</span> {/* Memperbesar teks ikon */}
               </div>
-              <span className={`text-xl font-bold ${
+              <span className={`text-2xl font-bold ${ // Memperbesar teks judul
                 isScrolled ? 'text-blue-900' : 'text-white'
               }`}>
                 SALUT PERWIRA PURBALINGGA
