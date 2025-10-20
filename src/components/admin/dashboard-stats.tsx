@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Users, Calendar, Image, FileText, TrendingUp, TrendingDown, MessageSquare, Church } from 'lucide-react';
+import { Users, Calendar, Image, FileText, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatCardProps {
   title: string;
@@ -9,10 +9,9 @@ interface StatCardProps {
   change: string;
   trend: 'up' | 'down';
   icon: React.ReactNode;
-  description: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, trend, icon, description }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, value, change, trend, icon }) => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-200">
       <div className="flex items-center justify-between">
@@ -28,7 +27,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, trend, icon, 
             <span className={`text-sm font-medium ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
               {change}
             </span>
-            <span className="text-sm text-slate-500">{description}</span>
+            <span className="text-sm text-slate-500">dari bulan lalu</span>
           </div>
         </div>
         <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center">
@@ -42,36 +41,32 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, trend, icon, 
 export const DashboardStats: React.FC = () => {
   const stats = [
     {
-      title: 'Jemaat Aktif',
-      value: '500+',
-      change: '+15%',
+      title: 'Total Pengguna',
+      value: '1,234',
+      change: '+12%',
       trend: 'up' as const,
-      icon: <Users className="h-6 w-6 text-blue-600" />,
-      description: 'dari bulan lalu'
+      icon: <Users className="h-6 w-6 text-blue-600" />
     },
     {
-      title: 'Ibadah Minggu',
-      value: '3',
-      change: 'Stabil',
+      title: 'Kegiatan Aktif',
+      value: '8',
+      change: '+2',
       trend: 'up' as const,
-      icon: <Church className="h-6 w-6 text-blue-600" />,
-      description: 'sesi per minggu'
+      icon: <Calendar className="h-6 w-6 text-blue-600" />
     },
     {
-      title: 'Kegiatan Bulan Ini',
-      value: '12',
-      change: '+4',
+      title: 'Total Foto',
+      value: '456',
+      change: '+18%',
       trend: 'up' as const,
-      icon: <Calendar className="h-6 w-6 text-blue-600" />,
-      description: 'kegiatan aktif'
+      icon: <Image className="h-6 w-6 text-blue-600" />
     },
     {
-      title: 'Pesan Doa',
-      value: '28',
-      change: '+8',
-      trend: 'up' as const,
-      icon: <MessageSquare className="h-6 w-6 text-blue-600" />,
-      description: 'permohonan baru'
+      title: 'Pengumuman',
+      value: '24',
+      change: '-5%',
+      trend: 'down' as const,
+      icon: <FileText className="h-6 w-6 text-blue-600" />
     }
   ];
 

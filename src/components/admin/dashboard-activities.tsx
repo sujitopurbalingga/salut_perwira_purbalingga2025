@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Calendar, Clock, MapPin, Users, Church, BookOpen, Users2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -10,7 +10,6 @@ interface Activity {
   time: string;
   location: string;
   participants: number;
-  type: 'ibadah' | 'sekolah-minggu' | 'persekutuan' | 'pelayanan';
   status: 'upcoming' | 'ongoing' | 'completed';
 }
 
@@ -20,68 +19,30 @@ export const DashboardActivities: React.FC = () => {
       id: '1',
       title: 'Ibadah Minggu Pagi',
       date: '2024-01-07',
-      time: '08:00 WIB',
-      location: 'Gedung Gereja Utama',
-      participants: 200,
-      type: 'ibadah',
+      time: '08:00',
+      location: 'Gereja Utama',
+      participants: 150,
       status: 'upcoming'
     },
     {
       id: '2',
-      title: 'Ibadah Minggu Sore',
+      title: 'Sekolah Minggu',
       date: '2024-01-07',
-      time: '16:00 WIB',
-      location: 'Gedung Gereja Utama',
-      participants: 150,
-      type: 'ibadah',
+      time: '09:30',
+      location: 'Ruang Kelas',
+      participants: 45,
       status: 'upcoming'
     },
     {
       id: '3',
-      title: 'Sekolah Minggu',
-      date: '2024-01-07',
-      time: '09:30 WIB',
-      location: 'Ruang Kelas SM',
-      participants: 75,
-      type: 'sekolah-minggu',
-      status: 'upcoming'
-    },
-    {
-      id: '4',
-      title: 'Persekutuan Kaum Bapak',
+      title: 'Persekutuan Doa',
       date: '2024-01-05',
-      time: '19:00 WIB',
-      location: 'Ruang Pertemuan',
-      participants: 35,
-      type: 'persekutuan',
-      status: 'completed'
-    },
-    {
-      id: '5',
-      title: 'Persekutuan Kaum Ibu',
-      date: '2024-01-04',
-      time: '09:00 WIB',
-      location: 'Ruang Pertemuan',
-      participants: 45,
-      type: 'persekutuan',
+      time: '19:00',
+      location: 'Ruang Doa',
+      participants: 30,
       status: 'completed'
     }
   ];
-
-  const getTypeIcon = (type: Activity['type']) => {
-    switch (type) {
-      case 'ibadah':
-        return <Church className="h-4 w-4" />;
-      case 'sekolah-minggu':
-        return <BookOpen className="h-4 w-4" />;
-      case 'persekutuan':
-        return <Users2 className="h-4 w-4" />;
-      case 'pelayanan':
-        return <Users className="h-4 w-4" />;
-      default:
-        return <Calendar className="h-4 w-4" />;
-    }
-  };
 
   const getStatusColor = (status: Activity['status']) => {
     switch (status) {
@@ -112,9 +73,9 @@ export const DashboardActivities: React.FC = () => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-slate-900">Jadwal Kegiatan Gereja</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Kegiatan Terkini</h2>
         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          Kelola Jadwal →
+          Lihat Semua →
         </button>
       </div>
 
@@ -125,10 +86,7 @@ export const DashboardActivities: React.FC = () => {
             className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                {getTypeIcon(activity.type)}
-                <h3 className="font-medium text-slate-900">{activity.title}</h3>
-              </div>
+              <h3 className="font-medium text-slate-900">{activity.title}</h3>
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(activity.status)}`}>
                 {getStatusText(activity.status)}
               </span>
@@ -149,7 +107,7 @@ export const DashboardActivities: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4" />
-                <span>{activity.participants} jemaat terdaftar</span>
+                <span>{activity.participants} peserta</span>
               </div>
             </div>
           </div>

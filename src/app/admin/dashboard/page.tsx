@@ -12,9 +12,9 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard Gereja</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
         <p className="mt-2 text-slate-600">
-          Selamat datang di panel administrasi Gereja Protestan Reformatus Salut Wonomulyo
+          Selamat datang di panel administrasi Gereja Salut Wonomulyo
         </p>
       </div>
 

@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import { User, Clock, FileText, Image, Bell, Church, BookOpen, MessageSquare } from 'lucide-react';
+import { User, Clock, FileText, Image, Bell } from 'lucide-react';
 
 interface RecentItem {
   id: string;
-  type: 'user' | 'activity' | 'announcement' | 'gallery' | 'prayer' | 'sermon';
+  type: 'user' | 'activity' | 'announcement' | 'gallery';
   title: string;
   description: string;
   time: string;
@@ -16,16 +16,16 @@ export const DashboardRecent: React.FC = () => {
   const recentItems: RecentItem[] = [
     {
       id: '1',
-      type: 'prayer',
-      title: 'Permohonan Doa Baru',
-      description: 'Budi Santoso meminta doa untuk kesembuhan',
+      type: 'user',
+      title: 'User Baru Terdaftar',
+      description: 'John Doe bergabung sebagai anggota',
       time: '5 menit yang lalu',
-      user: 'Website'
+      user: 'System'
     },
     {
       id: '2',
       type: 'activity',
-      title: 'Jadwal Ibadah Ditambahkan',
+      title: 'Kegiatan Ditambahkan',
       description: 'Ibadah Natal 2024 telah dijadwalkan',
       time: '1 jam yang lalu',
       user: 'Admin'
@@ -34,33 +34,17 @@ export const DashboardRecent: React.FC = () => {
       id: '3',
       type: 'announcement',
       title: 'Pengumuman Baru',
-      description: 'Perubahan jadwal ibadah minggu depan',
+      description: 'Jadwal ibadah minggu depan',
       time: '2 jam yang lalu',
       user: 'Pastor'
     },
     {
       id: '4',
       type: 'gallery',
-      title: 'Foto Kegiatan Ditambahkan',
-      description: '15 foto dari perayaan Paskah',
+      title: 'Foto Ditambahkan',
+      description: '12 foto dari ibadah minggu lalu',
       time: '3 jam yang lalu',
       user: 'Admin'
-    },
-    {
-      id: '5',
-      type: 'sermon',
-      title: 'Khotbah Minggu Lalu',
-      description: 'Renungan tentang "Kasih dan Pengampunan"',
-      time: '1 hari yang lalu',
-      user: 'Pastor'
-    },
-    {
-      id: '6',
-      type: 'user',
-      title: 'Jemaat Baru',
-      description: 'Sarah Anderson bergabung dengan gereja',
-      time: '2 hari yang lalu',
-      user: 'System'
     }
   ];
 
@@ -69,15 +53,11 @@ export const DashboardRecent: React.FC = () => {
       case 'user':
         return <User className="h-4 w-4 text-blue-600" />;
       case 'activity':
-        return <Church className="h-4 w-4 text-green-600" />;
+        return <Clock className="h-4 w-4 text-green-600" />;
       case 'announcement':
         return <Bell className="h-4 w-4 text-yellow-600" />;
       case 'gallery':
         return <Image className="h-4 w-4 text-purple-600" />;
-      case 'prayer':
-        return <MessageSquare className="h-4 w-4 text-pink-600" />;
-      case 'sermon':
-        return <BookOpen className="h-4 w-4 text-indigo-600" />;
       default:
         return <FileText className="h-4 w-4 text-slate-600" />;
     }
