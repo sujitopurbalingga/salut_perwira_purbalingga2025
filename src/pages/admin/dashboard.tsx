@@ -7,7 +7,6 @@ import {
   BarChart3, 
   Users, 
   Newspaper, 
-  Image, 
   MessageSquare,
   Plus,
   Edit,
@@ -26,20 +25,11 @@ interface NewsItem {
   status: 'published' | 'draft';
 }
 
-interface GalleryItem {
-  id: number;
-  title: string;
-  date: string;
-  image: string;
-}
-
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [stats, setStats] = useState({
     totalNews: 0,
-    totalGallery: 0,
     totalMessages: 0,
     totalVisitors: 0
   });
@@ -51,8 +41,6 @@ const AdminDashboard = () => {
     // Load data based on active tab
     if (activeTab === 'news') {
       loadNews();
-    } else if (activeTab === 'gallery') {
-      loadGallery();
     }
     loadStats();
   }, [activeTab]);
@@ -66,20 +54,10 @@ const AdminDashboard = () => {
     ]);
   };
 
-  const loadGallery = () => {
-    // Mock data - replace with actual API call
-    setGalleryItems([
-      { id: 1, title: 'Kegiatan Pelatihan', date: '2024-11-15', image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a' },
-      { id: 2, title: 'Rapat Koordinasi', date: '2024-11-10', image: 'https://images.unsplash.com/photo-1515378791036-0648a814d6b6' },
-      { id: 3, title: 'Bakti Sosial', date: '2024-11-05', image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f' }
-    ]);
-  };
-
   const loadStats = () => {
     // Mock stats - replace with actual API call
     setStats({
       totalNews: 15,
-      totalGallery: 24,
       totalMessages: 8,
       totalVisitors: 1234
     });
@@ -96,13 +74,8 @@ const AdminDashboard = () => {
     toast.success('Berita berhasil dihapus');
   };
 
-  const handleDeleteGallery = (id: number) => {
-    setGalleryItems(galleryItems.filter(item => item.id !== id));
-    toast.success('Foto berhasil dihapus');
-  };
-
   const renderOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Berita</CardTitle>
@@ -112,19 +85,6 @@ const AdminDashboard = () => {
           <div className="text-2xl font-bold">{stats.totalNews}</div>
           <p className="text-xs text-muted-foreground">
             +2 dari bulan lalu
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Galeri</CardTitle>
-          <Image className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalGallery}</div>
-          <p className="text-xs text-muted-foreground">
-            +5 dari bulan lalu
           </p>
         </CardContent>
       </Card>
@@ -161,7 +121,7 @@ const AdminDashboard = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Kelola Berita</h2>
-        <Button className="bg-blue-900 hover:bg-blue-800">
+        <Button className="bg-green-600 hover:bg-green-700">
           <Plus className="w-4 h-4 mr-2" />
           Tambah Berita
         </Button>
@@ -193,48 +153,6 @@ const AdminDashboard = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => handleDeleteNews(item.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderGallery = () => (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Kelola Galeri</h2>
-        <Button className="bg-blue-900 hover:bg-blue-800">
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Foto
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {galleryItems.map((item) => (
-          <Card key={item.id}>
-            <CardContent className="p-0">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="text-sm text-gray-600 mb-3">{item.date}</p>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleDeleteGallery(item.id)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -302,7 +220,6 @@ const AdminDashboard = () => {
             {[
               { id: 'overview', label: 'Overview', icon: BarChart3 },
               { id: 'news', label: 'Berita', icon: Newspaper },
-              { id: 'gallery', label: 'Galeri', icon: Image },
               { id: 'messages', label: 'Pesan', icon: MessageSquare }
             ].map((tab) => (
               <button
@@ -310,7 +227,7 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center px-1 py-4 border-b-2 text-sm font-medium ${
                   activeTab === tab.id
-                    ? 'border-blue-900 text-blue-900'
+                    ? 'border-green-600 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -326,7 +243,6 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'news' && renderNews()}
-        {activeTab === 'gallery' && renderGallery()}
         {activeTab === 'messages' && renderMessages()}
       </div>
     </div>

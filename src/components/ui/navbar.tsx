@@ -26,7 +26,6 @@ const Navbar = () => {
     { name: 'BERANDA', href: '#home' },
     { name: 'TENTANG', href: '#about' },
     { name: 'BERITA', href: '#news' },
-    { name: 'GALERI', href: '#gallery' },
     { name: 'KONTAK', href: '#contact' },
   ];
 
