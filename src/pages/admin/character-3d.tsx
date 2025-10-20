@@ -31,12 +31,11 @@ const AdminCharacter3D = () => {
   const [previewCharacter, setPreviewCharacter] = useState<Character3D | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  // const [uploadProgress, setUploadProgress] = useState(0); // Removed
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     name: '',
-    // model_url: '', // Removed as requested
     thumbnail_url: '',
     animation_type: 'idle'
   });
@@ -70,11 +69,10 @@ const AdminCharacter3D = () => {
   // Upload thumbnail to Supabase Storage
   const uploadThumbnail = async (file: File) => {
     setUploadingThumbnail(true);
-    setUploadProgress(0);
     setErrorMessage('');
     
     try {
-      console.log('Starting upload for file:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Starting upload for file:', file.name);
       
       // Validate file type
       if (!file.type.startsWith('image/')) {
@@ -108,7 +106,7 @@ const AdminCharacter3D = () => {
 
       console.log('Uploading to path:', filePath);
 
-      // Upload to Supabase Storage with progress tracking
+      // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from('images')
         .upload(filePath, file, {
@@ -122,8 +120,6 @@ const AdminCharacter3D = () => {
         console.error('Upload error details:', uploadError);
         throw uploadError;
       }
-
-      setUploadProgress(100);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
@@ -149,7 +145,6 @@ const AdminCharacter3D = () => {
       return null;
     } finally {
       setUploadingThumbnail(false);
-      setUploadProgress(0);
     }
   };
 
@@ -382,18 +377,6 @@ const AdminCharacter3D = () => {
                 />
               </div>
 
-              {/* URL Model 3D removed as requested */}
-              {/* <div>
-                <Label htmlFor="model_url">URL Model 3D</Label>
-                <Input
-                  id="model_url"
-                  value={formData.model_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, model_url: e.target.value }))}
-                  placeholder="https://example.com/model.glb"
-                  className="mt-1"
-                />
-              </div> */}
-
               <div>
                 <Label>Thumbnail Karakter</Label>
                 <div className="mt-2">
@@ -435,7 +418,7 @@ const AdminCharacter3D = () => {
                           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
                             <div className="text-center">
                               <Loader2 className="w-8 h-8 animate-spin text-white mx-auto mb-2" />
-                              <p className="text-white text-sm">Mengupload... {uploadProgress}%</p>
+                              <p className="text-white text-sm">Mengupload...</p>
                             </div>
                           </div>
                         )}
@@ -445,7 +428,7 @@ const AdminCharacter3D = () => {
                         {uploadingThumbnail ? (
                           <div className="space-y-2">
                             <Loader2 className="w-12 h-12 text-blue-500 mx-auto animate-spin" />
-                            <p className="text-blue-600">Mengupload... {uploadProgress}%</p>
+                            <p className="text-blue-600">Mengupload...</p>
                           </div>
                         ) : (
                           <>
