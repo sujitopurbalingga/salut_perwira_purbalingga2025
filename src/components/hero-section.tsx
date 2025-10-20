@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
-import Character3DDisplay from './character-3d-display'; // Import komponen display
+import Character3DDisplay from './character-3d-display';
 
 const HeroSection = () => {
   return (
@@ -20,9 +20,9 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center lg:items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="text-white space-y-6 animate-fade-in lg:mt-0 mt-20">
+          <div className="text-white space-y-6 animate-fade-in">
             <p className="text-lg font-medium text-white/90">
               Mau Kuliah di
             </p>
@@ -56,20 +56,22 @@ const HeroSection = () => {
 
           {/* Right Content - 3D Character */}
           <div className="relative flex justify-center lg:justify-end items-center lg:mt-0 mt-8">
-            <div className="relative animate-float">
-              {/* 3D Character Display Component */}
-              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+            <div className="relative">
+              {/* Character Container with glow effect */}
+              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 xl:w-104 xl:h-104">
+                {/* This is where the character will be displayed */}
                 <Character3DDisplay className="w-full h-full" />
                 
-                {/* Character Glow Effect (using the same class structure) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl"></div>
+                {/* Outer glow effect - this creates the yellow glow */}
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/10 to-transparent rounded-full blur-3xl -z-10 scale-110"></div>
               </div>
               
               {/* Cloud Base */}
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-20">
                 <div className="relative">
-                  <div className="w-48 h-16 bg-white rounded-full opacity-90 blur-sm"></div>
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-12 bg-white rounded-full"></div>
+                  <div className="w-48 h-16 bg-white/90 backdrop-blur-sm rounded-full opacity-90 blur-sm"></div>
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-12 bg-white rounded-full shadow-lg"></div>
                 </div>
               </div>
             </div>

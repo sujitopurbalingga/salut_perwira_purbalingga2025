@@ -8,67 +8,80 @@ export const useCharacter3D = () => {
       console.log('=== FETCHING ACTIVE CHARACTER 3D ===');
       
       try {
-        // Step 1: Get landing settings
-        console.log('Step 1: Fetching landing settings...');
+        // First try to get from landing settings
         const { data: settings, error: settingsError } = await supabase
           .from('landing_settings')
           .select('*')
           .single();
 
-        if (settingsError) {
+        if (settingsError && settingsError.code !== 'PGRST116') {
           console.error('Settings error:', settingsError);
-          if (settingsError.code === 'PGRST116') {
-            console.log('No landing settings found, returning null');
-            return null;
+        }
+
+        if (settings?.selected_character_id) {
+          console.log('Found selected character ID:', settings.selected_character_id);
+          
+          const { data: character, error: characterError } = await supabase
+            .from('characters_3d')
+            .select('*')
+            .eq('id', settings.selected_character_id)
+            .single();
+
+          if (!characterError && character) {
+            console.log('Found character from settings:', character);
+            return character;
           }
-          throw settingsError;
         }
 
-        console.log('Landing settings:', settings);
-
-        if (!settings?.selected_character_id) {
-          console.log('No selected_character_id in settings');
-          return null;
-        }
-
-        console.log('Selected character ID:', settings.selected_character_id);
-
-        // Step 2: Get the character
-        console.log('Step 2: Fetching character...');
-        const { data: character, error: characterError } = await supabase
+        // Fallback: Get any active character
+        console.log('Fallback: getting any active character...');
+        const { data: activeCharacter, error: activeError } = await supabase
           .from('characters_3d')
           .select('*')
-          .eq('id', settings.selected_character_id)
-          .maybeSingle(); // Use maybeSingle to avoid errors if not found
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-        if (characterError) {
-          console.error('Character error:', characterError);
-          throw characterError;
+        if (!activeError && activeCharacter) {
+          console.log('Found active character:', activeCharacter);
+          // Update landing settings with this character
+          if (activeCharacter.id !== settings?.selected_character_id) {
+            await supabase
+              .from('landing_settings')
+              .upsert({
+                id: 1,
+                selected_character_id: activeCharacter.id,
+                updated_at: new Date().toISOString()
+              });
+          }
+          return activeCharacter;
         }
 
-        console.log('Character data:', character);
+        // Last fallback: Get most recent character
+        console.log('Last fallback: getting most recent character...');
+        const { data: recentCharacter, error: recentError } = await supabase
+          .from('characters_3d')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-        if (!character) {
-          console.log('Character not found with ID:', settings.selected_character_id);
-          return null;
+        if (!recentError && recentCharacter) {
+          console.log('Found recent character:', recentCharacter);
+          return recentCharacter;
         }
 
-        console.log('=== ACTIVE CHARACTER FOUND ===');
-        console.log('Name:', character.name);
-        console.log('Thumbnail URL:', character.thumbnail_url);
-        console.log('Animation Type:', character.animation_type);
-        console.log('Is Active:', character.is_active);
-
-        return character as Character3D;
+        console.log('No character found');
+        return null;
       } catch (error) {
-        console.error('=== ERROR IN FETCHING CHARACTER ===');
-        console.error(error);
-        throw error;
+        console.error('Error fetching character:', error);
+        return null;
       }
     },
-    retry: 1, // Reduce retry to avoid too many requests
-    staleTime: 1000, // Reduce stale time to 1 second for debugging
+    retry: 1,
+    staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: true,
-    refetchOnMount: true, // Always refetch on mount
+    refetchOnMount: true,
   });
 };
