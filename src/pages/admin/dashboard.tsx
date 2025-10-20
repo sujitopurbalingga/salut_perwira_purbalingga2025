@@ -11,14 +11,15 @@ import {
   TrendingUp,
   Calendar,
   Activity,
-  UserCheck
+  UserCheck,
+  AlertCircle
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
 const AdminDashboard = () => {
   // Fetch statistics
-  const { data: stats } = useQuery({
+  const { data: stats, error: statsError } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const [
@@ -86,6 +87,24 @@ const AdminDashboard = () => {
       iconColor: 'text-purple-600'
     }
   ];
+
+  // If there's an error, show an error message
+  if (statsError) {
+    return (
+      <div className="p-8">
+        <div className="flex items-center space-x-2 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <h2 className="text-2xl font-bold">Error Loading Dashboard</h2>
+        </div>
+        <p className="mt-4 text-gray-600">
+          Failed to load dashboard data. Please try again later.
+        </p>
+        <p className="mt-2 text-sm text-gray-500">
+          Error: {statsError.message}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-8">
