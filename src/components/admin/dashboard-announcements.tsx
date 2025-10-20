@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Bell, Calendar, User } from 'lucide-react';
+import { Bell, Calendar, User, Megaphone, Church, Users2, Heart } from 'lucide-react';
 
 interface Announcement {
   id: string;
@@ -10,35 +10,63 @@ interface Announcement {
   author: string;
   date: string;
   priority: 'high' | 'medium' | 'low';
+  category: 'ibadah' | 'kegiatan' | 'informasi' | 'dana';
 }
 
 export const DashboardAnnouncements: React.FC = () => {
   const announcements: Announcement[] = [
     {
       id: '1',
-      title: 'Ibadah Natal 2024',
-      content: 'Persiapan ibadah Natal akan dimulai tanggal 20 Desember 2024',
-      author: 'Pastor Joko',
-      date: '2024-01-05',
-      priority: 'high'
+      title: 'Persiapan Ibadah Natal 2024',
+      content: 'Panitia Natal memohon dukungan doa dan partisipasi seluruh jemaat dalam persiapan ibadah Natal 24 Desember',
+      author: 'Panitia Natal',
+      date: '2024-12-01',
+      priority: 'high',
+      category: 'ibadah'
     },
     {
       id: '2',
-      title: 'Persekutuan Remaja',
-      content: 'Persekutuan remaja setiap hari Sabtu pukul 16:00',
-      author: 'Admin',
-      date: '2024-01-04',
-      priority: 'medium'
+      title: 'Persekutuan Doa Malam',
+      content: 'Persekutuan doa setiap hari Rabu malam pukul 19:00 di ruang doa. Mari bersama-sama berdoa',
+      author: 'Pemuda',
+      date: '2024-11-28',
+      priority: 'medium',
+      category: 'kegiatan'
     },
     {
       id: '3',
-      title: 'Jadwal Pelayanan',
-      content: 'Update jadwal pelayanan minggu ini',
+      title: 'Donasi untuk Renovasi',
+      content: 'Program renovasi ruang kelas Sekolah Minggu membutuhkan dukungan dari jemaat',
+      author: 'Majelis',
+      date: '2024-11-25',
+      priority: 'high',
+      category: 'dana'
+    },
+    {
+      id: '4',
+      title: 'Jadwal Pelayanan Baru',
+      content: 'Update jadwal pelayanan musik dan multimedia untuk bulan Desember 2024',
       author: 'Admin',
-      date: '2024-01-03',
-      priority: 'low'
+      date: '2024-11-20',
+      priority: 'low',
+      category: 'informasi'
     }
   ];
+
+  const getCategoryIcon = (category: Announcement['category']) => {
+    switch (category) {
+      case 'ibadah':
+        return <Church className="h-4 w-4 text-blue-600" />;
+      case 'kegiatan':
+        return <Users2 className="h-4 w-4 text-green-600" />;
+      case 'dana':
+        return <Heart className="h-4 w-4 text-red-600" />;
+      case 'informasi':
+        return <Megaphone className="h-4 w-4 text-yellow-600" />;
+      default:
+        return <Bell className="h-4 w-4 text-blue-600" />;
+    }
+  };
 
   const getPriorityColor = (priority: Announcement['priority']) => {
     switch (priority) {
@@ -69,9 +97,9 @@ export const DashboardAnnouncements: React.FC = () => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-slate-900">Pengumuman Terbaru</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Pengumuman Gereja</h2>
         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          Kelola →
+          Tambah Pengumuman →
         </button>
       </div>
 
@@ -83,7 +111,7 @@ export const DashboardAnnouncements: React.FC = () => {
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <Bell className="h-4 w-4 text-blue-600" />
+                {getCategoryIcon(announcement.category)}
                 <h3 className="font-medium text-slate-900">
                   {announcement.title}
                 </h3>

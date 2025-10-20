@@ -12,18 +12,28 @@ import {
   Church,
   Image,
   Bell,
-  BarChart3
+  BarChart3,
+  BookOpen,
+  MessageSquare,
+  Heart,
+  Megaphone,
+  Music,
+  UserCheck
 } from 'lucide-react';
 
 const menuItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/users', label: 'Pengguna', icon: Users },
-  { href: '/admin/activities', label: 'Kegiatan', icon: Calendar },
-  { href: '/admin/announcements', label: 'Pengumuman', icon: Bell },
-  { href: '/admin/gallery', label: 'Galeri', icon: Image },
-  { href: '/admin/pages', label: 'Halaman', icon: FileText },
-  { href: '/admin/reports', label: 'Laporan', icon: BarChart3 },
-  { href: '/admin/settings', label: 'Pengaturan', icon: Settings },
+  { href: '/admin/jemaat', label: 'Data Jemaat', icon: Users },
+  { href: '/admin/ibadah', label: 'Jadwal Ibadah', icon: Church },
+  { href: '/admin/kegiatan', label: 'Kegiatan', icon: Calendar },
+  { href: '/admin/pengumuman', label: 'Pengumuman', icon: Bell },
+  { href: '/admin/khotbah', label: 'Khotbah & Renungan', icon: BookOpen },
+  { href: '/admin/doa', label: 'Permohonan Doa', icon: MessageSquare },
+  { href: '/admin/gallery', label: 'Galeri Foto', icon: Image },
+  { href: '/admin/pelayanan', label: 'Tim Pelayanan', icon: UserCheck },
+  { href: '/admin/donasi', label: 'Donasi', icon: Heart },
+  { href: '/admin/laporan', label: 'Laporan', icon: BarChart3 },
+  { href: '/admin/pengaturan', label: 'Pengaturan', icon: Settings },
 ];
 
 export const Sidebar: React.FC = () => {
