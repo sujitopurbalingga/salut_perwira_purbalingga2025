@@ -15,7 +15,6 @@ const Navbar = () => {
     { name: 'Layanan', href: '#services' },
     { name: 'Fakultas', href: '#faculties' },
     { name: 'Berita', href: '#news' },
-    { name: 'Galeri', href: '#gallery' },
     { name: 'Kontak', href: '#contact' },
   ];
 
