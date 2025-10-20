@@ -20,9 +20,25 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="relative h-16 shadow-lg sticky top-0 z-50 overflow-hidden">
+      {/* Background split design */}
+      <div className="absolute inset-0 flex">
+        {/* Yellow section - 30% */}
+        <div className="w-[30%] bg-yellow-400"></div>
+        {/* White section - 70% */}
+        <div className="w-[70%] bg-white"></div>
+        {/* Diagonal separator */}
+        <div 
+          className="absolute top-0 left-[30%] w-0 h-0 border-t-[64px] border-t-transparent border-b-[64px] border-b-transparent border-l-[20px] border-l-yellow-400"
+          style={{
+            borderLeftColor: '#facc15',
+            transform: 'translateX(-10px)'
+          }}
+        ></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between h-full">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-3"></div>
@@ -63,7 +79,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-lg">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navigation.map((item) => (
                 <Link
