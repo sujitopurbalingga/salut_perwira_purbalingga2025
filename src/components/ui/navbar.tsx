@@ -34,10 +34,10 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="#home" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"> {/* Mengembalikan ukuran ikon ke 10x10 */}
-                <span className="text-white font-bold text-lg">SP</span> {/* Mengembalikan ukuran teks ikon ke lg */}
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">SP</span>
               </div>
-              <span className={`text-xl font-bold ${ // Mengembalikan ukuran teks judul ke xl
+              <span className={`text-xl font-bold ${
                 isScrolled ? 'text-blue-900' : 'text-white'
               }`}>
                 SALUT PERWIRA PURBALINGGA
@@ -63,7 +63,7 @@ const Navbar = () => {
               ))}
             </div>
             <Button 
-              className="bg-blue-400 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-full transition-all duration-200 hover:shadow-lg"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium px-6 py-2 rounded-full transition-all duration-200 hover:shadow-lg"
             >
               Daftar Sekarang
             </Button>
@@ -97,7 +97,7 @@ const Navbar = () => {
               ))}
               <div className="border-t pt-2">
                 <Button 
-                  className="w-full bg-blue-400 hover:bg-blue-500 text-white font-medium"
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium"
                 >
                   Daftar Sekarang
                 </Button>

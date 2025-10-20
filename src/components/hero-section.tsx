@@ -19,17 +19,17 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center lg:items-center">
           {/* Left Content */}
-          <div className="text-white space-y-6 animate-fade-in">
+          <div className="text-white space-y-6 animate-fade-in lg:mt-0 mt-20">
             <p className="text-lg font-medium text-white/90">
               Mau Kuliah di
             </p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
               Universitas <br />
               Terbuka ?
             </h1>
-            <h2 className="text-3xl md:text-4xl font-bold text-yellow-400">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
               Daftarnya di SALUT <br />
               PERWIRA PURBALINGGA !
             </h2>
@@ -54,14 +54,14 @@ const HeroSection = () => {
           </div>
 
           {/* Right Content - 3D Character */}
-          <div className="relative flex justify-center lg:justify-end items-center">
+          <div className="relative flex justify-center lg:justify-end items-center lg:mt-0 mt-8">
             <div className="relative animate-float">
               {/* 3D Character Placeholder */}
               <div className="relative">
                 <img
                   src="https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg"
                   alt="3D Character"
-                  className="w-80 h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
+                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
                 />
                 
                 {/* Character Glow Effect */}
@@ -79,8 +79,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Scroll Indicator - Removed */}
     </section>
   );
 };
