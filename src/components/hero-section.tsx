@@ -66,14 +66,6 @@ const HeroSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl -z-10"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/10 to-transparent rounded-full blur-3xl -z-10 scale-110"></div>
               </div>
-              
-              {/* Cloud Base */}
-              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-20">
-                <div className="relative">
-                  <div className="w-48 h-16 bg-white/90 backdrop-blur-sm rounded-full opacity-90 blur-sm"></div>
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-12 bg-white rounded-full shadow-lg"></div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
