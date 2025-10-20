@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -12,46 +12,72 @@ import {
   Calendar,
   Activity,
   UserCheck,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
 const AdminDashboard = () => {
+  const [error, setError] = useState<string | null>(null);
+
   // Fetch statistics
-  const { data: stats, error: statsError } = useQuery({
+  const { data: stats, isLoading, error: statsError } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const [
-        { count: totalRegistrations },
-        { count: pendingRegistrations },
-        { count: totalNews },
-        { count: totalServices },
-        { count: totalFaculties },
-        { data: recentRegistrations }
-      ] = await Promise.all([
-        supabase.from('registrations').select('*', { count: 'exact', head: true }),
-        supabase.from('registrations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('news').select('*', { count: 'exact', head: true }),
-        supabase.from('services').select('*', { count: 'exact', head: true }),
-        supabase.from('faculties').select('*', { count: 'exact', head: true }),
-        supabase
-          .from('registrations')
-          .select('full_name, email, created_at, status')
-          .order('created_at', { ascending: false })
-          .limit(5)
-      ]);
+      try {
+        const [
+          { count: totalRegistrations, error: regError },
+          { count: pendingRegistrations, error: pendingError },
+          { count: totalNews, error: newsError },
+          { count: totalServices, error: servicesError },
+          { count: totalFaculties, error: facultiesError },
+          { data: recentRegistrations, error: recentError }
+        ] = await Promise.all([
+          supabase.from('registrations').select('*', { count: 'exact', head: true }),
+          supabase.from('registrations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('news').select('*', { count: 'exact', head: true }),
+          supabase.from('services').select('*', { count: 'exact', head: true }),
+          supabase.from('faculties').select('*', { count: 'exact', head: true }),
+          supabase
+            .from('registrations')
+            .select('full_name, email, created_at, status')
+            .order('created_at', { ascending: false })
+            .limit(5)
+        ]);
 
-      return {
-        totalRegistrations: totalRegistrations || 0,
-        pendingRegistrations: pendingRegistrations || 0,
-        totalNews: totalNews || 0,
-        totalServices: totalServices || 0,
-        totalFaculties: totalFaculties || 0,
-        recentRegistrations: recentRegistrations || []
-      };
-    }
+        // Check for errors in individual queries
+        if (regError) throw regError;
+        if (pendingError) throw pendingError;
+        if (newsError) throw newsError;
+        if (servicesError) throw servicesError;
+        if (facultiesError) throw facultiesError;
+        if (recentError) throw recentError;
+
+        return {
+          totalRegistrations: totalRegistrations || 0,
+          pendingRegistrations: pendingRegistrations || 0,
+          totalNews: totalNews || 0,
+          totalServices: totalServices || 0,
+          totalFaculties: totalFaculties || 0,
+          recentRegistrations: recentRegistrations || []
+        };
+      } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
+        throw err;
+      }
+    },
+    retry: 2,
+    staleTime: 5 * 60 * 1000 // 5 minutes
   });
+
+  // Handle query errors
+  useEffect(() => {
+    if (statsError) {
+      setError('Gagal memuat data dashboard. Silakan coba lagi.');
+      console.error('Dashboard stats error:', statsError);
+    }
+  }, [statsError]);
 
   const statsCards = [
     {
@@ -88,20 +114,33 @@ const AdminDashboard = () => {
     }
   ];
 
-  // If there's an error, show an error message
-  if (statsError) {
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="p-8">
+        <div className="flex items-center justify-center space-x-2">
+          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <h2 className="text-2xl font-bold">Memuat Dashboard...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
     return (
       <div className="p-8">
         <div className="flex items-center space-x-2 text-red-600">
           <AlertCircle className="w-6 h-6" />
-          <h2 className="text-2xl font-bold">Error Loading Dashboard</h2>
+          <h2 className="text-2xl font-bold">Error</h2>
         </div>
-        <p className="mt-4 text-gray-600">
-          Failed to load dashboard data. Please try again later.
-        </p>
-        <p className="mt-2 text-sm text-gray-500">
-          Error: {statsError.message}
-        </p>
+        <p className="mt-4 text-gray-600">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Muat Ulang
+        </button>
       </div>
     );
   }
