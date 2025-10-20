@@ -4,73 +4,70 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building, Users, BookOpen, Award } from 'lucide-react';
+import { Building, Users, BookOpen, Award, Loader2, LucideIcon, GraduationCap } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase, Faculty } from '@/lib/supabase';
+
+// Map icon names to Lucide React components (using generic ones for now)
+const iconMap: { [key: string]: LucideIcon } = {
+  building: Building,
+  users: Users,
+  bookopen: BookOpen,
+  award: Award,
+  graduationcap: GraduationCap, // Added GraduationCap for faculties
+  // Add more mappings as needed
+};
 
 const FacultiesSection = () => {
-  const faculties = [
-    {
-      name: "Fakultas Teknik",
-      dean: "Prof. Dr. Ir. Budi Santoso, M.T.",
-      programs: ["Teknik Informatika", "Teknik Sipil", "Teknik Elektro", "Teknik Mesin"],
-      students: "1200+",
-      icon: Building,
-      color: "blue"
-    },
-    {
-      name: "Fakultas Ekonomi dan Bisnis",
-      dean: "Dr. Siti Nurjanah, S.E., M.M.",
-      programs: ["Manajemen", "Akuntansi", "Ekonomi Pembangunan"],
-      students: "1500+",
-      icon: Users,
-      color: "green"
-    },
-    {
-      name: "Fakultas Ilmu Sosial dan Politik",
-      dean: "Prof. Dr. Ahmad Fauzi, S.Sos., M.Si.",
-      programs: ["Ilmu Komunikasi", "Administrasi Publik", "Hubungan Internasional"],
-      students: "800+",
-      icon: BookOpen,
-      color: "purple"
-    },
-    {
-      name: "Fakultas Hukum",
-      dean: "Dr. H. Muhammad Rizqi, S.H., M.H.",
-      programs: ["Ilmu Hukum"],
-      students: "600+",
-      icon: Award,
-      color: "red"
+  const { data: faculties, isLoading } = useQuery({
+    queryKey: ['faculties-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('faculties')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+      return data as Faculty[];
     }
-  ];
+  });
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: {
+  const getColorClasses = (index: number) => {
+    const colors = [
+      {
         bg: "bg-blue-100",
         text: "text-blue-600",
         border: "border-blue-200",
         gradient: "from-blue-600 to-blue-500"
       },
-      green: {
+      {
         bg: "bg-green-100",
         text: "text-green-600",
         border: "border-green-200",
         gradient: "from-green-600 to-green-500"
       },
-      purple: {
+      {
         bg: "bg-purple-100",
         text: "text-purple-600",
         border: "border-purple-200",
         gradient: "from-purple-600 to-purple-500"
       },
-      red: {
+      {
         bg: "bg-red-100",
         text: "text-red-600",
         border: "border-red-200",
         gradient: "from-red-600 to-red-500"
       }
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
+    ];
+    return colors[index % colors.length];
   };
+
+  if (isLoading) {
+    return (
+      <section id="faculties" className="py-24 bg-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </section>
+    );
+  }
 
   return (
     <section id="faculties" className="py-24 bg-white">
@@ -93,39 +90,52 @@ const FacultiesSection = () => {
 
         {/* Faculties Grid */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {faculties.map((faculty, index) => {
-            const colors = getColorClasses(faculty.color);
+          {faculties?.map((faculty, index) => {
+            const colors = getColorClasses(index);
+            const IconComponent = faculty.image_url ? 'img' : (iconMap[faculty.name.toLowerCase().replace(/\s/g, '')] || GraduationCap); // Fallback to GraduationCap
             return (
-              <Card key={index} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg group">
+              <Card key={faculty.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg group">
                 <div className={`h-2 bg-gradient-to-r ${colors.gradient}`}></div>
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-4 mb-6">
                     <div className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                      <faculty.icon className={`w-6 h-6 ${colors.text}`} />
+                      {faculty.image_url ? (
+                        <img src={faculty.image_url} alt={faculty.name} className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <IconComponent className={`w-6 h-6 ${colors.text}`} />
+                      )}
                     </div>
                     <div className="flex-1">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">{faculty.name}</h3>
-                      <p className="text-gray-600 text-sm">{faculty.dean}</p>
+                      {faculty.dean_name && <p className="text-gray-600 text-sm">{faculty.dean_name}</p>}
                     </div>
                   </div>
 
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Program Studi:</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {faculty.programs.map((program, idx) => (
-                        <div key={idx} className="flex items-center">
-                          <div className={`w-2 h-2 ${colors.text} rounded-full mr-2`}></div>
-                          <span className="text-gray-700">{program}</span>
-                        </div>
-                      ))}
+                  {faculty.description && (
+                    <p className="text-gray-600 mb-4 line-clamp-3">{faculty.description}</p>
+                  )}
+
+                  {faculty.programs && faculty.programs.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Program Studi:</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {faculty.programs.map((program, idx) => (
+                          <div key={idx} className="flex items-center">
+                            <div className={`w-2 h-2 ${colors.text} rounded-full mr-2`}></div>
+                            <span className="text-gray-700">{program}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{faculty.students} Mahasiswa</span>
-                    </div>
+                    {faculty.students_count !== undefined && (
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">{faculty.students_count} Mahasiswa</span>
+                      </div>
+                    )}
                     <Button 
                       variant="outline" 
                       className={`${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}

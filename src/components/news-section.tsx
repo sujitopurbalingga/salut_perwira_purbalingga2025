@@ -4,47 +4,33 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, User, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase, News } from '@/lib/supabase';
 
 const NewsSection = () => {
-  const newsItems = [
-    {
-      id: 1,
-      title: "Pembukaan Program Baru: Teknik Artificial Intelligence",
-      date: "15 November 2024",
-      author: "Tim Humas",
-      readTime: "5 menit",
-      category: "Akademik",
-      summary: "Universitas membuka program studi baru Teknik Artificial Intelligence untuk menjawab kebutuhan industri 4.0.",
-      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg",
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Mahasiswa Juara Kompetisi Nasional",
-      date: "10 November 2024",
-      author: "Tim Kemahasiswaan",
-      readTime: "3 menit",
-      category: "Prestasi",
-      summary: "Tim mahasiswa Fakultas Teknik berhasil meraih juara 1 dalam kompetisi robotika tingkat nasional.",
-      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-2-768x1024.jpeg",
-      featured: false
-    },
-    {
-      id: 3,
-      title: "Kerja Sama dengan Industri Teknologi",
-      date: "5 November 2024",
-      author: "Kerja Sama",
-      readTime: "4 menit",
-      category: "Kerja Sama",
-      summary: "Penandatanganan MoU dengan perusahaan teknologi ternama untuk program magang dan rekruitmen.",
-      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-3-768x1024.jpeg",
-      featured: false
+  const { data: newsItems, isLoading } = useQuery({
+    queryKey: ['news-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('news')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false });
+      return data as News[];
     }
-  ];
+  });
 
-  const featuredNews = newsItems.find(item => item.featured);
-  const regularNews = newsItems.filter(item => !item.featured);
+  const featuredNews = newsItems?.find(item => item.is_published); // Assuming the first published item is featured
+  const regularNews = newsItems?.filter(item => item.id !== featuredNews?.id) || [];
+
+  if (isLoading) {
+    return (
+      <section id="news" className="py-24 bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </section>
+    );
+  }
 
   return (
     <section id="news" className="py-24 bg-gray-50">
@@ -71,7 +57,7 @@ const NewsSection = () => {
             <div className="grid lg:grid-cols-2">
               <div className="relative h-64 lg:h-auto">
                 <img
-                  src={featuredNews.image}
+                  src={featuredNews.image_url || "https://via.placeholder.com/768x1024"}
                   alt={featuredNews.title}
                   className="w-full h-full object-cover"
                 />
@@ -83,23 +69,26 @@ const NewsSection = () => {
                 <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    {featuredNews.date}
+                    {new Date(featuredNews.published_at || featuredNews.created_at).toLocaleDateString('id-ID')}
                   </div>
                   <div className="flex items-center">
                     <User className="w-4 h-4 mr-1" />
-                    {featuredNews.author}
+                    {/* Author name is not directly available, using a placeholder */}
+                    Admin
                   </div>
-                  <div className="flex items-center">
+                  {/* Read time is not in DB, omitting */}
+                  {/* <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
                     {featuredNews.readTime}
-                  </div>
+                  </div> */}
                 </div>
-                <Badge variant="secondary" className="mb-4">{featuredNews.category}</Badge>
+                {/* Category is not in DB, omitting */}
+                {/* <Badge variant="secondary" className="mb-4">{featuredNews.category}</Badge> */}
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   {featuredNews.title}
                 </h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  {featuredNews.summary}
+                  {featuredNews.excerpt || featuredNews.content.substring(0, 150) + '...'}
                 </p>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
                   Baca Selengkapnya
@@ -116,17 +105,19 @@ const NewsSection = () => {
             <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={item.image}
+                  src={item.image_url || "https://via.placeholder.com/400"}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-3">
-                  <Badge variant="secondary" className="text-xs">{item.category}</Badge>
+                  {/* Category is not in DB, omitting */}
+                  {/* <Badge variant="secondary" className="text-xs">{item.category}</Badge> */}
                   <div className="flex items-center text-xs text-gray-500">
-                    <Clock className="w-3 h-3 mr-1" />
-                    {item.readTime}
+                    {/* Read time is not in DB, omitting */}
+                    {/* <Clock className="w-3 h-3 mr-1" />
+                    {item.readTime} */}
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -136,12 +127,12 @@ const NewsSection = () => {
               <CardContent>
                 <div className="flex items-center text-sm text-gray-500 mb-4">
                   <Calendar className="w-4 h-4 mr-1" />
-                  <span className="mr-3">{item.date}</span>
+                  <span className="mr-3">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
                   <User className="w-4 h-4 mr-1" />
-                  <span>{item.author}</span>
+                  <span>Admin</span> {/* Placeholder for author */}
                 </div>
                 <p className="text-gray-600 mb-4 line-clamp-3">
-                  {item.summary}
+                  {item.excerpt || item.content.substring(0, 150) + '...'}
                 </p>
                 <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium">
                   Baca Selengkapnya

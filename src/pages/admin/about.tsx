@@ -18,17 +18,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-
-interface AboutContent {
-  id: string;
-  title: string;
-  description: string;
-  mission: string;
-  vision: string;
-  history: string;
-  updated_at: string;
-}
+import { supabase, AboutContent } from '@/lib/supabase';
 
 const AdminAbout = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -66,7 +56,7 @@ const AdminAbout = () => {
           ...data,
           updated_at: new Date().toISOString()
         })
-        .eq('id', aboutContent?.id || 1);
+        .eq('id', aboutContent?.id || 1); // Assuming a single 'about' entry with ID 1
       if (error) throw error;
     },
     onSuccess: () => {

@@ -3,9 +3,23 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { GraduationCap, Users, Award, BookOpen } from 'lucide-react';
+import { GraduationCap, Users, Award, BookOpen, Target, Globe, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase, AboutContent } from '@/lib/supabase';
 
 const AboutSection = () => {
+  const { data: aboutContent, isLoading } = useQuery({
+    queryKey: ['about-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('about')
+        .select('*')
+        .single();
+      return data as AboutContent;
+    }
+  });
+
+  // Hardcoded features and stats (as per initial plan, can be made dynamic later if requested)
   const features = [
     {
       icon: GraduationCap,
@@ -36,6 +50,14 @@ const AboutSection = () => {
     { number: "95%", label: "Tingkat Kelulusan" }
   ];
 
+  if (isLoading) {
+    return (
+      <section id="about" className="py-24 bg-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </section>
+    );
+  }
+
   return (
     <section id="about" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,12 +69,11 @@ const AboutSection = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Mengapa Memilih
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
-              SALUT PERWIRA PURBALINGGA
+              {aboutContent?.title || "SALUT PERWIRA PURBALINGGA"}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Universitas terkemuka yang berkomitmen untuk memberikan pendidikan berkualitas 
-            dan mencetak lulusan yang siap bersaing di era global
+            {aboutContent?.description || "Universitas terkemuka yang berkomitmen untuk memberikan pendidikan berkualitas dan mencetak lulusan yang siap bersaing di era global"}
           </p>
         </div>
 
@@ -69,6 +90,37 @@ const AboutSection = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Dynamic About Content (Visi, Misi, Sejarah) */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+          {aboutContent?.vision && (
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                <Target className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Visi</h3>
+              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.vision}</p>
+            </Card>
+          )}
+          {aboutContent?.mission && (
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                <Award className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Misi</h3>
+              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.mission}</p>
+            </Card>
+          )}
+          {aboutContent?.history && (
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <Globe className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Sejarah</h3>
+              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.history}</p>
+            </Card>
+          )}
         </div>
 
         {/* Stats Section */}

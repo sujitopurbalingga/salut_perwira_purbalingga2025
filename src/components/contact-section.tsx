@@ -7,17 +7,40 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Phone, Mail, MessageSquare, Send, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, MessageSquare, Send, Clock, Loader2 } from 'lucide-react';
 import { showSuccess, showError } from '@/utils/toast';
+import { supabase, Faculty } from '@/lib/supabase';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
-    subject: '',
+    phone: '',
+    selected_faculty: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch faculties for the dropdown
+  const { data: faculties, isLoading: isLoadingFaculties } = useQuery({
+    queryKey: ['faculties-for-registration'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('faculties')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name', { ascending: true });
+      return data as Pick<Faculty, 'id' | 'name'>[];
+    }
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -26,16 +49,38 @@ const ContactSection = () => {
     });
   };
 
+  const handleSelectChange = (value: string) => {
+    setFormData({
+      ...formData,
+      selected_faculty: value
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('registrations')
+        .insert({
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone,
+          selected_faculty: formData.selected_faculty || null,
+          message: formData.message,
+          status: 'pending' // Default status
+        });
+
+      if (error) {
+        throw error;
+      }
+
       showSuccess('Pesan Anda telah terkirim! Kami akan segera menghubungi Anda.');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
-      showError('Terjadi kesalahan. Silakan coba lagi.');
+      setFormData({ full_name: '', email: '', phone: '', selected_faculty: '', message: '' });
+    } catch (error: any) {
+      console.error('Error submitting contact form:', error);
+      showError('Terjadi kesalahan saat mengirim pesan: ' + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -105,12 +150,12 @@ const ContactSection = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Label htmlFor="name" className="font-semibold text-gray-900">Nama Lengkap</Label>
+                      <Label htmlFor="full_name" className="font-semibold text-gray-900">Nama Lengkap</Label>
                       <Input
-                        id="name"
-                        name="name"
+                        id="full_name"
+                        name="full_name"
                         type="text"
-                        value={formData.name}
+                        value={formData.full_name}
                         onChange={handleChange}
                         required
                         placeholder="Masukkan nama Anda"
@@ -133,17 +178,43 @@ const ContactSection = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="subject" className="font-semibold text-gray-900">Subjek</Label>
+                    <Label htmlFor="phone" className="font-semibold text-gray-900">Nomor Telepon (Opsional)</Label>
                     <Input
-                      id="subject"
-                      name="subject"
-                      type="text"
-                      value={formData.subject}
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
                       onChange={handleChange}
-                      required
-                      placeholder="Apa yang ingin Anda diskusikan?"
+                      placeholder="Contoh: +6281234567890"
                       className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="selected_faculty" className="font-semibold text-gray-900">Fakultas yang Diminati (Opsional)</Label>
+                    <Select
+                      value={formData.selected_faculty}
+                      onValueChange={handleSelectChange}
+                      disabled={isLoadingFaculties}
+                    >
+                      <SelectTrigger className="w-full mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500">
+                        <SelectValue placeholder="Pilih Fakultas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {isLoadingFaculties ? (
+                          <SelectItem value="loading" disabled>Memuat fakultas...</SelectItem>
+                        ) : (
+                          <>
+                            <SelectItem value="">Tidak memilih fakultas</SelectItem>
+                            {faculties?.map((faculty) => (
+                              <SelectItem key={faculty.id} value={faculty.id}>
+                                {faculty.name}
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
@@ -166,7 +237,10 @@ const ContactSection = () => {
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      <>Mengirim...</>
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Mengirim...
+                      </>
                     ) : (
                       <>
                         Kirim Pesan

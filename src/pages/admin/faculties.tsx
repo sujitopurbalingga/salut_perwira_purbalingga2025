@@ -10,17 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Loader2, Plus, Edit, Trash2, Image as ImageIcon, GraduationCap } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-
-interface Faculty {
-  id: string;
-  name: string;
-  description?: string;
-  dean_name?: string;
-  image_url?: string;
-  order_index: number;
-  is_active: boolean;
-}
+import { supabase, Faculty } from '@/lib/supabase';
 
 const AdminFaculties = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -31,7 +21,9 @@ const AdminFaculties = () => {
     dean_name: '',
     image_url: '',
     order_index: 0,
-    is_active: true
+    is_active: true,
+    programs: [] as string[], // New field
+    students_count: 0 // New field
   });
   const [message, setMessage] = useState('');
 
@@ -106,7 +98,9 @@ const AdminFaculties = () => {
       dean_name: '',
       image_url: '',
       order_index: 0,
-      is_active: true
+      is_active: true,
+      programs: [],
+      students_count: 0
     });
   };
 
@@ -118,7 +112,9 @@ const AdminFaculties = () => {
       dean_name: faculty.dean_name || '',
       image_url: faculty.image_url || '',
       order_index: faculty.order_index,
-      is_active: faculty.is_active
+      is_active: faculty.is_active,
+      programs: faculty.programs || [],
+      students_count: faculty.students_count || 0
     });
     setIsDialogOpen(true);
   };
@@ -167,6 +163,21 @@ const AdminFaculties = () => {
     }
   };
 
+  const handleProgramChange = (index: number, value: string) => {
+    const newPrograms = [...formData.programs];
+    newPrograms[index] = value;
+    setFormData({ ...formData, programs: newPrograms });
+  };
+
+  const addProgram = () => {
+    setFormData({ ...formData, programs: [...formData.programs, ''] });
+  };
+
+  const removeProgram = (index: number) => {
+    const newPrograms = formData.programs.filter((_, i) => i !== index);
+    setFormData({ ...formData, programs: newPrograms });
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center">
@@ -189,7 +200,7 @@ const AdminFaculties = () => {
               Tambah Fakultas
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingFaculty ? 'Edit Fakultas' : 'Tambah Fakultas Baru'}
@@ -234,13 +245,45 @@ const AdminFaculties = () => {
               </div>
 
               <div>
+                <Label htmlFor="students_count">Jumlah Mahasiswa</Label>
+                <Input
+                  id="students_count"
+                  type="number"
+                  value={formData.students_count}
+                  onChange={(e) => setFormData({ ...formData, students_count: parseInt(e.target.value) || 0 })}
+                  placeholder="Masukkan jumlah mahasiswa"
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="order">Urutan</Label>
                 <Input
                   id="order"
                   type="number"
                   value={formData.order_index}
-                  onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) || 0 })}
                 />
+              </div>
+
+              <div>
+                <Label>Program Studi</Label>
+                <div className="space-y-2 mt-2">
+                  {formData.programs.map((program, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={program}
+                        onChange={(e) => handleProgramChange(index, e.target.value)}
+                        placeholder={`Program Studi ${index + 1}`}
+                      />
+                      <Button variant="outline" size="icon" onClick={() => removeProgram(index)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button variant="outline" onClick={addProgram} className="w-full">
+                    <Plus className="w-4 h-4 mr-2" /> Tambah Program
+                  </Button>
+                </div>
               </div>
 
               <div>
@@ -351,7 +394,20 @@ const AdminFaculties = () => {
                   {faculty.description}
                 </p>
               )}
-              <div className="flex justify-end space-x-2">
+              {faculty.programs && faculty.programs.length > 0 && (
+                <div className="mb-2">
+                  <h4 className="font-semibold text-gray-900 text-sm">Program Studi:</h4>
+                  <ul className="list-disc list-inside text-sm text-gray-700">
+                    {faculty.programs.map((program, idx) => (
+                      <li key={idx}>{program}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {faculty.students_count !== undefined && (
+                <p className="text-sm text-gray-600">Mahasiswa: {faculty.students_count}</p>
+              )}
+              <div className="flex justify-end space-x-2 mt-4">
                 <Button
                   variant="outline"
                   size="sm"
