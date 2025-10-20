@@ -21,20 +21,27 @@ const Navbar = () => {
 
   return (
     <nav className="relative h-16 shadow-lg sticky top-0 z-50 overflow-hidden">
-      {/* Background split design */}
+      {/* Background split design with curved separator */}
       <div className="absolute inset-0 flex">
-        {/* Yellow section - 30% */}
-        <div className="w-[30%] bg-yellow-400"></div>
-        {/* White section - 70% */}
-        <div className="w-[70%] bg-white"></div>
-        {/* Diagonal separator */}
-        <div 
-          className="absolute top-0 left-[30%] w-0 h-0 border-t-[64px] border-t-transparent border-b-[64px] border-b-transparent border-l-[20px] border-l-yellow-400"
-          style={{
-            borderLeftColor: '#facc15',
-            transform: 'translateX(-10px)'
-          }}
-        ></div>
+        {/* Yellow section - 45% */}
+        <div className="w-[45%] bg-yellow-400"></div>
+        {/* White section - 55% */}
+        <div className="w-[55%] bg-white"></div>
+        {/* Curved separator using SVG */}
+        <svg 
+          className="absolute top-0 left-[45%] h-full w-20 pointer-events-none"
+          viewBox="0 0 80 64"
+          preserveAspectRatio="none"
+        >
+          <path 
+            d="M 0 0 Q 40 32 0 64" 
+            fill="#facc15"
+          />
+          <path 
+            d="M 0 0 Q 40 32 0 64 L 80 64 L 80 0 Z" 
+            fill="white"
+          />
+        </svg>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
