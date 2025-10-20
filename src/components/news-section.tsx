@@ -10,35 +10,35 @@ const NewsSection = () => {
   const newsItems = [
     {
       id: 1,
-      title: "Peluncuran Program Pemberdayaan UMKM Digital",
+      title: "Pembukaan Program Baru: Teknik Artificial Intelligence",
       date: "15 November 2024",
-      author: "Admin Salut",
+      author: "Tim Humas",
       readTime: "5 menit",
-      category: "Program",
-      summary: "Salut Wonomulyo meluncurkan program baru untuk membantu UMKM lokal go digital dengan pelatihan dan pendampingan intensif.",
+      category: "Akademik",
+      summary: "Universitas membuka program studi baru Teknik Artificial Intelligence untuk menjawab kebutuhan industri 4.0.",
       image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg",
       featured: true
     },
     {
       id: 2,
-      title: "Workshop Kewirausahaan untuk Pemuda",
+      title: "Mahasiswa Juara Kompetisi Nasional",
       date: "10 November 2024",
-      author: "Tim Pengembangan",
+      author: "Tim Kemahasiswaan",
       readTime: "3 menit",
-      category: "Pelatihan",
-      summary: "Ratusan pemuda Wonomulyo mengikuti workshop kewirausahaan untuk meningkatkan skill dan membuka peluang usaha baru.",
-      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-3-768x1024.jpeg",
+      category: "Prestasi",
+      summary: "Tim mahasiswa Fakultas Teknik berhasil meraih juara 1 dalam kompetisi robotika tingkat nasional.",
+      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-2-768x1024.jpeg",
       featured: false
     },
     {
       id: 3,
-      title: "Kolaborasi dengan Pemerintah Daerah",
+      title: "Kerja Sama dengan Industri Teknologi",
       date: "5 November 2024",
-      author: "Humas Salut",
+      author: "Kerja Sama",
       readTime: "4 menit",
       category: "Kerja Sama",
-      summary: "Penandatanganan MoU dengan Pemerintah Daerah untuk percepatan pembangunan infrastruktur desa di Wonomulyo.",
-      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-2-768x1024.jpeg",
+      summary: "Penandatanganan MoU dengan perusahaan teknologi ternama untuk program magang dan rekruitmen.",
+      image: "https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-3-768x1024.jpeg",
       featured: false
     }
   ];
@@ -51,18 +51,17 @@ const NewsSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 px-4 py-2 border-blue-200 text-blue-700 bg-blue-50">
+          <Badge className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200">
             Berita Terbaru
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Informasi dan
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
-              Kegiatan Terkini
+              Kegiatan Kampus
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Dapatkan informasi terkini tentang kegiatan dan program-program kami 
-            serta dampak positif yang kami ciptakan untuk masyarakat
+            Dapatkan informasi terkini tentang kegiatan akademik, prestasi mahasiswa, dan program kampus
           </p>
         </div>
 

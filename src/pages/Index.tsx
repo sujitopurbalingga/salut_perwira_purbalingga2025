@@ -4,9 +4,9 @@ import React, { useEffect } from 'react';
 import Navbar from '@/components/ui/navbar';
 import HeroSection from '@/components/hero-section';
 import AboutSection from '@/components/about-section';
+import ServicesSection from '@/components/services-section';
+import FacultiesSection from '@/components/faculties-section';
 import NewsSection from '@/components/news-section';
-import GallerySection from '@/components/gallery-section';
-import ContactSection from '@/components/contact-section';
 import Footer from '@/components/footer';
 
 const Index = () => {
@@ -44,9 +44,9 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <ServicesSection />
+      <FacultiesSection />
       <NewsSection />
-      <GallerySection />
-      <ContactSection />
       <Footer />
     </div>
   );

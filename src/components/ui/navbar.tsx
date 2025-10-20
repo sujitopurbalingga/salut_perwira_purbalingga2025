@@ -1,14 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,64 +17,56 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { name: 'BERANDA', href: '#home' },
-    { name: 'TENTANG', href: '#about' },
-    { name: 'BERITA', href: '#news' },
-    { name: 'GALERI', href: '#gallery' },
-    { name: 'KONTAK', href: '#contact' },
+    { name: 'Tentang', href: '#about' },
+    { name: 'Layanan', href: '#services' },
+    { name: 'Fakultas', href: '#faculties' },
+    { name: 'Berita', href: '#news' },
   ];
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/95 backdrop-blur-md shadow-lg' 
+        ? 'bg-white shadow-lg' 
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#home" className="flex items-center">
-              <img 
-                src="https://salutwonomulyo.com/wp-content/uploads/2023/12/Logo-Salut-300x169.png" 
-                alt="Salut Wonomulyo" 
-                className="h-10 w-auto"
-              />
+            <a href="#home" className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">SP</span>
+              </div>
+              <span className={`text-xl font-bold ${
+                isScrolled ? 'text-blue-900' : 'text-white'
+              }`}>
+                SALUT PERWIRA PURBALINGGA
+              </span>
             </a>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-6">
+          <div className="hidden md:flex items-center space-x-8">
+            <div className="flex items-center space-x-6">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className={`px-3 py-2 text-sm font-bold transition-colors ${
+                  className={`font-medium transition-colors ${
                     isScrolled 
-                      ? 'text-gray-700 hover:text-green-600' 
-                      : 'text-white hover:text-green-300'
+                      ? 'text-gray-700 hover:text-blue-600' 
+                      : 'text-white hover:text-yellow-300'
                   }`}
                 >
                   {item.name}
                 </a>
               ))}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className={`font-bold ${
-                    isScrolled ? 'text-gray-700 hover:text-green-600' : 'text-white hover:text-green-300'
-                  }`}>
-                    ADMIN
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <a href="/admin/login">Login Admin</a>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
+            <Button 
+              className="bg-blue-400 hover:bg-blue-500 text-white font-medium px-6 py-2 rounded-full transition-all duration-200 hover:shadow-lg"
+            >
+              Daftar Sekarang
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -104,18 +90,17 @@ const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-bold"
+                  className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
                 >
                   {item.name}
                 </a>
               ))}
               <div className="border-t pt-2">
-                <a
-                  href="/admin/login"
-                  className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-bold"
+                <Button 
+                  className="w-full bg-blue-400 hover:bg-blue-500 text-white font-medium"
                 >
-                  Login Admin
-                </a>
+                  Daftar Sekarang
+                </Button>
               </div>
             </div>
           </div>

@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 142 76% 36%;
+    --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,7 +30,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%;
+    --ring: 217 91% 60%;
 
     --radius: 0.5rem;
 
@@ -48,7 +48,7 @@
 
     --sidebar-border: 220 13% 91%;
 
-    --sidebar-ring: 142 76% 36%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
@@ -62,7 +62,7 @@
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
-    --primary-foreground: 142 76% 36%;
+    --primary-foreground: 217 91% 60%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -81,12 +81,12 @@
     --ring: 212.7 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 142 76% 36%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -169,12 +169,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #16a34a;
+  background: #004BFF;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #15803d;
+  background: #0036CC;
 }
 
 /* Glassmorphism effect */
@@ -186,7 +186,7 @@ html {
 
 /* Gradient text */
 .text-gradient {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background: linear-gradient(135deg, #004BFF 0%, #0A6CFF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -195,13 +195,13 @@ html {
 /* Custom button hover effects */
 .btn-hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 75, 255, 0.2);
 }
 
 /* Card hover effects */
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 75, 255, 0.1);
 }
 
 /* Section spacing */
@@ -211,11 +211,36 @@ html {
 
 /* Focus styles */
 .focus-ring:focus {
-  outline: 2px solid #16a34a;
+  outline: 2px solid #004BFF;
   outline-offset: 2px;
 }
 
 /* Custom transitions */
 .transition-smooth {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* University specific styles */
+.university-gradient {
+  background: linear-gradient(135deg, #004BFF 0%, #0A6CFF 50%, #4A90FF 100%);
+}
+
+.yellow-accent {
+  color: #FFC700;
+}
+
+.yellow-bg {
+  background-color: #FFC700;
+}
+
+.blue-primary {
+  color: #004BFF;
+}
+
+.blue-bg {
+  background-color: #004BFF;
+}
+
+.blue-light {
+  background-color: #4A90FF;
 }

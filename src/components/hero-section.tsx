@@ -2,46 +2,91 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Download } from 'lucide-react';
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://salutwonomulyo.com/wp-content/uploads/2023/12/WhatsApp-Image-2023-12-28-at-14.31.18-1.jpeg"
-          alt="Hero Background"
-          className="w-full h-full object-cover"
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50"></div>
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400"></div>
+      
+      {/* Decorative Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-yellow-400/10 rounded-full blur-xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-lg"></div>
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in leading-tight">
-          Selamat Datang di Salut Wonomulyo
-        </h1>
-        <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-200 animate-slide-up leading-relaxed">
-          Mengabdi dan Berinovasi untuk Kemajuan Masyarakat Wonomulyo
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4">
-            Jelajahi Berita
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600 font-bold px-8 py-4">
-            <Play className="mr-2 h-5 w-5" />
-            Hubungi Kami
-          </Button>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="text-white space-y-6 animate-fade-in">
+            <p className="text-lg font-medium text-white/90">
+              Mau Kuliah di
+            </p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+              Universitas <br />
+              Terbuka ?
+            </h1>
+            <h2 className="text-3xl md:text-4xl font-bold text-yellow-400">
+              Daftarnya di SALUT <br />
+              PERWIRA PURBALINGGA !
+            </h2>
+            
+            <div className="flex flex-col sm:flex-row gap-4 pt-8">
+              <Button 
+                size="lg" 
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
+              >
+                Daftar Sekarang
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="bg-white hover:bg-gray-50 text-blue-600 border-white font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
+              >
+                <Download className="mr-2 h-5 w-5" />
+                Lihat Brosur Dulu
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Content - 3D Character */}
+          <div className="relative flex justify-center lg:justify-end items-center">
+            <div className="relative animate-float">
+              {/* 3D Character Placeholder */}
+              <div className="relative">
+                <img
+                  src="https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg"
+                  alt="3D Character"
+                  className="w-80 h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
+                />
+                
+                {/* Character Glow Effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl"></div>
+              </div>
+              
+              {/* Cloud Base */}
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  <div className="w-48 h-16 bg-white rounded-full opacity-90 blur-sm"></div>
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-12 bg-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
+        <div className="flex flex-col items-center text-white/70">
+          <span className="text-sm mb-2">Scroll untuk melanjutkan</span>
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white/70 rounded-full mt-2"></div>
+          </div>
         </div>
       </div>
     </section>
