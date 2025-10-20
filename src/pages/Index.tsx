@@ -5,7 +5,6 @@ import AboutSection from '@/components/about-section';
 import ServicesSection from '@/components/services-section';
 import FacultiesSection from '@/components/faculties-section';
 import NewsSection from '@/components/news-section';
-import GallerySection from '@/components/gallery-section';
 import ContactSection from '@/components/contact-section';
 import Footer from '@/components/footer';
 import { MadeWithDyad } from '@/components/made-with-dyad';
@@ -20,7 +19,6 @@ const Index = () => {
         <ServicesSection />
         <FacultiesSection />
         <NewsSection />
-        <GallerySection />
         <ContactSection />
       </main>
       <Footer />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,8 @@ import {
   Sparkles,
   CheckCircle,
   AlertCircle,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, Character3D, LandingSettings } from '@/lib/supabase';
@@ -28,6 +29,10 @@ const AdminCharacter3D = () => {
   const [message, setMessage] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [previewCharacter, setPreviewCharacter] = useState<Character3D | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [formData, setFormData] = useState({
     name: '',
     model_url: '',
@@ -61,6 +66,96 @@ const AdminCharacter3D = () => {
     }
   });
 
+  // Upload thumbnail to Supabase Storage
+  const uploadThumbnail = async (file: File) => {
+    setUploadingThumbnail(true);
+    
+    try {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setMessage('Harap upload file gambar (JPG, PNG, GIF)');
+        setTimeout(() => setMessage(''), 3000);
+        setUploadingThumbnail(false);
+        return null;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage('Ukuran file maksimal 5MB');
+        setTimeout(() => setMessage(''), 3000);
+        setUploadingThumbnail(false);
+        return null;
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `character-${Date.now()}.${fileExt}`;
+      const filePath = `characters/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, thumbnail_url: publicUrl }));
+      setMessage('Thumbnail berhasil diupload');
+      setTimeout(() => setMessage(''), 3000);
+      
+      return publicUrl;
+    } catch (error) {
+      console.error('Upload error:', error);
+      setMessage('Gagal mengupload thumbnail');
+      setTimeout(() => setMessage(''), 3000);
+      return null;
+    } finally {
+      setUploadingThumbnail(false);
+    }
+  };
+
+  // Handle file selection
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setThumbnailPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload file
+    await uploadThumbnail(file);
+  };
+
+  // Handle drag and drop
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    
+    if (!file) return;
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setThumbnailPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload file
+    await uploadThumbnail(file);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
   // Add new character
   const addCharacterMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -76,7 +171,7 @@ const AdminCharacter3D = () => {
       queryClient.invalidateQueries({ queryKey: ['characters-3d'] });
       setMessage('Karakter 3D berhasil ditambahkan');
       setIsAddDialogOpen(false);
-      setFormData({ name: '', model_url: '', thumbnail_url: '', animation_type: 'idle' });
+      resetForm();
       setTimeout(() => setMessage(''), 3000);
     },
     onError: (error) => {
@@ -141,6 +236,19 @@ const AdminCharacter3D = () => {
     }
   });
 
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      model_url: '',
+      thumbnail_url: '',
+      animation_type: 'idle'
+    });
+    setThumbnailPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleAddCharacter = () => {
     if (!formData.name || !formData.model_url) {
       setMessage('Nama dan URL model wajib diisi');
@@ -196,6 +304,17 @@ const AdminCharacter3D = () => {
               <DialogTitle>Tambah Karakter 3D Baru</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
+              {message && (
+                <Alert className={message.includes('berhasil') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+                  {message.includes('berhasil') ? (
+                    <CheckCircle className="h-4 w-4" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" />
+                  )}
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
+              )}
+              
               <div>
                 <Label htmlFor="name">Nama Karakter</Label>
                 <Input
@@ -206,6 +325,7 @@ const AdminCharacter3D = () => {
                   className="mt-1"
                 />
               </div>
+
               <div>
                 <Label htmlFor="model_url">URL Model 3D</Label>
                 <Input
@@ -216,16 +336,60 @@ const AdminCharacter3D = () => {
                   className="mt-1"
                 />
               </div>
+
               <div>
-                <Label htmlFor="thumbnail_url">URL Thumbnail</Label>
-                <Input
-                  id="thumbnail_url"
-                  value={formData.thumbnail_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, thumbnail_url: e.target.value }))}
-                  placeholder="https://example.com/thumbnail.jpg"
-                  className="mt-1"
-                />
+                <Label>Thumbnail Karakter</Label>
+                <div className="mt-2">
+                  {/* Upload Area */}
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {thumbnailPreview ? (
+                      <div className="relative">
+                        <img 
+                          src={thumbnailPreview} 
+                          alt="Thumbnail preview" 
+                          className="mx-auto max-h-48 rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setThumbnailPreview(null);
+                            setFormData(prev => ({ ...prev, thumbnail_url: '' }));
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                            }
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Upload className="w-12 h-12 text-gray-400 mx-auto" />
+                        <div>
+                          <p className="text-gray-600">Drag & drop gambar di sini atau klik untuk browse</p>
+                          <p className="text-sm text-gray-500">PNG, JPG, GIF (Maks. 5MB)</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
               </div>
+
               <div>
                 <Label htmlFor="animation_type">Tipe Animasi</Label>
                 <select
@@ -241,22 +405,23 @@ const AdminCharacter3D = () => {
                   ))}
                 </select>
               </div>
+              
               <Button 
                 onClick={handleAddCharacter} 
-                disabled={addCharacterMutation.isPending}
+                disabled={addCharacterMutation.isPending || uploadingThumbnail}
                 className="w-full"
               >
-                {addCharacterMutation.isPending ? (
+                {addCharacterMutation.isPending || uploadingThumbnail ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : null}
-                Tambah Karakter
+                {uploadingThumbnail ? 'Mengupload...' : 'Tambah Karakter'}
               </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {message && (
+      {message && !isAddDialogOpen && (
         <Alert className={message.includes('berhasil') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
           {message.includes('berhasil') ? (
             <CheckCircle className="h-4 w-4" />
@@ -279,8 +444,16 @@ const AdminCharacter3D = () => {
           <CardContent>
             {characters?.find(c => c.id === landingSettings.selected_character_id) ? (
               <div className="flex items-center space-x-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center">
-                  <ImageIcon className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center overflow-hidden">
+                  {characters.find(c => c.id === landingSettings.selected_character_id)?.thumbnail_url ? (
+                    <img 
+                      src={characters.find(c => c.id === landingSettings.selected_character_id)?.thumbnail_url} 
+                      alt={characters.find(c => c.id === landingSettings.selected_character_id)?.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="w-10 h-10 text-white" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold">
