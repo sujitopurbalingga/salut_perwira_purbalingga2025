@@ -37,6 +37,7 @@ const AdminCharacter3D = () => {
   
   const [formData, setFormData] = useState({
     name: '',
+    model_url: '',
     thumbnail_url: '',
     animation_type: 'idle'
   });
@@ -195,45 +196,21 @@ const AdminCharacter3D = () => {
     event.preventDefault();
   };
 
-  // Add new character and automatically make it active
+  // Add new character
   const addCharacterMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       console.log('Adding character:', data);
-      
-      // Insert new character
-      const { data: newCharacter, error: insertError } = await supabase
+      const { error } = await supabase
         .from('characters_3d')
         .insert({
           ...data,
-          model_url: data.thumbnail_url, // Use thumbnail as model URL for display
-          is_active: true
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      // Deactivate all other characters
-      await supabase
-        .from('characters_3d')
-        .update({ is_active: false })
-        .neq('id', newCharacter.id);
-
-      // Update landing settings
-      await supabase
-        .from('landing_settings')
-        .upsert({
-          id: 1,
-          selected_character_id: newCharacter.id,
-          updated_at: new Date().toISOString()
+          is_active: false
         });
-
-      return newCharacter;
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['characters-3d'] });
-      queryClient.invalidateQueries({ queryKey: ['landing-settings'] });
-      setMessage('Karakter 3D berhasil ditambahkan dan diaktifkan');
+      setMessage('Karakter 3D berhasil ditambahkan');
       setIsAddDialogOpen(false);
       resetForm();
       setTimeout(() => setMessage(''), 3000);
@@ -318,6 +295,7 @@ const AdminCharacter3D = () => {
   const resetForm = () => {
     setFormData({
       name: '',
+      model_url: '',
       thumbnail_url: '',
       animation_type: 'idle'
     });
@@ -329,8 +307,8 @@ const AdminCharacter3D = () => {
   };
 
   const handleAddCharacter = () => {
-    if (!formData.name || !formData.thumbnail_url) {
-      const errorMsg = 'Nama dan thumbnail wajib diisi';
+    if (!formData.name || !formData.model_url) {
+      const errorMsg = 'Nama dan URL model wajib diisi';
       setErrorMessage(errorMsg);
       setMessage(errorMsg);
       setTimeout(() => {
@@ -387,7 +365,7 @@ const AdminCharacter3D = () => {
             <DialogHeader>
               <DialogTitle>Tambah Karakter 3D Baru</DialogTitle>
               <DialogDescription>
-                Upload gambar karakter untuk ditampilkan di halaman utama. Karakter akan otomatis aktif setelah ditambahkan.
+                Isi form di bawah untuk menambahkan karakter 3D baru. Upload thumbnail dari komputer Anda.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -409,6 +387,17 @@ const AdminCharacter3D = () => {
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Masukkan nama karakter"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="model_url">URL Model 3D</Label>
+                <Input
+                  id="model_url"
+                  value={formData.model_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, model_url: e.target.value }))}
+                  placeholder="https://example.com/model.glb"
                   className="mt-1"
                 />
               </div>
@@ -678,8 +667,8 @@ const AdminCharacter3D = () => {
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-semibold">Nama:</span>
-                  <p className="text-gray-600">{previewCharacter.name}</p>
+                  <span className="font-semibold">Model URL:</span>
+                  <p className="text-gray-600 break-all">{previewCharacter.model_url}</p>
                 </div>
                 <div>
                   <span className="font-semibold">Animasi:</span>
