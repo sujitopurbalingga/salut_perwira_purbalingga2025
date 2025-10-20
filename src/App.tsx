@@ -16,6 +16,7 @@ import NotFound from './pages/NotFound';
 // Admin Pages
 import AdminLogin from './pages/admin/login';
 import AdminDashboard from './pages/admin/dashboard';
+import AdminCharacter3D from './pages/admin/character-3d';
 import AdminAbout from './pages/admin/about';
 import AdminServices from './pages/admin/services';
 import AdminFaculties from './pages/admin/faculties';
@@ -58,6 +59,7 @@ function App() {
                   }
                 >
                   <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="character-3d" element={<AdminCharacter3D />} />
                   <Route path="about" element={<AdminAbout />} />
                   <Route path="services" element={<AdminServices />} />
                   <Route path="faculties" element={<AdminFaculties />} />

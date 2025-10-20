@@ -1,12 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rtbdhcehdrrabyslymth.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0YmRoY2VoZHJyYWJ5c2x5bXRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzk0MzUsImV4cCI6MjA3NjQ1NTQzNX0.oaRQo79okwXxyE4StehPTDA_i8vJmyiDTogsVBBLSM8';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Types for 3D Character
+export interface Character3D {
+  id: string;
+  name: string;
+  model_url: string;
+  thumbnail_url: string;
+  animation_type: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Types for Landing Page Settings
+export interface LandingSettings {
+  id: string;
+  selected_character_id: string;
+  hero_title: string;
+  hero_subtitle: string;
+  updated_at: string;
+}

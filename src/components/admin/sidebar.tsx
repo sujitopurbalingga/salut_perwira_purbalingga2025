@@ -13,7 +13,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  ChevronDown
+  ChevronDown,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from './auth-provider';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,11 @@ const menuItems: MenuItem[] = [
     title: 'Dashboard',
     icon: <LayoutDashboard className="w-5 h-5" />,
     path: '/admin/dashboard',
+  },
+  {
+    title: 'Karakter 3D',
+    icon: <Sparkles className="w-5 h-5" />,
+    path: '/admin/character-3d',
   },
   {
     title: 'Tentang',

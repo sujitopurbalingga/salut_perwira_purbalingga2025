@@ -1,53 +1,30 @@
-"use client";
-
-import React, { useEffect } from 'react';
-import Navbar from '@/components/ui/navbar';
+import React from 'react';
+import Navbar from '@/components/navbar';
 import HeroSection from '@/components/hero-section';
 import AboutSection from '@/components/about-section';
 import ServicesSection from '@/components/services-section';
 import FacultiesSection from '@/components/faculties-section';
 import NewsSection from '@/components/news-section';
+import GallerySection from '@/components/gallery-section';
+import ContactSection from '@/components/contact-section';
 import Footer from '@/components/footer';
+import { MadeWithDyad } from '@/components/made-with-dyad';
 
 const Index = () => {
-  useEffect(() => {
-    // Add smooth scrolling behavior
-    document.documentElement.style.scrollBehavior = 'smooth';
-
-    // Add scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-in');
-        }
-      });
-    }, observerOptions);
-
-    // Observe all sections
-    const sections = document.querySelectorAll('section');
-    sections.forEach(section => {
-      observer.observe(section);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   return (
     <div className="min-h-screen">
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <ServicesSection />
-      <FacultiesSection />
-      <NewsSection />
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <ServicesSection />
+        <FacultiesSection />
+        <NewsSection />
+        <GallerySection />
+        <ContactSection />
+      </main>
       <Footer />
+      <MadeWithDyad />
     </div>
   );
 };
