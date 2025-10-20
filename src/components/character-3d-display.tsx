@@ -9,11 +9,12 @@ interface Character3DDisplayProps {
 }
 
 const Character3DDisplay: React.FC<Character3DDisplayProps> = ({ className = "" }) => {
-  const { data: character, isLoading, error } = useCharacter3D();
+  const { data: character, isLoading, error, refetch } = useCharacter3D();
 
-  console.log('Character3DDisplay - data:', character);
-  console.log('Character3DDisplay - isLoading:', isLoading);
-  console.log('Character3DDisplay - error:', error);
+  console.log('=== Character3DDisplay Render ===');
+  console.log('Data:', character);
+  console.log('Is Loading:', isLoading);
+  console.log('Error:', error);
 
   if (isLoading) {
     return (
@@ -34,7 +35,7 @@ const Character3DDisplay: React.FC<Character3DDisplayProps> = ({ className = "" 
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
           <p className="text-red-500 text-sm">Error memuat karakter</p>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => refetch()} 
             className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
           >
             Refresh
@@ -45,15 +46,25 @@ const Character3DDisplay: React.FC<Character3DDisplayProps> = ({ className = "" 
   }
 
   if (!character) {
+    console.log('No character data available');
     return (
       <div className={`flex items-center justify-center ${className}`}>
         <div className="text-center">
           <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-2" />
           <p className="text-gray-500 text-sm">Karakter Tidak Tersedia</p>
+          <button 
+            onClick={() => refetch()} 
+            className="mt-2 text-xs text-gray-600 hover:text-gray-800 underline"
+          >
+            Refresh
+          </button>
         </div>
       </div>
     );
   }
+
+  console.log('Rendering character:', character.name);
+  console.log('Thumbnail URL:', character.thumbnail_url);
 
   return (
     <div className={`${className} relative`}>
@@ -65,6 +76,13 @@ const Character3DDisplay: React.FC<Character3DDisplayProps> = ({ className = "" 
             className="w-full h-full object-contain animate-float"
             style={{
               filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))'
+            }}
+            onError={(e) => {
+              console.error('Image load error:', e);
+              console.error('Failed URL:', character.thumbnail_url);
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully');
             }}
           />
           {/* Debug info */}

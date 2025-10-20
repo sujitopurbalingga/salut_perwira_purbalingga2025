@@ -27,12 +27,14 @@ import AdminBrochure from './pages/admin/brochure';
 // Protected Route Component
 import ProtectedRoute from './components/admin/protected-route';
 
-// Create a client
+// Create a client with better configuration for debugging
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      refetchOnWindowFocus: true, // Mengubah dari false menjadi true
+      refetchOnWindowFocus: true,
+      staleTime: 0, // Force refetch for debugging
+      gcTime: 1000 * 60 * 5, // 5 minutes
     },
   },
 });
