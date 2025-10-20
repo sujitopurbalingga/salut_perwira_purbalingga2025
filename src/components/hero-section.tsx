@@ -55,8 +55,8 @@ const HeroSection = () => {
           </div>
 
           {/* Right Content - 3D Character */}
-          <div className="relative flex justify-center lg:justify-end items-center lg:mt-0 mt-8">
-            <div className="relative">
+          <div className="relative flex justify-end lg:justify-end items-center lg:mt-0 mt-8 lg:translate-x-8 xl:translate-x-12">
+            <div className="relative lg:-mr-16 xl:-mr-20">
               {/* Character Container with glow effect - Increased size */}
               <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[450px] lg:h-[450px] xl:w-[500px] xl:h-[500px]">
                 {/* This is where the character will be displayed */}
