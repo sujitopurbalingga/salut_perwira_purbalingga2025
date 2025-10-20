@@ -8,6 +8,7 @@ import {
   Users, 
   Newspaper, 
   MessageSquare,
+  Image,
   Plus,
   Edit,
   Trash2,
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [stats, setStats] = useState({
     totalNews: 0,
+    totalGallery: 0,
     totalMessages: 0,
     totalVisitors: 0
   });
@@ -58,6 +60,7 @@ const AdminDashboard = () => {
     // Mock stats - replace with actual API call
     setStats({
       totalNews: 15,
+      totalGallery: 24,
       totalMessages: 8,
       totalVisitors: 1234
     });
@@ -75,7 +78,7 @@ const AdminDashboard = () => {
   };
 
   const renderOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Berita</CardTitle>
@@ -85,6 +88,19 @@ const AdminDashboard = () => {
           <div className="text-2xl font-bold">{stats.totalNews}</div>
           <p className="text-xs text-muted-foreground">
             +2 dari bulan lalu
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Galeri</CardTitle>
+          <Image className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalGallery}</div>
+          <p className="text-xs text-muted-foreground">
+            +3 dari minggu lalu
           </p>
         </CardContent>
       </Card>
@@ -165,6 +181,42 @@ const AdminDashboard = () => {
     </div>
   );
 
+  const renderGallery = () => (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Kelola Galeri</h2>
+        <Button className="bg-green-600 hover:bg-green-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Upload Foto
+        </Button>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+          <Card key={item} className="overflow-hidden group">
+            <div className="relative">
+              <img
+                src={`https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-${item <= 3 ? item : '1'}-768x1024.jpeg`}
+                alt={`Gallery ${item}`}
+                className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center">
+                <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="outline" size="sm" className="bg-white text-gray-800 hover:bg-gray-100">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-white text-red-600 hover:bg-red-50">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderMessages = () => (
     <div>
       <h2 className="text-2xl font-bold mb-6">Pesan Masuk</h2>
@@ -220,6 +272,7 @@ const AdminDashboard = () => {
             {[
               { id: 'overview', label: 'Overview', icon: BarChart3 },
               { id: 'news', label: 'Berita', icon: Newspaper },
+              { id: 'gallery', label: 'Galeri', icon: Image },
               { id: 'messages', label: 'Pesan', icon: MessageSquare }
             ].map((tab) => (
               <button
@@ -243,6 +296,7 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'news' && renderNews()}
+        {activeTab === 'gallery' && renderGallery()}
         {activeTab === 'messages' && renderMessages()}
       </div>
     </div>

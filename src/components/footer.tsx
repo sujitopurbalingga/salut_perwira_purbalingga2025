@@ -1,65 +1,53 @@
 "use client";
 
 import React from 'react';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
-    main: [
+    quickLinks: [
       { name: 'Tentang Kami', href: '#about' },
       { name: 'Berita', href: '#news' },
+      { name: 'Galeri', href: '#gallery' },
       { name: 'Kontak', href: '#contact' }
     ],
     legal: [
       { name: 'Kebijakan Privasi', href: '#' },
-      { name: 'Syarat & Ketentuan', href: '#' },
-      { name: 'Kebijakan Cookie', href: '#' }
+      { name: 'Syarat & Ketentuan', href: '#' }
     ]
   };
 
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Youtube, href: '#', label: 'YouTube' }
-  ];
-
-  const contactInfo = [
-    { icon: MapPin, value: 'Jl. Merdeka No. 123, Wonomulyo' },
-    { icon: Phone, value: '+62 812-3456-7890' },
-    { icon: Mail, value: 'info@salutwonomulyo.com' }
+    { icon: Facebook, href: '#' },
+    { icon: Twitter, href: '#' },
+    { icon: Instagram, href: '#' },
+    { icon: Youtube, href: '#' }
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid lg:grid-cols-4 gap-12">
-          {/* Brand Section */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">S</span>
-              </div>
-              <span className="text-xl font-bold">Salut Wonomulyo</span>
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="md:col-span-1">
+            <div className="flex items-center mb-4">
+              <img 
+                src="https://salutwonomulyo.com/wp-content/uploads/2023/12/Logo-Salut-300x169.png" 
+                alt="Salut Wonomulyo" 
+                className="h-10 w-auto"
+              />
             </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              Mengabdi dan berinovasi untuk kemajuan masyarakat Wonomulyo melalui program-program yang berdampak positif.
+            <p className="text-gray-400 mb-4 leading-relaxed">
+              Mengabdi dan berinovasi untuk kemajuan masyarakat Wonomulyo.
             </p>
-            
-            {/* Social Links */}
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors duration-200"
-                  aria-label={social.label}
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors"
                 >
                   <social.icon className="w-5 h-5" />
                 </a>
@@ -69,15 +57,14 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold mb-6">Link Cepat</h3>
-            <ul className="space-y-3">
-              {footerLinks.main.map((link, index) => (
+            <h3 className="text-lg font-bold mb-4">Link Cepat</h3>
+            <ul className="space-y-2">
+              {footerLinks.quickLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
+                    className="text-gray-400 hover:text-green-600 transition-colors"
                   >
-                    <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.name}
                   </a>
                 </li>
@@ -87,56 +74,54 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-bold mb-6">Kontak</h3>
-            <div className="space-y-4">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <item.icon className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-300">{item.value}</span>
-                </div>
-              ))}
+            <h3 className="text-lg font-bold mb-4">Kontak</h3>
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-400">
+                <MapPin className="w-5 h-5 mr-2" />
+                <span>Jl. Merdeka No. 123, Wonomulyo</span>
+              </div>
+              <div className="flex items-center text-gray-400">
+                <Phone className="w-5 h-5 mr-2" />
+                <span>+62 812-3456-7890</span>
+              </div>
+              <div className="flex items-center text-gray-400">
+                <Mail className="w-5 h-5 mr-2" />
+                <span>info@salutwonomulyo.com</span>
+              </div>
             </div>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-bold mb-6">Newsletter</h3>
-            <p className="text-gray-300 mb-4">
-              Dapatkan update terbaru tentang program dan kegiatan kami
+            <h3 className="text-lg font-bold mb-4">Newsletter</h3>
+            <p className="text-gray-400 mb-4">
+              Dapatkan informasi terbaru dari kami
             </p>
-            <form className="space-y-3">
-              <Input
+            <div className="flex">
+              <input
                 type="email"
                 placeholder="Email Anda"
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-green-500 focus:ring-green-500"
+                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-green-600 text-white"
               />
-              <Button 
-                type="submit" 
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium"
-              >
+              <button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-r-lg transition-colors font-bold">
                 Subscribe
-              </Button>
-            </form>
-            <Badge variant="secondary" className="mt-3 text-xs bg-gray-800 text-gray-300 border-gray-700">
-              No spam, unsubscribe anytime
-            </Badge>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Footer */}
-      <div className="border-t border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Bottom Footer */}
+        <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            <p className="text-gray-400 text-sm">
               © {currentYear} Salut Wonomulyo. All rights reserved.
             </p>
-            <div className="flex flex-wrap gap-6">
+            <div className="flex space-x-6 mt-4 md:mt-0">
               {footerLinks.legal.map((link, index) => (
                 <a
                   key={index}
                   href={link.href}
-                  className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                  className="text-gray-400 hover:text-green-600 text-sm transition-colors"
                 >
                   {link.name}
                 </a>
