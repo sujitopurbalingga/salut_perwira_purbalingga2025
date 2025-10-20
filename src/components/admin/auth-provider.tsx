@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { AuthError } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 
 interface User {
   id: string;
@@ -30,77 +31,64 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient(); // Initialize queryClient
 
   useEffect(() => {
-    // Check for existing session
-    const checkSession = async () => {
+    const checkSessionAndProfile = async (sessionUser: any) => {
+      if (sessionUser) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', sessionUser.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error getting profile:', profileError);
+          // Continue with default role if profile not found
+        }
+
+        setUser({
+          id: sessionUser.id,
+          email: sessionUser.email!,
+          role: profile?.role || 'user'
+        });
+        queryClient.invalidateQueries(); // Invalidate queries to refetch data for the new user
+      } else {
+        setUser(null);
+        queryClient.invalidateQueries(); // Invalidate queries on logout/no session
+      }
+      setLoading(false);
+    };
+
+    // Check for existing session on initial load
+    const initialSessionCheck = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
-        
         if (error) {
-          console.error('Error getting session:', error);
+          console.error('Error getting initial session:', error);
           setLoading(false);
           return;
         }
-        
-        if (session?.user) {
-          // Get user role from profiles table
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) {
-            console.error('Error getting profile:', profileError);
-            // Continue with default role if profile not found
-          }
-
-          setUser({
-            id: session.user.id,
-            email: session.user.email!,
-            role: profile?.role || 'user'
-          });
-        }
+        await checkSessionAndProfile(session?.user);
       } catch (error) {
-        console.error('Error in checkSession:', error);
-      } finally {
+        console.error('Error in initialSessionCheck:', error);
         setLoading(false);
       }
     };
 
-    checkSession();
+    initialSessionCheck();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        
-        if (session?.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) {
-            console.error('Error getting profile on auth change:', profileError);
-          }
-
-          setUser({
-            id: session.user.id,
-            email: session.user.email!,
-            role: profile?.role || 'user'
-          });
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
+        setLoading(true); // Set loading true while processing auth change
+        await checkSessionAndProfile(session?.user);
       }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [queryClient]); // Add queryClient to dependency array
 
   const login = async (email: string, password: string) => {
     try {
@@ -114,7 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('Login error:', error);
         
-        // Handle specific error messages
         if (error.message.includes('Invalid login credentials')) {
           return { success: false, error: 'Email atau password salah' };
         }
@@ -130,7 +117,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       console.log('Login successful:', data.user?.email);
 
-      // Check if user is admin
       if (data.user) {
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
@@ -149,6 +135,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await supabase.auth.signOut();
           return { success: false, error: 'Anda tidak memiliki akses admin' };
         }
+        
+        // Invalidate queries after successful admin login
+        queryClient.invalidateQueries();
       }
 
       return { success: true };
@@ -162,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await supabase.auth.signOut();
       setUser(null);
+      queryClient.invalidateQueries(); // Invalidate queries after logout
     } catch (error) {
       console.error('Logout error:', error);
     }
