@@ -3,6 +3,10 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+// Tambahkan console.log ini untuk debugging
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Anon Key (first 5 chars):', supabaseAnonKey ? supabaseAnonKey.substring(0, 5) + '...' : 'Not set');
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Types for 3D Character
