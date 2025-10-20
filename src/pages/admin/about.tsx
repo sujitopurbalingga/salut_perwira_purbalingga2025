@@ -42,26 +42,38 @@ const AdminAbout = () => {
       const { data } = await supabase
         .from('about')
         .select('*')
-        .single();
+        .maybeSingle(); // Menggunakan maybeSingle untuk menghindari error jika tidak ada data
       return data as AboutContent;
     }
   });
 
-  // Update about content
-  const updateMutation = useMutation({
+  // Update or Insert about content
+  const saveMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
-        .from('about')
-        .update({
-          ...data,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', aboutContent?.id || 1); // Assuming a single 'about' entry with ID 1
-      if (error) throw error;
+      if (aboutContent?.id) {
+        // Jika ID ada, lakukan UPDATE
+        const { error } = await supabase
+          .from('about')
+          .update({
+            ...data,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', aboutContent.id); // Gunakan ID yang valid
+        if (error) throw error;
+      } else {
+        // Jika tidak ada ID, lakukan INSERT
+        const { error } = await supabase
+          .from('about')
+          .insert({
+            ...data,
+            // Tidak perlu mengisi ID, Supabase akan membuatnya otomatis
+          });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['about'] });
-      setMessage('Konten berhasil diperbarui');
+      setMessage('Konten berhasil disimpan!');
       setIsEditing(false);
       setTimeout(() => setMessage(''), 3000);
     },
@@ -84,13 +96,14 @@ const AdminAbout = () => {
   }, [aboutContent]);
 
   const handleSave = () => {
-    updateMutation.mutate(formData);
+    saveMutation.mutate(formData);
   };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Jika data sedang dimuat, tampilkan loading
   if (isLoading) {
     return (
       <div className="p-8 flex items-center justify-center">
@@ -151,8 +164,8 @@ const AdminAbout = () => {
               <span>Edit</span>
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={updateMutation.isPending} className="space-x-2">
-              {updateMutation.isPending ? (
+            <Button onClick={handleSave} disabled={saveMutation.isPending} className="space-x-2">
+              {saveMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Save className="w-4 h-4" />
