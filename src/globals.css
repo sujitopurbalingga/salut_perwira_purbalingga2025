@@ -97,11 +97,12 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
   }
 }
 
@@ -128,12 +129,21 @@
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
 .animate-fade-in {
   animation: fade-in 0.6s ease-out;
 }
 
 .animate-slide-up {
   animation: slide-up 0.8s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
 /* Line clamp utility */
@@ -151,7 +161,7 @@ html {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -160,22 +170,37 @@ html {
 
 ::-webkit-scrollbar-thumb {
   background: #16a34a;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #15803d;
 }
 
+/* Glassmorphism effect */
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Custom button hover effects */
-.btn-green-hover:hover {
+.btn-hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 /* Card hover effects */
 .card-hover:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -184,19 +209,13 @@ html {
   @apply py-20;
 }
 
-/* Custom text styles */
-.text-gradient {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Focus styles */
+.focus-ring:focus {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
 }
 
-/* Border styles */
-.border-green {
-  border-color: #16a34a;
-}
-
-.bg-green-gradient {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+/* Custom transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
