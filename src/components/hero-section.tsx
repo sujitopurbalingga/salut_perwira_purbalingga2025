@@ -1,84 +1,123 @@
 "use client";
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Download } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase, LandingSettings, Character3D } from '@/lib/supabase';
 
 const HeroSection = () => {
+  // Fetch current active character
+  const { data: landingSettings } = useQuery({
+    queryKey: ['landing-settings'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('landing_settings')
+        .select('*')
+        .single();
+      return data as LandingSettings;
+    }
+  });
+
+  // Fetch active character details
+  const { data: activeCharacter } = useQuery({
+    queryKey: ['active-character', landingSettings?.selected_character_id],
+    queryFn: async () => {
+      if (!landingSettings?.selected_character_id) return null;
+      const { data } = await supabase
+        .from('characters_3d')
+        .select('*')
+        .eq('id', landingSettings.selected_character_id)
+        .single();
+      return data as Character3D;
+    },
+    enabled: !!landingSettings?.selected_character_id
+  });
+
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400"></div>
-      
-      {/* Decorative Elements */}
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+      {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-yellow-400/10 rounded-full blur-xl"></div>
-        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-lg"></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center lg:items-center">
-          {/* Left Content */}
-          <div className="text-white space-y-6 animate-fade-in lg:mt-0 mt-20">
-            <p className="text-lg font-medium text-white/90">
-              Mau Kuliah di
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
-              Universitas <br />
-              Terbuka ?
-            </h1>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
-              Daftarnya di SALUT <br />
-              PERWIRA PURBALINGGA !
-            </h2>
-            
-            <div className="flex flex-col sm:flex-row gap-4 pt-8">
-              <Button 
-                size="lg" 
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
-              >
-                Daftar Sekarang
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="bg-white hover:bg-gray-50 text-blue-600 border-white font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
-              >
-                <Download className="mr-2 h-5 w-5" />
-                Lihat Brosur Dulu
-              </Button>
-            </div>
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6">
+            Selamat Datang di
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+              Desa Wonomulyo
+            </span>
+          </h1>
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Temukan keindahan dan kearifan lokal di desa kami. Mari bersama membangun desa yang lebih baik.
+          </p>
+          
+          {/* 3D Character Display */}
+          <div className="flex justify-center mb-8">
+            {activeCharacter?.thumbnail_url ? (
+              <img 
+                src={activeCharacter.thumbnail_url} 
+                alt={activeCharacter.name || "3D Character"}
+                className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
+              />
+            ) : (
+              <img 
+                src="https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg" 
+                alt="3D Character"
+                className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
+              />
+            )}
           </div>
 
-          {/* Right Content - 3D Character */}
-          <div className="relative flex justify-center lg:justify-end items-center lg:mt-0 mt-8">
-            <div className="relative animate-float">
-              {/* 3D Character Placeholder */}
-              <div className="relative">
-                <img
-                  src="https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg"
-                  alt="3D Character"
-                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
-                />
-                
-                {/* Character Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl"></div>
-              </div>
-              
-              {/* Cloud Base */}
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-                <div className="relative">
-                  <div className="w-48 h-16 bg-white rounded-full opacity-90 blur-sm"></div>
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-12 bg-white rounded-full"></div>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+              Jelajahi Desa
+            </button>
+            <button className="px-8 py-3 bg-white text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transform hover:scale-105 transition-all duration-200 shadow-lg border border-gray-200">
+              Tentang Kami
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="animate-bounce">
+          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
+      </div>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes blob {
+            0% {
+              transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+              transform: translate(30px, -50px) scale(1.1);
+            }
+            66% {
+              transform: translate(-20px, 20px) scale(0.9);
+            }
+            100% {
+              transform: translate(0px, 0px) scale(1);
+            }
+          }
+          .animate-blob {
+            animation: blob 7s infinite;
+          }
+          .animation-delay-2000 {
+            animation-delay: 2s;
+          }
+          .animation-delay-4000 {
+            animation-delay: 4s;
+          }
+        `
+      }} />
     </section>
   );
 };
