@@ -10,24 +10,39 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('admin@salutwonomulyo.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('sujitopurbalingga@gmail.com');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (user) {
+      console.log('User already logged in, redirecting to dashboard...');
+      navigate('/admin/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    console.log('Submitting login form for:', email);
+
     const result = await login(email, password);
 
     if (result.success) {
-      navigate('/admin/dashboard');
+      console.log('Login successful, redirecting to dashboard...');
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 100);
     } else {
+      console.error('Login failed:', result.error);
       setError(result.error || 'Login gagal');
     }
 
@@ -70,7 +85,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-11 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="admin@salutwonomulyo.com"
+                placeholder="sujitopurbalingga@gmail.com"
                 required
               />
             </div>
@@ -86,7 +101,7 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-11 pr-12 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Masukkan password"
+                  placeholder="Masukkan password Anda"
                   required
                 />
                 <button
@@ -124,7 +139,7 @@ export default function AdminLogin() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-slate-500">
-          <p>© 2024 Gereja Salut Wonomulyo</p>
+          <p>© 2024 Gereja Protestan Reformatus Salut Wonomulyo</p>
         </div>
       </div>
     </div>

@@ -56,14 +56,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (profileError) {
             console.error('Error getting profile:', profileError);
-            // Continue with default role if profile not found
+            // Create profile if it doesn't exist
+            if (profileError.code === 'PGRST116') {
+              console.log('Profile not found, creating new one...');
+              const { error: insertError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: session.user.id,
+                  email: session.user.email,
+                  role: 'admin' // Make first user admin
+              });
+              
+              if (insertError) {
+                console.error('Error creating profile:', insertError);
+                setLoading(false);
+                return;
+              }
+            } else {
+              setLoading(false);
+              return;
+            }
           }
 
-          setUser({
+          const userData: User = {
             id: session.user.id,
             email: session.user.email!,
-            role: profile?.role || 'user'
-          });
+            role: profile?.role || 'admin'
+          };
+          
+          console.log('Setting user state:', userData);
+          setUser(userData);
         }
       } catch (error) {
         console.error('Error in checkSession:', error);
@@ -79,7 +101,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         
-        if (session?.user) {
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in, setting up profile...');
+          
+          // Get or create user profile
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('role')
@@ -88,16 +113,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (profileError) {
             console.error('Error getting profile on auth change:', profileError);
+            // Create profile if it doesn't exist
+            if (profileError.code === 'PGRST116') {
+              console.log('Creating new profile for user...');
+              const { error: insertError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: session.user.id,
+                  email: session.user.email,
+                  role: 'admin'
+                });
+              
+              if (insertError) {
+                console.error('Error creating profile:', insertError);
+                return;
+              }
+            } else {
+              console.error('Profile error:', profileError);
+              return;
+            }
           }
 
-          setUser({
+          const userData: User = {
             id: session.user.id,
             email: session.user.email!,
-            role: profile?.role || 'user'
-          });
-        } else {
+            role: profile?.role || 'admin'
+          };
+          
+          console.log('Setting user state after sign in:', userData);
+          setUser(userData);
+        } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
           setUser(null);
         }
+        
         setLoading(false);
       }
     );
@@ -108,15 +157,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       console.log('Attempting login for:', email);
-      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-
-      console.log('Login response data:', data);
-      console.log('Login response error:', error);
 
       if (error) {
         console.error('Login error:', error);
@@ -135,45 +180,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, error: error.message };
       }
 
-      console.log('Login successful:', data.user?.email);
+      console.log('Login successful, waiting for auth state change...');
 
-      // Check if user is admin
-      if (data.user) {
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileError) {
-          console.error('Error checking admin role:', profileError);
-          // Create profile if it doesn't exist
-          if (profileError.code === 'PGRST116') {
-            console.log('Profile not found, creating new one...');
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert({
-                id: data.user.id,
-                email: data.user.email,
-                role: 'admin' // Make first user admin
-              });
-            
-            if (insertError) {
-              console.error('Error creating profile:', insertError);
-              await supabase.auth.signOut();
-              return { success: false, error: 'Gagal membuat profile user' };
-            }
-          } else {
-            await supabase.auth.signOut();
-            return { success: false, error: 'Gagal memverifikasi role user' };
-          }
-        } else if (profile?.role !== 'admin') {
-          console.log('User is not admin, role:', profile?.role);
-          await supabase.auth.signOut();
-          return { success: false, error: 'Anda tidak memiliki akses admin' };
-        }
-      }
-
+      // The user state will be set by the onAuthStateChange listener
       return { success: true };
     } catch (error) {
       console.error('Unexpected login error:', error);
