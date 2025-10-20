@@ -3,4 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rtbdhcehdrrabyslymth.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0YmRoY2VoZHJyYWJ5c2x5bXRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzk0MzUsImV4cCI6MjA3NjQ1NTQzNX0.oaRQo79okwXxyE4StehPTDA_i8vJmyiDTogsVBBLSM8';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
