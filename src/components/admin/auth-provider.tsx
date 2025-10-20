@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { AuthError } from '@supabase/supabase-js';
-import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
+import { useQueryClient } from '@tanstack/react-query';
 
 interface User {
   id: string;
@@ -31,28 +31,33 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient(); // Initialize queryClient
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkSessionAndProfile = async (sessionUser: any) => {
       if (sessionUser) {
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', sessionUser.id)
-          .single();
+        try {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', sessionUser.id)
+            .single();
 
-        if (profileError) {
-          console.error('Error getting profile:', profileError);
-          // Continue with default role if profile not found
+          if (profileError) {
+            console.error('Error getting profile:', profileError);
+            // Continue with default role if profile not found
+          }
+
+          setUser({
+            id: sessionUser.id,
+            email: sessionUser.email!,
+            role: profile?.role || 'user'
+          });
+          queryClient.invalidateQueries(); // Invalidate queries to refetch data for the new user
+        } catch (error) {
+          console.error('Error in checkSessionAndProfile:', error);
+          setUser(null);
         }
-
-        setUser({
-          id: sessionUser.id,
-          email: sessionUser.email!,
-          role: profile?.role || 'user'
-        });
-        queryClient.invalidateQueries(); // Invalidate queries to refetch data for the new user
       } else {
         setUser(null);
         queryClient.invalidateQueries(); // Invalidate queries on logout/no session
@@ -87,8 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    return () => subscription.unsubscribe();
-  }, [queryClient]); // Add queryClient to dependency array
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [queryClient]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -152,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await supabase.auth.signOut();
       setUser(null);
       queryClient.invalidateQueries(); // Invalidate queries after logout
+      queryClient.removeQueries(); // Clear all queries
     } catch (error) {
       console.error('Logout error:', error);
     }

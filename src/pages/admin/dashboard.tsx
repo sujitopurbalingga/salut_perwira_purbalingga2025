@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch statistics
-  const { data: stats, isLoading, error: statsError } = useQuery({
+  const { data: stats, isLoading, error: statsError, refetch } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       try {
@@ -68,7 +68,9 @@ const AdminDashboard = () => {
       }
     },
     retry: 2,
-    staleTime: 0, // Mengubah dari 5 * 60 * 1000 menjadi 0
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   // Handle query errors
@@ -78,6 +80,11 @@ const AdminDashboard = () => {
       console.error('Dashboard stats error:', statsError);
     }
   }, [statsError]);
+
+  // Force refetch when component mounts
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const statsCards = [
     {
@@ -136,7 +143,7 @@ const AdminDashboard = () => {
         </div>
         <p className="mt-4 text-gray-600">{error}</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={() => refetch()}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           Muat Ulang
