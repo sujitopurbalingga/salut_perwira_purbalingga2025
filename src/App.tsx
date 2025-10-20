@@ -6,6 +6,9 @@ import { Toaster } from 'sonner';
 // Layout
 import AdminLayout from './layouts/admin-layout';
 
+// Auth Provider
+import { AuthProvider } from './components/admin/auth-provider';
+
 // Public Pages
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
@@ -41,25 +44,31 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Index />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route 
-            path="/admin/*" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="about" element={<AdminAbout />} />
-            <Route path="services" element={<AdminServices />} />
-            <Route path="faculties" element={<AdminFaculties />} />
-            <Route path="news" element={<AdminNews />} />
-            <Route path="registrations" element={<AdminRegistrations />} />
-            <Route path="brochure" element={<AdminBrochure />} />
-            <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
-          </Route>
+          {/* Admin Routes - All wrapped with AuthProvider */}
+          <Route path="/admin/*" element={
+            <AuthProvider>
+              <Routes>
+                <Route path="login" element={<AdminLogin />} />
+                <Route 
+                  path="/*" 
+                  element={
+                    <ProtectedRoute>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="about" element={<AdminAbout />} />
+                  <Route path="services" element={<AdminServices />} />
+                  <Route path="faculties" element={<AdminFaculties />} />
+                  <Route path="news" element={<AdminNews />} />
+                  <Route path="registrations" element={<AdminRegistrations />} />
+                  <Route path="brochure" element={<AdminBrochure />} />
+                  <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
+                </Route>
+              </Routes>
+            </AuthProvider>
+          } />
 
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
