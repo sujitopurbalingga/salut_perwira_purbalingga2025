@@ -21,24 +21,26 @@ const Navbar = () => {
 
   return (
     <nav className="relative h-16 shadow-lg sticky top-0 z-50 overflow-hidden">
-      {/* Background split design with curved separator */}
+      {/* Background split design with inward curved separator */}
       <div className="absolute inset-0 flex">
         {/* Yellow section - 45% */}
         <div className="w-[45%] bg-yellow-400"></div>
         {/* White section - 55% */}
         <div className="w-[55%] bg-white"></div>
-        {/* Curved separator using SVG */}
+        {/* Inward curved and sharp separator using SVG */}
         <svg 
-          className="absolute top-0 left-[45%] h-full w-20 pointer-events-none"
-          viewBox="0 0 80 64"
+          className="absolute top-0 left-[45%] h-full w-32 pointer-events-none"
+          viewBox="0 0 128 64"
           preserveAspectRatio="none"
         >
+          {/* Inward curve with sharp point - yellow part */}
           <path 
-            d="M 0 0 Q 40 32 0 64" 
+            d="M 0 0 C 20 0 40 16 64 32 C 88 48 108 64 128 64 L 0 64 Z" 
             fill="#facc15"
           />
+          {/* White part */}
           <path 
-            d="M 0 0 Q 40 32 0 64 L 80 64 L 80 0 Z" 
+            d="M 0 0 C 20 0 40 16 64 32 C 88 48 108 64 128 64 L 128 0 L 0 0 Z" 
             fill="white"
           />
         </svg>
