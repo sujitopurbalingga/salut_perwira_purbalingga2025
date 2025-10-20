@@ -1,13 +1,56 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Tambahkan console.log ini untuk debugging
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase Anon Key (first 5 chars):', supabaseAnonKey ? supabaseAnonKey.substring(0, 5) + '...' : 'Not set');
+// Enhanced logging for debugging
+console.log('=== SUPABASE CONFIG DEBUG ===')
+console.log('VITE_SUPABASE_URL (raw):', supabaseUrl)
+console.log('VITE_SUPABASE_URL (type):', typeof supabaseUrl)
+console.log('VITE_SUPABASE_URL (length):', supabaseUrl?.length)
+console.log('VITE_SUPABASE_URL (starts with https://):', supabaseUrl?.startsWith('https://'))
+console.log('VITE_SUPABASE_URL (trimmed):', supabaseUrl?.trim())
+console.log('VITE_SUPABASE_ANON_KEY (first 10 chars):', supabaseAnonKey?.substring(0, 10) + '...')
+console.log('=============================')
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Validate URL format
+const validateUrl = (url: string | undefined): string => {
+  if (!url) {
+    throw new Error('Supabase URL is not defined in environment variables')
+  }
+
+  const trimmedUrl = url.trim()
+  
+  if (!trimmedUrl) {
+    throw new Error('Supabase URL is empty after trimming')
+  }
+
+  if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+    throw new Error(`Supabase URL must start with http:// or https://. Received: "${trimmedUrl}"`)
+  }
+
+  try {
+    // Try to create a URL object to validate it
+    new URL(trimmedUrl)
+  } catch (error) {
+    throw new Error(`Supabase URL is malformed: "${trimmedUrl}". Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+
+  return trimmedUrl
+}
+
+try {
+  const validatedUrl = validateUrl(supabaseUrl)
+  console.log('✅ Supabase URL is valid:', validatedUrl)
+  
+  export const supabase = createClient(validatedUrl, supabaseAnonKey)
+  console.log('✅ Supabase client created successfully')
+} catch (error) {
+  console.error('❌ Failed to create Supabase client:', error)
+  // Re-throw the error so the app will still fail, but with a clearer message
+  throw error
+}
 
 // Types for 3D Character
 export interface Character3D {
