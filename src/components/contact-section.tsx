@@ -50,10 +50,10 @@ const ContactSection = () => {
   };
 
   const handleSelectChange = (value: string) => {
-    setFormData({
-      ...formData,
-      selected_faculty: value
-    });
+    setFormData(prev => ({
+      ...prev,
+      selected_faculty: value === 'none' ? '' : value // Set to empty string if 'none' is selected
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,7 +67,7 @@ const ContactSection = () => {
           full_name: formData.full_name,
           email: formData.email,
           phone: formData.phone,
-          selected_faculty: formData.selected_faculty || null,
+          selected_faculty: formData.selected_faculty || null, // Will be null if formData.selected_faculty is ''
           message: formData.message,
           status: 'pending' // Default status
         });
@@ -205,7 +205,8 @@ const ContactSection = () => {
                           <SelectItem value="loading" disabled>Memuat fakultas...</SelectItem>
                         ) : (
                           <>
-                            <SelectItem value="">Tidak memilih fakultas</SelectItem>
+                            {/* Changed value from "" to "none" */}
+                            <SelectItem value="none">Tidak memilih fakultas</SelectItem> 
                             {faculties?.map((faculty) => (
                               <SelectItem key={faculty.id} value={faculty.id}>
                                 {faculty.name}
