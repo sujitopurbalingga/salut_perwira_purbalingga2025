@@ -3,12 +3,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
+import Character3DDisplay from './character-3d-display'; // Import komponen display
 
 const HeroSection = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700"></div>
       
       {/* Decorative Elements */}
       <div className="absolute inset-0">
@@ -56,15 +57,11 @@ const HeroSection = () => {
           {/* Right Content - 3D Character */}
           <div className="relative flex justify-center lg:justify-end items-center lg:mt-0 mt-8">
             <div className="relative animate-float">
-              {/* 3D Character Placeholder */}
-              <div className="relative">
-                <img
-                  src="https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-1-768x1024.jpeg"
-                  alt="3D Character"
-                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain filter drop-shadow-2xl"
-                />
+              {/* 3D Character Display Component */}
+              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+                <Character3DDisplay className="w-full h-full" />
                 
-                {/* Character Glow Effect */}
+                {/* Character Glow Effect (using the same class structure) */}
                 <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl"></div>
               </div>
               
