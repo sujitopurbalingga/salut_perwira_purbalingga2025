@@ -1,303 +1,202 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { 
-  BarChart3, 
   Users, 
   Newspaper, 
-  MessageSquare,
-  Image,
-  Plus,
-  Edit,
-  Trash2,
-  LogOut
+  Briefcase, 
+  GraduationCap,
+  TrendingUp,
+  Eye
 } from 'lucide-react';
-import { useAuth } from '@/components/admin/auth-provider';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-
-interface NewsItem {
-  id: number;
-  title: string;
-  date: string;
-  author: string;
-  status: 'published' | 'draft';
-}
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
-  const [stats, setStats] = useState({
-    totalNews: 0,
-    totalGallery: 0,
-    totalMessages: 0,
-    totalVisitors: 0
-  });
-  
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  // Fetch statistics
+  const { data: stats } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: async () => {
+      const [
+        { count: registrationsCount },
+        { count: newsCount },
+        { count: servicesCount },
+        { count: facultiesCount },
+        { count: pendingRegistrations }
+      ] = await Promise.all([
+        supabase.from('registrations').select('*', { count: 'exact', head: true }),
+        supabase.from('news').select('*', { count: 'exact', head: true }),
+        supabase.from('services').select('*', { count: 'exact', head: true }),
+        supabase.from('faculties').select('*', { count: 'exact', head: true }),
+        supabase.from('registrations').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+      ]);
 
-  useEffect(() => {
-    // Load data based on active tab
-    if (activeTab === 'news') {
-      loadNews();
+      return {
+        registrations: registrationsCount || 0,
+        news: newsCount || 0,
+        services: servicesCount || 0,
+        faculties: facultiesCount || 0,
+        pendingRegistrations: pendingRegistrations || 0
+      };
     }
-    loadStats();
-  }, [activeTab]);
+  });
 
-  const loadNews = () => {
-    // Mock data - replace with actual API call
-    setNewsItems([
-      { id: 1, title: 'Peluncuran Program UMKM Digital', date: '2024-11-15', author: 'Admin', status: 'published' },
-      { id: 2, title: 'Workshop Kewirausahaan', date: '2024-11-10', author: 'Tim', status: 'published' },
-      { id: 3, title: 'Kolaborasi dengan Pemda', date: '2024-11-05', author: 'Humas', status: 'draft' }
-    ]);
-  };
+  // Fetch recent registrations
+  const { data: recentRegistrations } = useQuery({
+    queryKey: ['recent-registrations'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('registrations')
+        .select(`
+          *,
+          faculties (name)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    }
+  });
 
-  const loadStats = () => {
-    // Mock stats - replace with actual API call
-    setStats({
-      totalNews: 15,
-      totalGallery: 24,
-      totalMessages: 8,
-      totalVisitors: 1234
-    });
-  };
+  // Fetch recent news
+  const { data: recentNews } = useQuery({
+    queryKey: ['recent-news'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    }
+  });
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-    toast.success('Berhasil logout');
-  };
-
-  const handleDeleteNews = (id: number) => {
-    setNewsItems(newsItems.filter(item => item.id !== id));
-    toast.success('Berita berhasil dihapus');
-  };
-
-  const renderOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Berita</CardTitle>
-          <Newspaper className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalNews}</div>
-          <p className="text-xs text-muted-foreground">
-            +2 dari bulan lalu
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Galeri</CardTitle>
-          <Image className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalGallery}</div>
-          <p className="text-xs text-muted-foreground">
-            +3 dari minggu lalu
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pesan Masuk</CardTitle>
-          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalMessages}</div>
-          <p className="text-xs text-muted-foreground">
-            +3 dari minggu lalu
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pengunjung</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalVisitors}</div>
-          <p className="text-xs text-muted-foreground">
-            +12% dari bulan lalu
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderNews = () => (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Kelola Berita</h2>
-        <Button className="bg-green-600 hover:bg-green-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Berita
-        </Button>
-      </div>
-      
-      <div className="space-y-4">
-        {newsItems.map((item) => (
-          <Card key={item.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-lg">{item.title}</h3>
-                  <p className="text-sm text-gray-600">
-                    {item.date} • {item.author}
-                  </p>
-                  <span className={`inline-block px-2 py-1 text-xs rounded-full mt-2 ${
-                    item.status === 'published' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {item.status === 'published' ? 'Diterbitkan' : 'Draft'}
-                  </span>
-                </div>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleDeleteNews(item.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderGallery = () => (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Kelola Galeri</h2>
-        <Button className="bg-green-600 hover:bg-green-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Upload Foto
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-          <Card key={item} className="overflow-hidden group">
-            <div className="relative">
-              <img
-                src={`https://salutwonomulyo.com/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-15-at-10.30.45-${item <= 3 ? item : '1'}-768x1024.jpeg`}
-                alt={`Gallery ${item}`}
-                className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center">
-                <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="outline" size="sm" className="bg-white text-gray-800 hover:bg-gray-100">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="bg-white text-red-600 hover:bg-red-50">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderMessages = () => (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">Pesan Masuk</h2>
-      <div className="space-y-4">
-        {[
-          { id: 1, name: 'Ahmad', email: 'ahmad@example.com', message: 'Tanya tentang program UMKM', date: '2024-11-15' },
-          { id: 2, name: 'Siti', email: 'siti@example.com', message: 'Ingin bergabung sebagai relawan', date: '2024-11-14' }
-        ].map((msg) => (
-          <Card key={msg.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold">{msg.name}</h3>
-                  <p className="text-sm text-gray-600">{msg.email}</p>
-                  <p className="mt-2">{msg.message}</p>
-                  <p className="text-xs text-gray-500 mt-2">{msg.date}</p>
-                </div>
-                <Button variant="outline" size="sm">
-                  Balas
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+  const statCards = [
+    {
+      title: 'Total Pendaftaran',
+      value: stats?.registrations || 0,
+      icon: Users,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100',
+    },
+    {
+      title: 'Pendaftaran Menunggu',
+      value: stats?.pendingRegistrations || 0,
+      icon: TrendingUp,
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-100',
+    },
+    {
+      title: 'Total Berita',
+      value: stats?.news || 0,
+      icon: Newspaper,
+      color: 'text-green-600',
+      bgColor: 'bg-green-100',
+    },
+    {
+      title: 'Layanan & Fakultas',
+      value: (stats?.services || 0) + (stats?.faculties || 0),
+      icon: Briefcase,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100',
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-gray-900">Dashboard Admin</h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                {user?.email}
-              </span>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
+    <div className="p-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600">Selamat datang di panel administrasi</p>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            {[
-              { id: 'overview', label: 'Overview', icon: BarChart3 },
-              { id: 'news', label: 'Berita', icon: Newspaper },
-              { id: 'gallery', label: 'Galeri', icon: Image },
-              { id: 'messages', label: 'Pesan', icon: MessageSquare }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-1 py-4 border-b-2 text-sm font-medium ${
-                  activeTab === tab.id
-                    ? 'border-green-600 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <tab.icon className="w-4 h-4 mr-2" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.title}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                  </div>
+                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                    <Icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'overview' && renderOverview()}
-        {activeTab === 'news' && renderNews()}
-        {activeTab === 'gallery' && renderGallery()}
-        {activeTab === 'messages' && renderMessages()}
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Registrations */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Pendaftaran Terbaru
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentRegistrations && recentRegistrations.length > 0 ? (
+              <div className="space-y-4">
+                {recentRegistrations.map((reg) => (
+                  <div key={reg.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{reg.full_name}</p>
+                      <p className="text-sm text-gray-600">{reg.email}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(reg.created_at).toLocaleDateString('id-ID')}
+                      </p>
+                    </div>
+                    <span className={`
+                      px-2 py-1 text-xs rounded-full
+                      ${reg.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                      ${reg.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
+                      ${reg.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
+                    `}>
+                      {reg.status === 'pending' ? 'Menunggu' : 
+                       reg.status === 'approved' ? 'Disetujui' : 'Ditolak'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">Belum ada pendaftaran</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent News */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Newspaper className="w-5 h-5" />
+              Berita Terbaru
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentNews && recentNews.length > 0 ? (
+              <div className="space-y-4">
+                {recentNews.map((news) => (
+                  <div key={news.id} className="p-3 bg-gray-50 rounded-lg">
+                    <p className="font-medium">{news.title}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{news.excerpt || news.content.substring(0, 100)}...</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(news.created_at).toLocaleDateString('id-ID')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">Belum ada berita</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

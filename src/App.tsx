@@ -1,41 +1,73 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/components/admin/auth-provider";
-import ProtectedRoute from "@/components/admin/protected-route";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import AdminLogin from "./pages/admin/login";
-import AdminDashboard from "./pages/admin/dashboard";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
 
-const queryClient = new QueryClient();
+// Layout
+import AdminLayout from './layouts/admin-layout';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route 
-              path="/admin/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+// Public Pages
+import Index from './pages/Index';
+import NotFound from './pages/NotFound';
+
+// Admin Pages
+import AdminLogin from './pages/admin/login';
+import AdminDashboard from './pages/admin/dashboard';
+import AdminAbout from './pages/admin/about';
+import AdminServices from './pages/admin/services';
+import AdminFaculties from './pages/admin/faculties';
+import AdminNews from './pages/admin/news';
+import AdminRegistrations from './pages/admin/registrations';
+import AdminBrochure from './pages/admin/brochure';
+
+// Protected Route Component
+import ProtectedRoute from './components/admin/protected-route';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Index />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route 
+            path="/admin/*" 
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="about" element={<AdminAbout />} />
+            <Route path="services" element={<AdminServices />} />
+            <Route path="faculties" element={<AdminFaculties />} />
+            <Route path="news" element={<AdminNews />} />
+            <Route path="registrations" element={<AdminRegistrations />} />
+            <Route path="brochure" element={<AdminBrochure />} />
+            <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
+          </Route>
+
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster position="top-right" />
+      </Router>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
