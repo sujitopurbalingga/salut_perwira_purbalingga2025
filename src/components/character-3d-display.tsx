@@ -105,7 +105,7 @@ const Character3DDisplay: React.FC<Character3DDisplayProps> = ({ className = "" 
           <img 
             src={character.thumbnail_url} 
             alt={character.name}
-            className="w-full h-full object-contain animate-float max-w-[280px] max-h-[280px] md:max-w-[350px] md:max-h-[350px] lg:max-w-[400px] lg:max-h-[400px]"
+            className="w-full h-full object-contain animate-float max-w-[350px] max-h-[350px] md:max-w-[400px] md:max-h-[400px] lg:max-w-[450px] lg:max-h-[450px] xl:max-w-[500px] xl:max-h-[500px]"
             style={{
               filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))',
             }}
