@@ -14,4 +14,7 @@ export default defineConfig(() => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  future: {
+    v7_relativeSplatPath: true, // Menambahkan konfigurasi ini
+  },
 }));
