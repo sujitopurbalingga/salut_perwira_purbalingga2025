@@ -4,20 +4,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { School, Briefcase, Globe, Users, BookOpen, Award, Loader2, LucideIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react'; // Keep Loader2 as it's used directly
+import * as LucideIcons from 'lucide-react'; // Import all Lucide icons for fallback
 import { useQuery } from '@tanstack/react-query';
 import { supabase, Service } from '@/lib/supabase';
-
-// Map icon names to Lucide React components
-const iconMap: { [key: string]: LucideIcon } = {
-  school: School,
-  briefcase: Briefcase,
-  globe: Globe,
-  users: Users,
-  bookopen: BookOpen,
-  award: Award,
-  // Add more mappings as needed
-};
+import { getLucideIcon } from '@/lib/utils'; // Import the new utility function
 
 const ServicesSection = () => {
   const { data: services, isLoading } = useQuery({
@@ -105,7 +96,9 @@ const ServicesSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services?.map((service, index) => {
             const colors = getColorClasses(index);
-            const IconComponent = service.icon_name ? iconMap[service.icon_name.toLowerCase()] : Briefcase;
+            // Use the utility function to get the icon component
+            const IconComponent = getLucideIcon(service.icon_name || '') || LucideIcons.Briefcase; // Fallback to Briefcase
+
             return (
               <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                 <CardHeader className="pb-4">
@@ -122,15 +115,6 @@ const ServicesSection = () => {
                   <p className="text-gray-600">{service.description}</p>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  {/* Features are not in DB, so omitting for now or can be hardcoded if needed */}
-                  {/* <div className="space-y-2 mb-4">
-                    {service.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center text-sm text-gray-600">
-                        <div className={`w-2 h-2 ${colors.badge} rounded-full mr-2`}></div>
-                        {feature}
-                      </div>
-                    ))}
-                  </div> */}
                   <Button variant="outline" className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}>
                     Pelajari Lebih Lanjut
                   </Button>

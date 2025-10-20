@@ -4,19 +4,11 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building, Users, BookOpen, Award, Loader2, LucideIcon, GraduationCap } from 'lucide-react';
+import { Loader2 } from 'lucide-react'; // Keep Loader2 as it's used directly
+import * as LucideIcons from 'lucide-react'; // Import all Lucide icons for fallback
 import { useQuery } from '@tanstack/react-query';
 import { supabase, Faculty } from '@/lib/supabase';
-
-// Map icon names to Lucide React components (using generic ones for now)
-const iconMap: { [key: string]: LucideIcon } = {
-  building: Building,
-  users: Users,
-  bookopen: BookOpen,
-  award: Award,
-  graduationcap: GraduationCap, // Added GraduationCap for faculties
-  // Add more mappings as needed
-};
+import { getLucideIcon } from '@/lib/utils'; // Import the new utility function
 
 const FacultiesSection = () => {
   const { data: faculties, isLoading } = useQuery({
@@ -92,7 +84,10 @@ const FacultiesSection = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           {faculties?.map((faculty, index) => {
             const colors = getColorClasses(index);
-            const IconComponent = faculty.image_url ? 'img' : (iconMap[faculty.name.toLowerCase().replace(/\s/g, '')] || GraduationCap); // Fallback to GraduationCap
+            // Use the utility function to get the icon component
+            // If faculty.image_url exists, we render an <img> tag, otherwise use the icon component
+            const IconComponent = getLucideIcon(faculty.name || '') || LucideIcons.GraduationCap; // Fallback to GraduationCap
+
             return (
               <Card key={faculty.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg group">
                 <div className={`h-2 bg-gradient-to-r ${colors.gradient}`}></div>
@@ -132,12 +127,12 @@ const FacultiesSection = () => {
                   <div className="flex items-center justify-between">
                     {faculty.students_count !== undefined && (
                       <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-gray-400" />
+                        <LucideIcons.Users className="w-4 h-4 text-gray-400" />
                         <span className="text-sm text-gray-600">{faculty.students_count} Mahasiswa</span>
                       </div>
                     )}
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className={`${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}
                     >
                       Lihat Detail
