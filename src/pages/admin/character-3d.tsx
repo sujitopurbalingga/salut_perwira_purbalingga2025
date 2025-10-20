@@ -51,7 +51,8 @@ const AdminCharacter3D = () => {
         .select('*')
         .order('created_at', { ascending: false });
       return data as Character3D[];
-    }
+    },
+    staleTime: 0, // Menambahkan ini untuk memastikan data selalu segar
   });
 
   // Fetch current active character
@@ -63,7 +64,8 @@ const AdminCharacter3D = () => {
         .select('*')
         .single();
       return data as LandingSettings;
-    }
+    },
+    staleTime: 0, // Menambahkan ini untuk memastikan data selalu segar
   });
 
   // Upload thumbnail to Supabase Storage
@@ -491,7 +493,7 @@ const AdminCharacter3D = () => {
           {message.includes('berhasil') ? (
             <CheckCircle className="h-4 w-4" />
           ) : (
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="h-4 h-4" />
           )}
           <AlertDescription>{message}</AlertDescription>
         </Alert>
