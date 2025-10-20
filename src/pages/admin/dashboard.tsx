@@ -68,7 +68,7 @@ const AdminDashboard = () => {
       }
     },
     retry: 2,
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 0, // Mengubah dari 5 * 60 * 1000 menjadi 0
   });
 
   // Handle query errors

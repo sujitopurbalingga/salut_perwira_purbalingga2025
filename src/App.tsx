@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true, // Mengubah dari false menjadi true
     },
   },
 });
