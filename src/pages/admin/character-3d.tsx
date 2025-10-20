@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Upload, 
   Save, 
@@ -37,7 +36,7 @@ const AdminCharacter3D = () => {
   
   const [formData, setFormData] = useState({
     name: '',
-    model_url: '',
+    // model_url: '', // Removed as requested
     thumbnail_url: '',
     animation_type: 'idle'
   });
@@ -198,12 +197,13 @@ const AdminCharacter3D = () => {
 
   // Add new character
   const addCharacterMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+    mutationFn: async (data: Omit<typeof formData, 'model_url'>) => {
       console.log('Adding character:', data);
       const { error } = await supabase
         .from('characters_3d')
         .insert({
           ...data,
+          model_url: '', // Set model_url to empty string since it's not used
           is_active: false
         });
       if (error) throw error;
@@ -295,7 +295,6 @@ const AdminCharacter3D = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      model_url: '',
       thumbnail_url: '',
       animation_type: 'idle'
     });
@@ -307,8 +306,8 @@ const AdminCharacter3D = () => {
   };
 
   const handleAddCharacter = () => {
-    if (!formData.name || !formData.model_url) {
-      const errorMsg = 'Nama dan URL model wajib diisi';
+    if (!formData.name || !formData.thumbnail_url) {
+      const errorMsg = 'Nama dan Thumbnail wajib diisi';
       setErrorMessage(errorMsg);
       setMessage(errorMsg);
       setTimeout(() => {
@@ -338,14 +337,6 @@ const AdminCharacter3D = () => {
     { value: 'jumping', label: 'Melompat' }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="p-8 space-y-6">
       {/* Header */}
@@ -365,7 +356,7 @@ const AdminCharacter3D = () => {
             <DialogHeader>
               <DialogTitle>Tambah Karakter 3D Baru</DialogTitle>
               <DialogDescription>
-                Isi form di bawah untuk menambahkan karakter 3D baru. Upload thumbnail dari komputer Anda.
+                Isi form di bawah untuk menambahkan karakter 3D baru.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -391,7 +382,8 @@ const AdminCharacter3D = () => {
                 />
               </div>
 
-              <div>
+              {/* URL Model 3D removed as requested */}
+              {/* <div>
                 <Label htmlFor="model_url">URL Model 3D</Label>
                 <Input
                   id="model_url"
@@ -400,7 +392,7 @@ const AdminCharacter3D = () => {
                   placeholder="https://example.com/model.glb"
                   className="mt-1"
                 />
-              </div>
+              </div> */}
 
               <div>
                 <Label>Thumbnail Karakter</Label>
@@ -416,10 +408,10 @@ const AdminCharacter3D = () => {
                     }`}
                     onClick={() => !uploadingThumbnail && fileInputRef.current?.click()}
                   >
-                    {thumbnailPreview ? (
+                    {thumbnailPreview || formData.thumbnail_url ? (
                       <div className="relative">
                         <img 
-                          src={thumbnailPreview} 
+                          src={thumbnailPreview || formData.thumbnail_url} 
                           alt="Thumbnail preview" 
                           className="mx-auto max-h-48 rounded-lg"
                         />
@@ -504,7 +496,7 @@ const AdminCharacter3D = () => {
                 {addCharacterMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : null}
-                {uploadingThumbnail ? 'Tunggu Upload Selesai...' : 'Tambah Karakter'}
+                {uploadingThumbnail ? 'Tunggu Upload Selesai...' : 'Simpan Karakter'}
               </Button>
             </div>
           </DialogContent>
@@ -668,7 +660,7 @@ const AdminCharacter3D = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-semibold">Model URL:</span>
-                  <p className="text-gray-600 break-all">{previewCharacter.model_url}</p>
+                  <p className="text-gray-600 break-all">{previewCharacter.model_url || 'Tidak ada URL Model 3D'}</p>
                 </div>
                 <div>
                   <span className="font-semibold">Animasi:</span>
