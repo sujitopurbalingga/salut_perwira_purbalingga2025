@@ -1,16 +1,20 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react'; // Keep Loader2 as it's used directly
-import * as LucideIcons from 'lucide-react'; // Import all Lucide icons for fallback
+import { Loader2 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, Service } from '@/lib/supabase';
-import { getLucideIcon } from '@/lib/utils'; // Import the new utility function
+import { getLucideIcon } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const ServicesSection = () => {
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+
   const { data: services, isLoading } = useQuery({
     queryKey: ['services-public'],
     queryFn: async () => {
@@ -65,6 +69,11 @@ const ServicesSection = () => {
     return colors[index % colors.length];
   };
 
+  const handleViewDetail = (service: Service) => {
+    setSelectedService(service);
+    setIsDetailDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <section id="services" className="py-24 bg-gray-50 flex items-center justify-center">
@@ -96,12 +105,11 @@ const ServicesSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services?.map((service, index) => {
             const colors = getColorClasses(index);
-            // Use the utility function to get the icon component
-            const IconComponent = getLucideIcon(service.icon_name || '') || LucideIcons.Briefcase; // Fallback to Briefcase
+            const IconComponent = getLucideIcon(service.icon_name || '') || LucideIcons.Briefcase;
 
             return (
-              <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-                <CardHeader className="pb-4">
+              <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg flex flex-col">
+                <CardHeader className="pb-4 flex-grow">
                   <div className={`w-16 h-16 ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     {service.image_url ? (
                       <img src={service.image_url} alt={service.title} className="w-full h-full object-cover rounded-xl" />
@@ -112,10 +120,14 @@ const ServicesSection = () => {
                   <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                     {service.title}
                   </CardTitle>
-                  <p className="text-gray-600">{service.description}</p>
+                  <p className="text-gray-600 line-clamp-3">{service.description}</p> {/* Keep line-clamp for card preview */}
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <Button variant="outline" className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}>
+                <CardContent className="pt-0 mt-auto">
+                  <Button 
+                    variant="outline" 
+                    className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}
+                    onClick={() => handleViewDetail(service)}
+                  >
                     Pelajari Lebih Lanjut
                   </Button>
                 </CardContent>
@@ -124,6 +136,27 @@ const ServicesSection = () => {
           })}
         </div>
       </div>
+
+      {/* Service Detail Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedService?.title}</DialogTitle>
+            {selectedService?.image_url && (
+              <img src={selectedService.image_url} alt={selectedService.title} className="w-full h-48 object-cover rounded-lg mt-4" />
+            )}
+          </DialogHeader>
+          <DialogDescription className="text-gray-700 whitespace-pre-wrap">
+            {selectedService?.description}
+          </DialogDescription>
+          {selectedService?.icon_name && (
+            <div className="flex items-center text-sm text-gray-500 mt-4">
+              <LucideIcons.Info className="w-4 h-4 mr-2" />
+              <span>Icon: {selectedService.icon_name}</span>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
