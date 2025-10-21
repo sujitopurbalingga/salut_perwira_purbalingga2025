@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } => '@/components/ui/badge';
 import { Calendar, User, Clock, ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, News } from '@/lib/supabase';
@@ -55,7 +55,7 @@ const NewsSection = () => {
         {featuredNews && (
           <Card className="mb-12 overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
             <div className="grid lg:grid-cols-2">
-              <div className="relative h-64 lg:h-auto">
+              <div className="relative aspect-video"> {/* Changed h-64 lg:h-auto to aspect-video */}
                 <img
                   src={featuredNews.image_url || "https://via.placeholder.com/768x1024"}
                   alt={featuredNews.title}
@@ -103,7 +103,7 @@ const NewsSection = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {regularNews.map((item) => (
             <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative aspect-video overflow-hidden"> {/* Changed h-48 to aspect-video */}
                 <img
                   src={item.image_url || "https://via.placeholder.com/400"}
                   alt={item.title}
