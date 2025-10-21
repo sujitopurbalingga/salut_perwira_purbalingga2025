@@ -58,7 +58,8 @@ const AdminFaculties = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['faculties'] });
+      queryClient.invalidateQueries({ queryKey: ['faculties'] }); // Invalidate for admin view
+      queryClient.invalidateQueries({ queryKey: ['faculties-public'] }); // Invalidate for public view
       setIsDialogOpen(false);
       setEditingFaculty(null);
       resetForm();
@@ -81,7 +82,8 @@ const AdminFaculties = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['faculties'] });
+      queryClient.invalidateQueries({ queryKey: ['faculties'] }); // Invalidate for admin view
+      queryClient.invalidateQueries({ queryKey: ['faculties-public'] }); // Invalidate for public view
       setMessage('Fakultas berhasil dihapus');
       setTimeout(() => setMessage(''), 3000);
     },
