@@ -124,10 +124,10 @@ const AdminDashboard = () => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="p-8">
+      <div className="p-6">
         <div className="flex items-center justify-center space-x-2">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          <h2 className="text-2xl font-bold">Memuat Dashboard...</h2>
+          <h2 className="text-xl font-bold text-gray-900">Memuat Dashboard...</h2>
         </div>
       </div>
     );
@@ -136,10 +136,10 @@ const AdminDashboard = () => {
   // Show error state
   if (error) {
     return (
-      <div className="p-8">
+      <div className="p-6">
         <div className="flex items-center space-x-2 text-red-600">
           <AlertCircle className="w-6 h-6" />
-          <h2 className="text-2xl font-bold">Error</h2>
+          <h2 className="text-xl font-bold">Error</h2>
         </div>
         <p className="mt-4 text-gray-600">{error}</p>
         <button 
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div>
           <Card className="border-0 shadow-lg">
             <CardHeader className="pb-4">
