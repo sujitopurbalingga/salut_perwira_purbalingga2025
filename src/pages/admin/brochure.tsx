@@ -65,7 +65,8 @@ const AdminBrochure = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['brochures'] });
+      queryClient.invalidateQueries({ queryKey: ['brochures'] }); // Invalidate for admin view
+      queryClient.invalidateQueries({ queryKey: ['brochures-public'] }); // Invalidate for public view
       setIsDialogOpen(false);
       setEditingBrochure(null);
       resetForm();
@@ -115,7 +116,8 @@ const AdminBrochure = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['brochures'] });
+      queryClient.invalidateQueries({ queryKey: ['brochures'] }); // Invalidate for admin view
+      queryClient.invalidateQueries({ queryKey: ['brochures-public'] }); // Invalidate for public view
       setMessage('Brosur berhasil dihapus');
       setTimeout(() => setMessage(''), 3000);
     },
@@ -138,7 +140,8 @@ const AdminBrochure = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['brochures'] });
+      queryClient.invalidateQueries({ queryKey: ['brochures'] }); // Invalidate for admin view
+      queryClient.invalidateQueries({ queryKey: ['brochures-public'] }); // Invalidate for public view
       setMessage('Status berhasil diperbarui');
       setTimeout(() => setMessage(''), 3000);
     },
