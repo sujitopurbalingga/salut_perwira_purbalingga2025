@@ -1,11 +1,13 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { GraduationCap, Users, Award, BookOpen, Target, Globe, Loader2 } from 'lucide-react';
+import { GraduationCap, Users, Award, BookOpen, Target, Globe, Loader2, Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, AboutContent } from '@/lib/supabase';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface Feature {
   id: string;
@@ -20,6 +22,9 @@ interface Stat {
 }
 
 const AboutSection = () => {
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [isFeatureDetailOpen, setIsFeatureDetailOpen] = useState(false);
+
   const { data: aboutContent, isLoading } = useQuery({
     queryKey: ['about-public'],
     queryFn: async () => {
@@ -32,29 +37,31 @@ const AboutSection = () => {
   });
 
   // Default features and stats (will be replaced with database data if available)
+  // NOTE: In a real app, these should be fetched from the DB or a separate settings table.
+  // Since AdminAbout hardcodes them, we use the same hardcoded structure here.
   const features: Feature[] = [
     {
       id: '1',
       title: 'Pendidikan Berkualitas',
-      description: 'Program studi terakreditasi dengan kurikulum modern dan relevan',
+      description: 'Program studi terakreditasi dengan kurikulum modern dan relevan. Kami menjamin kualitas pengajaran yang tinggi dan fasilitas pendukung terbaik untuk setiap mahasiswa.',
       icon: 'GraduationCap'
     },
     {
       id: '2',
       title: 'Dosen Profesional',
-      description: 'Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing',
+      description: 'Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing. Mereka adalah praktisi industri dan akademisi yang siap membimbing Anda menuju kesuksesan.',
       icon: 'Users'
     },
     {
       id: '3',
       title: 'Prestasi Membanggakan',
-      description: 'Berbagai prestasi akademik dan non-akademik tingkat nasional',
+      description: 'Berbagai prestasi akademik dan non-akademik tingkat nasional dan internasional. Kami bangga dengan pencapaian mahasiswa dan alumni kami di berbagai bidang.',
       icon: 'Award'
     },
     {
       id: '4',
       title: 'Fasilitas Lengkap',
-      description: 'Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern',
+      description: 'Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern. Semua dirancang untuk mendukung proses belajar mengajar yang efektif dan nyaman.',
       icon: 'BookOpen'
     }
   ];
@@ -88,6 +95,11 @@ const AboutSection = () => {
       { bg: "bg-yellow-100", text: "text-yellow-600", border: "border-yellow-200", badge: "bg-yellow-600" }
     ];
     return colors[index % colors.length];
+  };
+
+  const handleViewFeatureDetail = (feature: Feature) => {
+    setSelectedFeature(feature);
+    setIsFeatureDetailOpen(true);
   };
 
   if (isLoading) {
@@ -124,13 +136,23 @@ const AboutSection = () => {
             const IconComponent = getIconComponent(feature.icon);
             
             return (
-              <Card key={feature.id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-0 text-center">
+              <Card key={feature.id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+                <CardContent className="p-0 text-center flex flex-col h-full">
                   <div className={`w-16 h-16 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-4`}>
                     <IconComponent className={`w-8 h-8 ${colors.text}`} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow">
+                    {feature.description}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="mt-auto w-full"
+                    onClick={() => handleViewFeatureDetail(feature)}
+                  >
+                    Lihat Detail
+                  </Button>
                 </CardContent>
               </Card>
             );
@@ -184,6 +206,25 @@ const AboutSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Feature Detail Dialog */}
+      <Dialog open={isFeatureDetailOpen} onOpenChange={setIsFeatureDetailOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-3">
+              {selectedFeature && React.createElement(getIconComponent(selectedFeature.icon), { className: "w-6 h-6 text-blue-600" })}
+              <span>{selectedFeature?.title}</span>
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-gray-700 whitespace-pre-wrap">
+            {selectedFeature?.description}
+          </DialogDescription>
+          <div className="flex items-center text-sm text-gray-500 mt-4">
+            <Info className="w-4 h-4 mr-2" />
+            <span>Informasi Unggulan Universitas</span>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
