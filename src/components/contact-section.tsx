@@ -124,9 +124,9 @@ const ContactSection = () => {
   const defaultContact = {
     hero_title: 'Mari Berkolaborasi',
     hero_subtitle: 'untuk Masyarakat',
-    form_title: 'Formulir Pendaftaran',
-    form_description: 'Isi formulir pendaftaran di bawah ini dan kami akan segera menghubungi Anda',
-    submit_button: 'Daftar', // Pastikan ini 'Daftar'
+    form_title: 'Formulir Pendaftaran Mahasiswa',
+    form_description: 'Isi formulir pendaftaran mahasiswa di bawah ini dan kami akan segera menghubungi Anda',
+    submit_button: 'Daftar',
     address: 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
     address_description: 'Kunjungi kantor kami',
     phone: '+62 812-3456-7890',
