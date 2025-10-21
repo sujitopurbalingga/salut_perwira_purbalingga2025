@@ -88,7 +88,11 @@ const AdminSettings = () => {
         .maybeSingle();
       return data as SiteSettings;
     },
-    staleTime: 1000, // Set to refresh quickly
+    staleTime: 0, // No stale time - always fetch fresh data
+    cacheTime: 1000, // Cache for 1 second only
+    refetchOnWindowFocus: true, // Refetch when window is focused
+    refetchOnMount: true, // Refetch when component mounts
+    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
   });
 
   // Update form data when settings change
@@ -118,15 +122,15 @@ const AdminSettings = () => {
       }
     },
     onSuccess: () => {
+      // Invalidate ALL queries that might use this data
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
-      // Also invalidate other queries that might use this data
       queryClient.invalidateQueries({ queryKey: ['site-settings-navbar'] });
       queryClient.invalidateQueries({ queryKey: ['site-settings-hero'] });
       queryClient.invalidateQueries({ queryKey: ['site-settings-for-footer'] });
       queryClient.invalidateQueries({ queryKey: ['footer-public'] });
       queryClient.invalidateQueries({ queryKey: ['site-settings-hero'] });
       
-      setMessage('Pengaturan berhasil disimpan! Perubahan akan terlihat di seluruh website.');
+      setMessage('Pengaturan berhasil disimpan! Perubahan akan langsung terlihat di seluruh website.');
       setTimeout(() => setMessage(''), 3000);
     },
     onError: (error) => {

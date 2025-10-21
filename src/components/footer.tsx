@@ -30,7 +30,7 @@ interface FooterContent {
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  // Fetch footer content from database
+  // Fetch footer content from database with very short cache time
   const { data: footerContent, isLoading } = useQuery({
     queryKey: ['footer-public'],
     queryFn: async () => {
@@ -40,8 +40,11 @@ const Footer = () => {
         .maybeSingle();
       return data as FooterContent;
     },
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 60000, // 1 minute
+    staleTime: 0, // No stale time - always fetch fresh data
+    cacheTime: 1000, // Cache for 1 second only
+    refetchOnWindowFocus: true, // Refetch when window is focused
+    refetchOnMount: true, // Refetch when component mounts
+    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
   });
 
   // Fallback to site settings if footer_settings doesn't have brand_name
@@ -54,8 +57,11 @@ const Footer = () => {
         .maybeSingle();
       return data;
     },
-    staleTime: 30000,
-    refetchInterval: 60000
+    staleTime: 0, // No stale time - always fetch fresh data
+    cacheTime: 1000, // Cache for 1 second only
+    refetchOnWindowFocus: true, // Refetch when window is focused
+    refetchOnMount: true, // Refetch when component mounts
+    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
   });
 
   // Use site settings as fallback for brand name if footer_settings doesn't exist
@@ -76,6 +82,20 @@ const Footer = () => {
     };
     return iconMap[platform] || Facebook;
   };
+
+  // Show loading state while fetching
+  if (isLoading) {
+    return (
+      <footer className="bg-blue-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+            <p>Memuat footer...</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   // Default values if footer_content doesn't have complete data
   const defaultFooterData = {

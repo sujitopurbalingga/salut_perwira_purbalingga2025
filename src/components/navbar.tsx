@@ -25,20 +25,6 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
 
-  // Fetch site settings from database
-  const { data: siteSettings, isLoading } = useQuery({
-    queryKey: ['site-settings-navbar'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('site_settings')
-        .select('*')
-        .maybeSingle();
-      return data as SiteSettings;
-    },
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 60000, // 1 minute
-  });
-
   const navigation = [
     { name: 'Beranda', href: '#home', icon: Home },
     { name: 'Tentang', href: '#about', icon: Info },
@@ -50,6 +36,23 @@ const Navbar = () => {
 
   // Get first 5 items for bottom navigation
   const bottomNavItems = navigation.slice(0, 5);
+
+  // Fetch site settings from database with very short cache time
+  const { data: siteSettings, isLoading } = useQuery({
+    queryKey: ['site-settings-navbar'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .maybeSingle();
+      return data as SiteSettings;
+    },
+    staleTime: 0, // No stale time - always fetch fresh data
+    cacheTime: 1000, // Cache for 1 second only
+    refetchOnWindowFocus: true, // Refetch when window is focused
+    refetchOnMount: true, // Refetch when component mounts
+    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
+  });
 
   // Handle scroll untuk background navbar
   useEffect(() => {
@@ -101,10 +104,12 @@ const Navbar = () => {
     }
   };
 
-  // Dynamic site name from database
+  // Dynamic site name from database with loading state
   const siteName = siteSettings?.site_name || 'EduCampus';
-  // Dynamic logo URL from database
   const logoUrl = siteSettings?.logo_url;
+
+  // Show loading state while fetching
+  const displaySiteName = isLoading ? 'Loading...' : siteName;
 
   return (
     <>
@@ -160,7 +165,9 @@ const Navbar = () => {
                 )}
                 <span className={`text-xl font-bold transition-colors duration-300 ${
                   isScrolled ? 'text-gray-900' : 'text-gray-900'
-                }`}>{siteName}</span>
+                }`}>
+                  {displaySiteName}
+                </span>
               </Link>
             </div>
 
@@ -239,7 +246,9 @@ const Navbar = () => {
               ) : (
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-2"></div>
               )}
-              <span className="text-lg font-bold text-gray-900">{siteName}</span>
+              <span className="text-lg font-bold text-gray-900">
+                {displaySiteName}
+              </span>
             </Link>
             <Button 
               asChild
@@ -298,7 +307,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Add padding to bottom to prevent content from being hidden behind bottom nav */}
       <div className="md:hidden h-16"></div>

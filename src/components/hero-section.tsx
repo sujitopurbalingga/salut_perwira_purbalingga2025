@@ -53,7 +53,7 @@ const HeroSection = () => {
     }
   };
 
-  // Fetch site settings from database
+  // Fetch site settings from database with very short cache time
   const { data: siteSettings, isLoading } = useQuery({
     queryKey: ['site-settings-hero'],
     queryFn: async () => {
@@ -63,12 +63,18 @@ const HeroSection = () => {
         .maybeSingle();
       return data as SiteSettings;
     },
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 60000, // 1 minute
+    staleTime: 0, // No stale time - always fetch fresh data
+    cacheTime: 1000, // Cache for 1 second only
+    refetchOnWindowFocus: true, // Refetch when window is focused
+    refetchOnMount: true, // Refetch when component mounts
+    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
   });
 
-  // Dynamic site name from database
+  // Dynamic site name from database with loading state
   const siteName = siteSettings?.site_name || 'EduCampus';
+
+  // Show loading state while fetching
+  const displaySiteName = isLoading ? 'Loading...' : siteName;
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -95,7 +101,7 @@ const HeroSection = () => {
               Terbuka ?
             </h1>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
-              Daftarnya di <span className="text-white">{siteName}</span> <br />
+              Daftarnya di <span className="text-white">{displaySiteName}</span> <br />
               JAWA TENGAH!
             </h2>
             
