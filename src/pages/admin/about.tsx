@@ -60,6 +60,10 @@ const AdminAbout = () => {
   const [newFeature, setNewFeature] = useState({ title: '', description: '', icon: 'GraduationCap' });
   const [newStat, setNewStat] = useState({ number: '', label: '' });
 
+  // New state for controlling new feature/stat dialogs
+  const [isNewFeatureDialogOpen, setIsNewFeatureDialogOpen] = useState(false);
+  const [isNewStatDialogOpen, setIsNewStatDialogOpen] = useState(false);
+
   const queryClient = useQueryClient();
 
   // Fetch about content
@@ -148,6 +152,7 @@ const AdminAbout = () => {
     const updatedFeatures = [...(formData.features || []), { ...newFeature, id: newId }];
     handleInputChange('features', updatedFeatures);
     setNewFeature({ title: '', description: '', icon: 'GraduationCap' });
+    setIsNewFeatureDialogOpen(false); // Close dialog on add
     setMessage('Fitur berhasil ditambahkan! Jangan lupa Simpan.');
     setTimeout(() => setMessage(''), 3000);
   };
@@ -187,6 +192,7 @@ const AdminAbout = () => {
     const updatedStats = [...(formData.stats || []), { ...newStat, id: newId }];
     handleInputChange('stats', updatedStats);
     setNewStat({ number: '', label: '' });
+    setIsNewStatDialogOpen(false); // Close dialog on add
     setMessage('Statistik berhasil ditambahkan! Jangan lupa Simpan.');
     setTimeout(() => setMessage(''), 3000);
   };
@@ -437,9 +443,16 @@ const AdminAbout = () => {
               <span>Fitur Unggulan</span>
             </span>
             {isEditing && (
-              <Dialog open={!!newFeature.title} onOpenChange={(open) => !open && setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
+              <Dialog open={isNewFeatureDialogOpen} onOpenChange={setIsNewFeatureDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => setNewFeature({ title: '', description: '', icon: 'GraduationCap' })} disabled={!isEditing} size="sm">
+                  <Button 
+                    onClick={() => {
+                      setNewFeature({ title: '', description: '', icon: 'GraduationCap' });
+                      setIsNewFeatureDialogOpen(true);
+                    }} 
+                    disabled={!isEditing} 
+                    size="sm"
+                  >
                     <Plus className="w-4 h-4 mr-1" />
                     Tambah Fitur
                   </Button>
@@ -483,7 +496,7 @@ const AdminAbout = () => {
                       </select>
                     </div>
                     <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
+                      <Button variant="outline" onClick={() => setIsNewFeatureDialogOpen(false)}>
                         Batal
                       </Button>
                       <Button onClick={handleAddFeature}>
@@ -597,9 +610,16 @@ const AdminAbout = () => {
               <span>Statistik & Pencapaian</span>
             </span>
             {isEditing && (
-              <Dialog open={!!newStat.number} onOpenChange={(open) => !open && setNewStat({ number: '', label: '' })}>
+              <Dialog open={isNewStatDialogOpen} onOpenChange={setIsNewStatDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => setNewStat({ number: '', label: '' })} disabled={!isEditing} size="sm">
+                  <Button 
+                    onClick={() => {
+                      setNewStat({ number: '', label: '' });
+                      setIsNewStatDialogOpen(true);
+                    }} 
+                    disabled={!isEditing} 
+                    size="sm"
+                  >
                     <Plus className="w-4 h-4 mr-1" />
                     Tambah Statistik
                   </Button>
@@ -628,7 +648,7 @@ const AdminAbout = () => {
                       />
                     </div>
                     <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setNewStat({ number: '', label: '' })}>
+                      <Button variant="outline" onClick={() => setIsNewStatDialogOpen(false)}>
                         Batal
                       </Button>
                       <Button onClick={handleAddStat}>
