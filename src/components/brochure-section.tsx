@@ -152,7 +152,7 @@ const BrochureSection = () => {
                   }
                 }}
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 font-bold px-8 py-3 rounded-full"
+                className="border-white text-blue-600 hover:bg-white hover:text-blue-700 font-bold px-8 py-3 rounded-full"
               >
                 Hubungi Kami
               </Button>
