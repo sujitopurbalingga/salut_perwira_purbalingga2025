@@ -15,7 +15,8 @@ import {
   X,
   ChevronDown,
   Sparkles,
-  MessageSquare
+  MessageSquare,
+  Globe
 } from 'lucide-react';
 import { useAuth } from './auth-provider';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,11 @@ const menuItems: MenuItem[] = [
     title: 'Hubungi Kami',
     icon: <MessageSquare className="w-5 h-5" />,
     path: '/admin/contact',
+  },
+  {
+    title: 'Footer',
+    icon: <Globe className="w-5 h-5" />,
+    path: '/admin/footer',
   },
 ];
 
