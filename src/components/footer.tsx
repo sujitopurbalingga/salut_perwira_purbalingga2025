@@ -66,7 +66,7 @@ const Footer = () => {
 
   // Use site settings as fallback for brand name if footer_settings doesn't exist
   const fallbackBrand = {
-    brand_name: siteSettings?.site_name || 'EduCampus',
+    brand_name: siteSettings?.site_name || 'SALUT PERWIRA PURBALINGGA',
     brand_description: siteSettings?.site_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas.'
   };
 
@@ -99,11 +99,11 @@ const Footer = () => {
 
   // Default values if footer_content doesn't have complete data
   const defaultFooterData = {
-    brand_name: footer.brand_name || 'EduCampus',
-    brand_description: footer.brand_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas.',
+    brand_name: footer.brand_name || 'SALUT PERWIRA PURBALINGGA',
+    brand_description: footer.brand_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas dan siap bersaing di era global.',
     address: footer.address || 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
     phone: footer.phone || '(0281) 123456',
-    email: footer.email || 'info@educampus.ac.id',
+    email: footer.email || 'info@salutperwira.ac.id',
     quick_links: footer.quick_links || [
       { id: '1', name: 'Tentang Kami', href: '#about' },
       { id: '2', name: 'Layanan', href: '#services' },
@@ -118,7 +118,7 @@ const Footer = () => {
     ],
     newsletter_title: footer.newsletter_title || 'Newsletter',
     newsletter_description: footer.newsletter_description || 'Dapatkan informasi terbaru tentang pendaftaran dan program kami',
-    copyright_text: footer.copyright_text || `© ${currentYear} EduCampus. Semua Hak Dilindungi.`
+    copyright_text: footer.copyright_text || `© ${currentYear} SALUT PERWIRA PURBALINGGA. Semua Hak Dilindungi.`
   };
 
   return (

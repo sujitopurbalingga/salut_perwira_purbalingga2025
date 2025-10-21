@@ -71,7 +71,7 @@ const HeroSection = () => {
   });
 
   // Dynamic site name from database with loading state
-  const siteName = siteSettings?.site_name || 'EduCampus';
+  const siteName = siteSettings?.site_name || 'SALUT PERWIRA PURBALINGGA';
 
   // Show loading state while fetching
   const displaySiteName = isLoading ? 'Loading...' : siteName;

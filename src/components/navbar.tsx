@@ -105,7 +105,7 @@ const Navbar = () => {
   };
 
   // Dynamic site name from database with loading state
-  const siteName = siteSettings?.site_name || 'EduCampus';
+  const siteName = siteSettings?.site_name || 'SALUT PERWIRA PURBALINGGA';
   const logoUrl = siteSettings?.logo_url;
 
   // Show loading state while fetching

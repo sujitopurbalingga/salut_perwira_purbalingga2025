@@ -43,6 +43,20 @@ const AboutSection = () => {
     }
   });
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['site-settings-about'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('site_name')
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 30000,
+  });
+
+  const siteName = siteSettings?.site_name || 'SALUT PERWIRA PURBALINGGA';
+
   const getIconComponent = (iconName: string) => {
     const iconMap: Record<string, React.ComponentType<any>> = {
       GraduationCap,
@@ -95,7 +109,7 @@ const AboutSection = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Mengapa Memilih
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
-              {aboutContent?.title || "SALUT PERWIRA PURBALINGGA"}
+              {aboutContent?.title || siteName}
             </span>
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
