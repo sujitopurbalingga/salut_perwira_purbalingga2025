@@ -155,7 +155,7 @@ const FacultiesSection = () => {
               <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3 rounded-full">
                 Download Brosur
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 font-bold px-8 py-3 rounded-full">
+              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-8 py-3 rounded-full">
                 Konsultasi Gratis
               </Button>
             </div>
