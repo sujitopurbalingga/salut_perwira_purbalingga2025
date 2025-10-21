@@ -37,21 +37,30 @@ const Navbar = () => {
   // Get first 5 items for bottom navigation
   const bottomNavItems = navigation.slice(0, 5);
 
-  // Fetch site settings from database with very short cache time
-  const { data: siteSettings, isLoading } = useQuery({
-    queryKey: ['site-settings-navbar'],
+  // Fetch site settings from database - ini harus bisa diakses oleh semua user
+  const { data: siteSettings, isLoading, error } = useQuery({
+    queryKey: ['site-settings-public'],
     queryFn: async () => {
-      const { data } = await supabase
+      console.log('Fetching site settings for navbar...');
+      const { data, error } = await supabase
         .from('site_settings')
         .select('*')
         .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching site settings:', error);
+        throw error;
+      }
+      
+      console.log('Site settings fetched:', data);
       return data as SiteSettings;
     },
     staleTime: 0, // No stale time - always fetch fresh data
     cacheTime: 1000, // Cache for 1 second only
     refetchOnWindowFocus: true, // Refetch when window is focused
     refetchOnMount: true, // Refetch when component mounts
-    refetchInterval: 5000, // Refetch every 5 seconds to ensure freshness
+    refetchInterval: 10000, // Refetch every 10 seconds to ensure freshness
+    retry: 3, // Retry up to 3 times on failure
   });
 
   // Handle scroll untuk background navbar
@@ -111,6 +120,17 @@ const Navbar = () => {
   // Show loading state while fetching
   const displaySiteName = isLoading ? 'Loading...' : siteName;
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Navbar state:', {
+      isLoading,
+      hasLogoUrl: !!logoUrl,
+      logoUrl,
+      siteName,
+      error
+    });
+  }, [isLoading, logoUrl, siteName, error]);
+
   // Function to get logo component
   const getLogoComponent = () => {
     // If we have a valid logo URL and it's not loading, show the image
@@ -129,6 +149,9 @@ const Navbar = () => {
             if (iconContainer) {
               iconContainer.style.display = 'flex';
             }
+          }}
+          onLoad={() => {
+            console.log('Logo loaded successfully:', logoUrl);
           }}
         />
       );
