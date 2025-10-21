@@ -34,20 +34,22 @@ interface ContactContent {
   form_title: string;
   form_description: string;
   submit_button: string;
-  contact_info: {
-    address: string;
-    address_description: string;
-    phone: string;
-    phone_description: string;
-    email: string;
-    email_description: string;
-  };
-  office_hours: Array<{
-    day: string;
-    hours: string;
-  }>;
+  address: string;
+  address_description: string;
+  phone: string;
+  phone_description: string;
+  email: string;
+  email_description: string;
   map_title: string;
   map_description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface OfficeHour {
+  id: string;
+  day: string;
+  hours: string;
 }
 
 const AdminContact = () => {
@@ -71,19 +73,19 @@ const AdminContact = () => {
     map_description: 'Lokasi Kami\nJl. Merdeka No. 123, Wonomulyo'
   });
 
-  const [officeHours, setOfficeHours] = useState([
+  const [officeHours, setOfficeHours] = useState<OfficeHour[]>([
     { id: '1', day: 'Senin - Jumat', hours: '08:00 - 17:00' },
     { id: '2', day: 'Sabtu', hours: '09:00 - 15:00' },
     { id: '3', day: 'Minggu', hours: 'Tutup' }
   ]);
 
-  const [editingHour, setEditingHour] = useState<{id: string, day: string, hours: string} | null>(null);
+  const [editingHour, setEditingHour] = useState<OfficeHour | null>(null);
   const [newHour, setNewHour] = useState({ day: '', hours: '' });
 
   const queryClient = useQueryClient();
 
   // Fetch contact content
-  const { data: contactContent, isLoading } = useQuery({
+  const { data: contactContent, isLoading, refetch } = useQuery({
     queryKey: ['contact'],
     queryFn: async () => {
       const { data } = await supabase
@@ -91,8 +93,31 @@ const AdminContact = () => {
         .select('*')
         .maybeSingle();
       return data as ContactContent;
-    }
+    },
+    staleTime: 0,
+    refetchOnMount: true
   });
+
+  // Update form data when contact content changes
+  React.useEffect(() => {
+    if (contactContent) {
+      setFormData({
+        hero_title: contactContent.hero_title || 'Mari Berkolaborasi',
+        hero_subtitle: contactContent.hero_subtitle || 'untuk Masyarakat',
+        form_title: contactContent.form_title || 'Kirim Pesan',
+        form_description: contactContent.form_description || 'Isi formulir di bawah ini dan kami akan segera merespons',
+        submit_button: contactContent.submit_button || 'Kirim Pesan',
+        address: contactContent.address || 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
+        address_description: contactContent.address_description || 'Kunjungi kantor kami',
+        phone: contactContent.phone || '+62 812-3456-7890',
+        phone_description: contactContent.phone_description || 'Hubungi kami langsung',
+        email: contactContent.email || 'info@salutwonomulyo.com',
+        email_description: contactContent.email_description || 'Kirim email kapan saja',
+        map_title: contactContent.map_title || 'Map Location',
+        map_description: contactContent.map_description || 'Lokasi Kami\nJl. Merdeka No. 123, Wonomulyo'
+      });
+    }
+  }, [contactContent]);
 
   // Update or Insert contact content
   const saveMutation = useMutation({
@@ -117,6 +142,7 @@ const AdminContact = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact'] });
+      refetch(); // Refetch data to get updated content
       setMessage('Konten berhasil disimpan!');
       setIsEditing(false);
       setTimeout(() => setMessage(''), 3000);
@@ -126,26 +152,6 @@ const AdminContact = () => {
       setTimeout(() => setMessage(''), 3000);
     }
   });
-
-  React.useEffect(() => {
-    if (contactContent) {
-      setFormData({
-        hero_title: contactContent.hero_title || 'Mari Berkolaborasi',
-        hero_subtitle: contactContent.hero_subtitle || 'untuk Masyarakat',
-        form_title: contactContent.form_title || 'Kirim Pesan',
-        form_description: contactContent.form_description || 'Isi formulir di bawah ini dan kami akan segera merespons',
-        submit_button: contactContent.submit_button || 'Kirim Pesan',
-        address: contactContent.contact_info?.address || 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
-        address_description: contactContent.contact_info?.address_description || 'Kunjungi kantor kami',
-        phone: contactContent.contact_info?.phone || '+62 812-3456-7890',
-        phone_description: contactContent.contact_info?.phone_description || 'Hubungi kami langsung',
-        email: contactContent.contact_info?.email || 'info@salutwonomulyo.com',
-        email_description: contactContent.contact_info?.email_description || 'Kirim email kapan saja',
-        map_title: contactContent.map_title || 'Map Location',
-        map_description: contactContent.map_description || 'Lokasi Kami\nJl. Merdeka No. 123, Wonomulyo'
-      });
-    }
-  }, [contactContent]);
 
   const handleSave = () => {
     saveMutation.mutate(formData);
@@ -172,7 +178,7 @@ const AdminContact = () => {
   });
 
   const updateHourMutation = useMutation({
-    mutationFn: async (hour: { id: string; day: string; hours: string }) => {
+    mutationFn: async (hour: OfficeHour) => {
       setOfficeHours(prev => prev.map(h => h.id === hour.id ? hour : h));
     },
     onSuccess: () => {
@@ -217,6 +223,9 @@ const AdminContact = () => {
     }
   };
 
+  // Use current form data for preview (not the database data)
+  const previewData = isEditing ? formData : (contactContent || formData);
+
   if (isLoading) {
     return (
       <div className="p-8 flex items-center justify-center">
@@ -248,14 +257,14 @@ const AdminContact = () => {
               <div className="space-y-6">
                 {/* Hero Section */}
                 <div className="text-center py-12 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg">
-                  <h2 className="text-3xl font-bold mb-2">{formData.hero_title}</h2>
-                  <p className="text-xl">{formData.hero_subtitle}</p>
+                  <h2 className="text-3xl font-bold mb-2">{previewData.hero_title}</h2>
+                  <p className="text-xl">{previewData.hero_subtitle}</p>
                 </div>
 
                 {/* Form Section */}
                 <div className="bg-gray-50 p-8 rounded-lg">
-                  <h3 className="text-2xl font-bold mb-4">{formData.form_title}</h3>
-                  <p className="text-gray-600 mb-6">{formData.form_description}</p>
+                  <h3 className="text-2xl font-bold mb-4">{previewData.form_title}</h3>
+                  <p className="text-gray-600 mb-6">{previewData.form_description}</p>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
@@ -274,7 +283,7 @@ const AdminContact = () => {
                       <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md" rows={4} placeholder="Tulis pesan Anda di sini..." />
                     </div>
                     <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
-                      {formData.submit_button}
+                      {previewData.submit_button}
                     </button>
                   </div>
                 </div>
@@ -286,24 +295,24 @@ const AdminContact = () => {
                       <MapPin className="w-6 h-6 text-green-600 mr-3" />
                       <h4 className="font-semibold">Alamat</h4>
                     </div>
-                    <p className="text-gray-900 font-medium mb-2">{formData.address}</p>
-                    <p className="text-gray-600 text-sm">{formData.address_description}</p>
+                    <p className="text-gray-900 font-medium mb-2">{previewData.address}</p>
+                    <p className="text-gray-600 text-sm">{previewData.address_description}</p>
                   </div>
                   <div className="bg-white p-6 rounded-lg shadow">
                     <div className="flex items-center mb-4">
                       <Phone className="w-6 h-6 text-green-600 mr-3" />
                       <h4 className="font-semibold">Telepon</h4>
                     </div>
-                    <p className="text-gray-900 font-medium mb-2">{formData.phone}</p>
-                    <p className="text-gray-600 text-sm">{formData.phone_description}</p>
+                    <p className="text-gray-900 font-medium mb-2">{previewData.phone}</p>
+                    <p className="text-gray-600 text-sm">{previewData.phone_description}</p>
                   </div>
                   <div className="bg-white p-6 rounded-lg shadow">
                     <div className="flex items-center mb-4">
                       <Mail className="w-6 h-6 text-green-600 mr-3" />
                       <h4 className="font-semibold">Email</h4>
                     </div>
-                    <p className="text-gray-900 font-medium mb-2">{formData.email}</p>
-                    <p className="text-gray-600 text-sm">{formData.email_description}</p>
+                    <p className="text-gray-900 font-medium mb-2">{previewData.email}</p>
+                    <p className="text-gray-600 text-sm">{previewData.email_description}</p>
                   </div>
                 </div>
 
@@ -327,8 +336,8 @@ const AdminContact = () => {
                 <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
                   <div className="text-center">
                     <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-600">{formData.map_title}</p>
-                    <p className="text-sm text-gray-500">{formData.map_description}</p>
+                    <p className="text-gray-600">{previewData.map_title}</p>
+                    <p className="text-sm text-gray-500 whitespace-pre-line">{previewData.map_description}</p>
                   </div>
                 </div>
               </div>
@@ -560,7 +569,7 @@ const AdminContact = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setEditingHour({ id: hour.id, day: hour.day, hours: hour.hours })}
+                      onClick={() => setEditingHour(hour)}
                     >
                       Edit
                     </Button>
