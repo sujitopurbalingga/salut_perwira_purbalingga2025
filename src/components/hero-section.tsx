@@ -52,8 +52,8 @@ const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)]">
           {/* Left Content */}
           <div className="text-white space-y-6 animate-fade-in">
             <p className="text-lg font-medium text-white/90">
@@ -90,17 +90,14 @@ const HeroSection = () => {
           </div>
 
           {/* Right Content - 3D Character */}
-          <div className="relative flex justify-end lg:justify-end items-center lg:mt-0 mt-8 lg:translate-x-8 xl:translate-x-12">
-            <div className="relative lg:-mr-16 xl:-mr-20">
-              {/* Character Container with glow effect - Increased size */}
-              <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[450px] lg:h-[450px] xl:w-[500px] xl:h-[500px]">
-                {/* This is where the character will be displayed */}
-                <Character3DDisplay className="w-full h-full" />
-                
-                {/* Outer glow effect - this creates the yellow glow */}
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl -z-10"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/10 to-transparent rounded-full blur-3xl -z-10 scale-110"></div>
-              </div>
+          <div className="relative flex justify-end lg:justify-center items-center lg:mt-0 mt-8 lg:translate-x-0 xl:translate-x-0">
+            <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[450px] lg:h-[450px] xl:w-[500px] xl:h-[500px]">
+              {/* This is where the character will be displayed */}
+              <Character3DDisplay className="w-full h-full" />
+              
+              {/* Outer glow effect - this creates the yellow glow */}
+              <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-full blur-2xl -z-10"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/10 to-transparent rounded-full blur-3xl -z-10 scale-110"></div>
             </div>
           </div>
         </div>

@@ -77,7 +77,7 @@ const BrochureSection = () => {
 
   if (isLoadingBrochures || isLoadingContact) {
     return (
-      <section data-brosur-section className="py-16 md:py-24 bg-gray-50 flex items-center justify-center">
+      <section data-brosur-section className="py-16 md:py-24 bg-gray-50 flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </section>
     );
@@ -89,8 +89,8 @@ const BrochureSection = () => {
   }
 
   return (
-    <section data-brosur-section className="py-16 md:py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section data-brosur-section className="py-16 md:py-24 bg-gray-50 min-h-screen flex items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center mb-12">
           <Badge className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200">

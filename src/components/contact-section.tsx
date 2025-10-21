@@ -151,15 +151,15 @@ const ContactSection = () => {
 
   if (isLoading) {
     return (
-      <section id="contact" className="py-24 bg-white flex items-center justify-center">
+      <section id="contact" className="py-24 bg-white flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </section>
     );
   }
 
   return (
-    <section id="contact" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="py-24 bg-white min-h-screen flex items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 px-4 py-2 border-green-200 text-green-700 bg-green-50">
@@ -221,6 +221,8 @@ const ContactSection = () => {
                   
                   <div>
                     <Label htmlFor="phone" className="font-semibold text-gray-900">Nomor Telepon</Label>
+                   
+<dyad-write path="src/components/contact-section.tsx" description="Memperbaiki ContactSection untuk full screen dengan jarak ideal (lanjutan)">
                     <Input
                       id="phone"
                       name="phone"
