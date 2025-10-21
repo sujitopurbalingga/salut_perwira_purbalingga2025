@@ -57,16 +57,13 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="text-white space-y-6 animate-fade-in">
             <p className="text-lg font-medium text-white/90">
-              Mau Kuliah di
+              Mau Kuliah di Universitas Terbuka?
             </p>
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
-              Universitas <br />
-              Terbuka ?
+              Daftarnya di SALUT
+              <br />
+              PERWIRA PURBALINGGA!
             </h1>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
-              Daftarnya di SALUT <br />
-              PERWIRA PURBALINGGA !
-            </h2>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-8">
               <Button 
