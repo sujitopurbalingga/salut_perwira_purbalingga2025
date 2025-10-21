@@ -55,8 +55,8 @@ const AdminSettings = () => {
   // Site settings state
   const [siteSettings, setSiteSettings] = useState<SiteSettings>({
     id: '',
-    site_name: 'SALUT PERWIRA PURBALINGGA',
-    site_description: 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas',
+    site_name: 'EduCampus',
+    site_description: 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas dan siap bersaing di era global.',
     logo_url: '',
     favicon_url: '',
     theme: 'light',
@@ -259,7 +259,7 @@ const AdminSettings = () => {
   ];
 
   const colorPresets = [
-    { name: 'Blue', primary: '#004BFF', secondary: '#0A6CFF', accent: '#FFC700' },
+    { name: 'EduCampus Blue', primary: '#004BFF', secondary: '#0A6CFF', accent: '#FFC700' },
     { name: 'Green', primary: '#059669', secondary: '#10B981', accent: '#FCD34D' },
     { name: 'Purple', primary: '#7C3AED', secondary: '#8B5CF6', accent: '#FBBF24' },
     { name: 'Red', primary: '#DC2626', secondary: '#EF4444', accent: '#FCD34D' }

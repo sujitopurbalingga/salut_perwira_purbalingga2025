@@ -44,11 +44,11 @@ const Footer = () => {
 
   // Default values if no data from database
   const defaultFooter = {
-    brand_name: 'SALUT PERWIRA PURBALINGGA',
+    brand_name: 'EduCampus',
     brand_description: 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas dan siap bersaing di era global.',
     address: 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
     phone: '(0281) 123456',
-    email: 'info@salutperwira.ac.id',
+    email: 'info@educampus.ac.id',
     quick_links: [
       { id: '1', name: 'Tentang Kami', href: '#about' },
       { id: '2', name: 'Layanan', href: '#services' },
@@ -63,7 +63,7 @@ const Footer = () => {
     ],
     newsletter_title: 'Newsletter',
     newsletter_description: 'Dapatkan informasi terbaru tentang pendaftaran dan program kami',
-    copyright_text: `© ${currentYear} SALUT PERWIRA PURBALINGGA. Semua Hak Dilindungi.`
+    copyright_text: `© ${currentYear} EduCampus. Semua Hak Dilindungi.`
   };
 
   // Use database data if available, otherwise use defaults
@@ -101,7 +101,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-                <span className="text-blue-900 font-bold text-lg">SP</span>
+                <span className="text-blue-900 font-bold text-lg">EC</span>
               </div>
               <span className="text-xl font-bold">{footer.brand_name}</span>
             </div>
