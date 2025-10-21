@@ -103,21 +103,21 @@ const AboutSection = () => {
           </p>
         </div>
 
-        {/* Features Grid */}
+        {/* Features Grid - 2 columns on mobile */}
         {featuresToDisplay.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
             {featuresToDisplay.map((feature, index) => {
               const colors = getColorClasses(index);
               const IconComponent = getIconComponent(feature.icon);
               
               return (
-                <Card key={feature.id} className="p-4 md:p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+                <Card key={feature.id} className="p-3 md:p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
                   <CardContent className="p-0 text-center flex flex-col h-full">
-                    <div className={`w-12 h-12 md:w-16 md:h-16 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4`}>
-                      <IconComponent className={`w-6 h-6 md:w-8 md:h-8 ${colors.text}`} />
+                    <div className={`w-10 h-10 md:w-12 md:w-16 md:h-16 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-2 md:mb-4`}>
+                      <IconComponent className={`w-5 h-5 md:w-6 md:w-8 md:h-8 ${colors.text}`} />
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm md:text-base mb-4 line-clamp-3 flex-grow">
+                    <h3 className="text-sm md:text-lg lg:text-xl font-bold text-gray-900 mb-2 md:mb-3">{feature.title}</h3>
+                    <p className="text-gray-600 text-xs md:text-sm line-clamp-2 flex-grow">
                       {feature.description}
                     </p>
                     <Button 
@@ -126,7 +126,7 @@ const AboutSection = () => {
                       className="mt-auto w-full text-xs md:text-sm"
                       onClick={() => handleViewDetail(feature.title, feature.description, IconComponent)}
                     >
-                      Lihat Detail
+                      Detail
                     </Button>
                   </CardContent>
                 </Card>
@@ -135,16 +135,16 @@ const AboutSection = () => {
           </div>
         )}
 
-        {/* Dynamic About Content (Visi, Misi, Sejarah) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        {/* Dynamic About Content (Visi, Misi, Sejarah) - 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
           {aboutContent?.vision && (
             <Card className="p-4 md:p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
               <div className="flex-grow">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                  <Target className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+                <div className="w-10 h-10 md:w-12 md:w-16 md:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3 md:mb-6">
+                  <Target className="w-5 h-5 md:w-6 md:w-8 md:h-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Visi</h3>
-                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-sm md:text-base">
+                <h3 className="text-sm md:text-lg lg:text-xl font-semibold mb-2 md:mb-4">Visi</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-xs md:text-sm">
                   {aboutContent.vision}
                 </p>
               </div>
@@ -154,18 +154,18 @@ const AboutSection = () => {
                 className="mt-auto w-full text-xs md:text-sm"
                 onClick={() => handleViewDetail("Visi", aboutContent.vision || '', Target)}
               >
-                Lihat Detail
+                Detail
               </Button>
             </Card>
           )}
           {aboutContent?.mission && (
             <Card className="p-4 md:p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
               <div className="flex-grow">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                  <Award className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+                <div className="w-10 h-10 md:w-12 md:w-16 md:h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3 md:mb-6">
+                  <Award className="w-5 h-5 md:w-6 md:w-8 md:h-8 text-purple-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Misi</h3>
-                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-sm md:text-base">
+                <h3 className="text-sm md:text-lg lg:text-xl font-semibold mb-2 md:mb-4">Misi</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-xs md:text-sm">
                   {aboutContent.mission}
                 </p>
               </div>
@@ -175,18 +175,18 @@ const AboutSection = () => {
                 className="mt-auto w-full text-xs md:text-sm"
                 onClick={() => handleViewDetail("Misi", aboutContent.mission || '', Award)}
               >
-                Lihat Detail
+                Detail
               </Button>
             </Card>
           )}
           {aboutContent?.history && (
-            <Card className="p-4 md:p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
+            <Card className="p-4 md:p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between col-span-2 lg:col-span-1">
               <div className="flex-grow">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                  <Globe className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+                <div className="w-10 h-10 md:w-12 md:w-16 md:h-16 bg-green-100 rounded-full flex items-center justify-center mb-3 md:mb-6">
+                  <Globe className="w-5 h-5 md:w-6 md:w-8 md:h-8 text-green-600" />
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Sejarah</h3>
-                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-sm md:text-base">
+                <h3 className="text-sm md:text-lg lg:text-xl font-semibold mb-2 md:mb-4">Sejarah</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-2 md:mb-4 text-xs md:text-sm">
                   {aboutContent.history}
                 </p>
               </div>
@@ -196,7 +196,7 @@ const AboutSection = () => {
                 className="mt-auto w-full text-xs md:text-sm"
                 onClick={() => handleViewDetail("Sejarah", aboutContent.history || '', Globe)}
               >
-                Lihat Detail
+                Detail
               </Button>
             </Card>
           )}
@@ -204,15 +204,15 @@ const AboutSection = () => {
 
         {/* Stats Section */}
         {statsToDisplay.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-6 md:p-8 text-white">
-            <div className="text-center mb-6 md:mb-8">
-              <h3 className="text-xl md:text-2xl font-bold mb-2">Pencapaian Kami</h3>
-              <p className="text-blue-100 text-sm md:text-base">Angka yang berbicara tentang kualitas kami</p>
+          <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-4 md:p-8 text-white">
+            <div className="text-center mb-4 md:mb-8">
+              <h3 className="text-lg md:text-2xl font-bold mb-2">Pencapaian Kami</h3>
+              <p className="text-blue-100 text-xs md:text-sm">Angka yang berbicara tentang kualitas kami</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               {statsToDisplay.map((stat, index) => (
                 <div key={stat.id} className="text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">{stat.number}</div>
+                  <div className="text-xl md:text-2xl lg:text-4xl font-bold mb-1">{stat.number}</div>
                   <div className="text-blue-100 text-xs md:text-sm">{stat.label}</div>
                 </div>
               ))}

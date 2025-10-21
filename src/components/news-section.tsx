@@ -103,41 +103,40 @@ const NewsSection = () => {
           </Card>
         )}
 
-        {/* Regular News Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        {/* Regular News Grid - 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
           {regularNews.map((item) => (
             <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-32 md:h-48 overflow-hidden">
                 <img
                   src={item.image_url || "https://via.placeholder.com/400"}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardHeader className="pb-3 p-4 md:p-6">
-                <div className="flex items-center justify-between mb-3">
+              <CardHeader className="pb-2 p-3 md:pb-3 md:p-6">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center text-xs text-gray-500">
                     <Calendar className="w-3 h-3 mr-1" />
-                    <span className="mr-3">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
-                    <User className="w-3 h-3 mr-1" />
-                    <span>Admin</span>
+                    <span className="hidden sm:inline">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
+                    <span className="sm:hidden">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})}</span>
                   </div>
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                   {item.title}
                 </h3>
               </CardHeader>
-              <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
-                <p className="text-gray-600 mb-4 line-clamp-2 text-sm md:text-base">
-                  {item.excerpt || item.content.substring(0, 150) + '...'}
+              <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
+                <p className="text-gray-600 mb-3 line-clamp-2 text-xs md:text-sm">
+                  {item.excerpt || item.content.substring(0, 80) + '...'}
                 </p>
                 <Button 
                   variant="ghost" 
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium text-sm md:text-base"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium text-xs md:text-sm w-full"
                   onClick={() => handleReadMore(item)}
                 >
-                  Baca Selengkapnya
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  Baca
+                  <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
               </CardContent>
             </Card>

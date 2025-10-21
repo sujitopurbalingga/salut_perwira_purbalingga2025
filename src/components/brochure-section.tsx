@@ -107,24 +107,24 @@ const BrochureSection = () => {
           </p>
         </div>
 
-        {/* Brochures Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Brochures Grid - 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {brochures.map((brochure) => (
             <Card key={brochure.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
-              <CardHeader className="pb-4 p-4 md:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+              <CardHeader className="pb-3 p-3 md:p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-8 h-8 md:w-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 md:w-5 md:w-6 md:h-6 text-blue-600" />
                   </div>
                   <Badge className="bg-green-100 text-green-800 text-xs">
                     Tersedia
                   </Badge>
                 </div>
-                <CardTitle className="text-lg md:text-xl font-semibold text-gray-900 mt-2 md:mt-4 line-clamp-2">
+                <CardTitle className="text-sm md:text-lg font-semibold text-gray-900 mt-2 md:mt-4 line-clamp-2">
                   {brochure.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 p-4 md:p-6 pt-0">
+              <CardContent className="space-y-3 p-3 pt-0 md:p-6 md:pt-0 md:space-y-4">
                 <div className="aspect-[3/4] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
                   {brochure.thumbnail_url ? (
                     <img 
@@ -133,24 +133,24 @@ const BrochureSection = () => {
                       className="w-full h-full object-cover" 
                     />
                   ) : (
-                    <FileText className="w-12 h-12 md:w-16 md:h-16 text-blue-300" />
+                    <FileText className="w-8 h-8 md:w-12 md:w-16 text-blue-300" />
                   )}
                 </div>
-                <p className="text-xs md:text-sm text-gray-600">
+                <p className="text-xs text-gray-600 hidden md:block">
                   Dokumen informasi lengkap tentang pendaftaran dan program studi
                 </p>
-                <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+                <div className="flex flex-col gap-2 md:flex-row md:gap-3">
                   <Button
                     onClick={() => handlePreview(brochure.file_url)}
                     variant="outline"
-                    className="flex-1 text-xs md:text-sm"
+                    className="flex-1 text-xs"
                   >
                     <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     Preview
                   </Button>
                   <Button
                     onClick={() => handleDownload(brochure.file_url, brochure.title)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs md:text-sm"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs"
                   >
                     <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     Download

@@ -101,36 +101,36 @@ const ServicesSection = () => {
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Services Grid - 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {services?.map((service, index) => {
             const colors = getColorClasses(index);
             const IconComponent = getLucideIcon(service.icon_name || '') || LucideIcons.Briefcase;
 
             return (
               <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg flex flex-col overflow-hidden">
-                <CardHeader className="pb-4 pt-6 flex-grow">
-                  <div className={`w-12 h-12 md:w-16 md:h-16 ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto sm:mx-0`}>
+                <CardHeader className="pb-2 pt-3 md:pb-4 md:pt-6 flex-grow">
+                  <div className={`w-8 h-8 md:w-12 md:w-16 md:h-16 ${colors.bg} rounded-lg flex items-center justify-center mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     {service.image_url ? (
-                      <img src={service.image_url} alt={service.title} className="w-full h-full object-cover rounded-xl" />
+                      <img src={service.image_url} alt={service.title} className="w-full h-full object-cover rounded-lg" />
                     ) : (
-                      <IconComponent className={`w-6 h-6 md:w-8 md:h-8 ${colors.text}`} />
+                      <IconComponent className={`w-4 h-4 md:w-6 md:h-6 md:w-8 md:h-8 ${colors.text}`} />
                     )}
                   </div>
-                  <CardTitle className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-center sm:text-left">
+                  <CardTitle className="text-sm md:text-base lg:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-center">
                     {service.title}
                   </CardTitle>
-                  <p className="text-gray-600 text-sm md:text-base mt-2 line-clamp-3 text-center sm:text-left">
+                </CardHeader>
+                <CardContent className="pt-0 mt-auto px-3 pb-3 md:px-6 md:pb-6">
+                  <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-2 md:mb-4 text-center">
                     {service.description}
                   </p>
-                </CardHeader>
-                <CardContent className="pt-0 mt-auto px-6 pb-6">
                   <Button 
                     variant="outline" 
-                    className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors text-sm md:text-base`}
+                    className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors text-xs md:text-sm lg:text-base`}
                     onClick={() => handleViewDetail(service)}
                   >
-                    Pelajari Lebih Lanjut
+                    Pelajari
                   </Button>
                 </CardContent>
               </Card>
