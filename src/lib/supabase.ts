@@ -79,6 +79,21 @@ export interface LandingSettings {
   updated_at: string;
 }
 
+// Types for Site Settings
+export interface SiteSettings {
+  id: string;
+  site_name: string;
+  site_description: string;
+  logo_url: string;
+  favicon_url: string;
+  theme: 'light' | 'dark' | 'auto';
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // New/Updated types for content management
 export interface AboutContent {
   id: string;
@@ -161,7 +176,7 @@ export interface Brochure {
   id: string;
   title: string;
   file_url: string;
-  thumbnail_url?: string; // New field
+  thumbnail_url?: string; // Added thumbnail_url
   is_active: boolean;
   created_at: string;
   updated_at: string;

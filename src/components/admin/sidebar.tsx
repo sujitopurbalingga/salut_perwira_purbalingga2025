@@ -16,7 +16,8 @@ import {
   ChevronDown,
   Sparkles,
   MessageSquare,
-  Globe
+  Globe,
+  Settings
 } from 'lucide-react';
 import { useAuth } from './auth-provider';
 import { Button } from '@/components/ui/button';
@@ -80,6 +81,11 @@ const menuItems: MenuItem[] = [
     title: 'Footer',
     icon: <Globe className="w-5 h-5" />,
     path: '/admin/footer',
+  },
+  {
+    title: 'Pengaturan',
+    icon: <Settings className="w-5 h-5" />,
+    path: '/admin/settings',
   },
 ];
 

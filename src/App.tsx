@@ -25,6 +25,7 @@ import AdminRegistrations from './pages/admin/registrations';
 import AdminBrochure from './pages/admin/brochure';
 import AdminContact from './pages/admin/contact';
 import AdminFooter from './pages/admin/footer';
+import AdminSettings from './pages/admin/settings';
 
 // Protected Route Component
 import ProtectedRoute from './components/admin/protected-route';
@@ -102,6 +103,7 @@ function App() {
                   <Route path="brochure" element={<AdminBrochure />} />
                   <Route path="contact" element={<AdminContact />} />
                   <Route path="footer" element={<AdminFooter />} />
+                  <Route path="settings" element={<AdminSettings />} />
                   <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
                 </Route>
               </Routes>
