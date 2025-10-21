@@ -38,31 +38,39 @@ const Navbar = () => {
   const bottomNavItems = navigation.slice(0, 5);
 
   // Fetch site settings from database - ini harus bisa diakses oleh semua user
-  const { data: siteSettings, isLoading, error } = useQuery({
+  const { data: siteSettings, isLoading, error, refetch } = useQuery({
     queryKey: ['site-settings-public'],
     queryFn: async () => {
       console.log('=== FETCHING SITE SETTINGS FOR NAVBAR ===');
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('*')
-        .maybeSingle();
+      console.log('Attempting to fetch site settings...');
       
-      if (error) {
-        console.error('Error fetching site settings:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('*')
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+        
+        console.log('Site settings fetched successfully:', data);
+        console.log('Logo URL:', data?.logo_url);
+        console.log('Site Name:', data?.site_name);
+        return data as SiteSettings;
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        throw err;
       }
-      
-      console.log('Site settings fetched successfully:', data);
-      console.log('Logo URL:', data?.logo_url);
-      console.log('Site Name:', data?.site_name);
-      return data as SiteSettings;
     },
     staleTime: 0, // No stale time - always fetch fresh data
     cacheTime: 1000, // Cache for 1 second only
     refetchOnWindowFocus: true, // Refetch when window is focused
     refetchOnMount: true, // Refetch when component mounts
-    refetchInterval: 10000, // Refetch every 10 seconds to ensure freshness
+    refetchInterval: 30000, // Refetch every 30 seconds
     retry: 3, // Retry up to 3 times on failure
+    retryDelay: 1000, // Delay between retries
   });
 
   // Handle scroll untuk background navbar
