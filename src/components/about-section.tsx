@@ -21,9 +21,15 @@ interface Stat {
   label: string;
 }
 
+interface DetailContent {
+  title: string;
+  content: string;
+  icon: React.ComponentType<any>;
+}
+
 const AboutSection = () => {
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
-  const [isFeatureDetailOpen, setIsFeatureDetailOpen] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState<DetailContent | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
   const { data: aboutContent, isLoading } = useQuery({
     queryKey: ['about-public'],
@@ -37,8 +43,6 @@ const AboutSection = () => {
   });
 
   // Default features and stats (will be replaced with database data if available)
-  // NOTE: In a real app, these should be fetched from the DB or a separate settings table.
-  // Since AdminAbout hardcodes them, we use the same hardcoded structure here.
   const features: Feature[] = [
     {
       id: '1',
@@ -97,9 +101,9 @@ const AboutSection = () => {
     return colors[index % colors.length];
   };
 
-  const handleViewFeatureDetail = (feature: Feature) => {
-    setSelectedFeature(feature);
-    setIsFeatureDetailOpen(true);
+  const handleViewDetail = (title: string, content: string, icon: React.ComponentType<any>) => {
+    setSelectedDetail({ title, content, icon });
+    setIsDetailDialogOpen(true);
   };
 
   if (isLoading) {
@@ -149,7 +153,7 @@ const AboutSection = () => {
                     variant="outline" 
                     size="sm"
                     className="mt-auto w-full"
-                    onClick={() => handleViewFeatureDetail(feature)}
+                    onClick={() => handleViewDetail(feature.title, feature.description, IconComponent)}
                   >
                     Lihat Detail
                   </Button>
@@ -162,30 +166,66 @@ const AboutSection = () => {
         {/* Dynamic About Content (Visi, Misi, Sejarah) */}
         <div className="grid lg:grid-cols-3 gap-8 mb-16">
           {aboutContent?.vision && (
-            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-blue-600" />
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
+              <div className="flex-grow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                  <Target className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Visi</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-4">
+                  {aboutContent.vision}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Visi</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.vision}</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full mt-4"
+                onClick={() => handleViewDetail("Visi", aboutContent.vision || '', Target)}
+              >
+                Lihat Detail
+              </Button>
             </Card>
           )}
           {aboutContent?.mission && (
-            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <Award className="w-8 h-8 text-purple-600" />
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
+              <div className="flex-grow">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                  <Award className="w-8 h-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Misi</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-4">
+                  {aboutContent.mission}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Misi</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.mission}</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full mt-4"
+                onClick={() => handleViewDetail("Misi", aboutContent.mission || '', Award)}
+              >
+                Lihat Detail
+              </Button>
             </Card>
           )}
           {aboutContent?.history && (
-            <Card className="p-8 hover:shadow-xl transition-shadow duration-300">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <Globe className="w-8 h-8 text-green-600" />
+            <Card className="p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
+              <div className="flex-grow">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                  <Globe className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Sejarah</h3>
+                <p className="text-gray-600 whitespace-pre-wrap line-clamp-3 mb-4">
+                  {aboutContent.history}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Sejarah</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{aboutContent.history}</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full mt-4"
+                onClick={() => handleViewDetail("Sejarah", aboutContent.history || '', Globe)}
+              >
+                Lihat Detail
+              </Button>
             </Card>
           )}
         </div>
@@ -207,21 +247,21 @@ const AboutSection = () => {
         </div>
       </div>
 
-      {/* Feature Detail Dialog */}
-      <Dialog open={isFeatureDetailOpen} onOpenChange={setIsFeatureDetailOpen}>
+      {/* General Detail Dialog for Features, Visi, Misi, Sejarah */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-3">
-              {selectedFeature && React.createElement(getIconComponent(selectedFeature.icon), { className: "w-6 h-6 text-blue-600" })}
-              <span>{selectedFeature?.title}</span>
+              {selectedDetail && React.createElement(selectedDetail.icon, { className: "w-6 h-6 text-blue-600" })}
+              <span>{selectedDetail?.title}</span>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="text-gray-700 whitespace-pre-wrap">
-            {selectedFeature?.description}
+            {selectedDetail?.content}
           </DialogDescription>
           <div className="flex items-center text-sm text-gray-500 mt-4">
             <Info className="w-4 h-4 mr-2" />
-            <span>Informasi Unggulan Universitas</span>
+            <span>Informasi Lengkap</span>
           </div>
         </DialogContent>
       </Dialog>
