@@ -39,7 +39,7 @@ const Navbar = () => {
       for (const section of sections) {
         const element = document.querySelector(section);
         if (element) {
-          const { offsetTop, offsetHeight } = element as HTMLElement;
+          const { offsetTop, offsetHeight } = element as HTMLElement; // <-- Cast to HTMLElement
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
             break;
@@ -76,7 +76,7 @@ const Navbar = () => {
         ? 'bg-white shadow-lg backdrop-blur-md bg-opacity-95' 
         : 'bg-transparent'
     }`}>
-      {/* Background split design with curved separator */}
+      {/* Background split design with inward curved separator */}
       <div className={`absolute inset-0 flex transition-opacity duration-300 ${
         isScrolled ? 'opacity-0' : 'opacity-100'
       }`}>
@@ -84,20 +84,20 @@ const Navbar = () => {
         <div className="w-[45%] bg-yellow-400"></div>
         {/* White section - 55% */}
         <div className="w-[55%] bg-white"></div>
-        {/* Curved separator from left to right using SVG */}
+        {/* Inward curved and sharp separator using SVG */}
         <svg 
           className="absolute top-0 left-[45%] h-full w-32 pointer-events-none"
           viewBox="0 0 128 64"
           preserveAspectRatio="none"
         >
-          {/* Curved line from left to right - yellow part */}
+          {/* Inward curve with sharp point - yellow part */}
           <path 
-            d="M 0 32 Q 32 0 64 32 T 128 32 L 0 64 Z" 
+            d="M 0 0 C 20 0 40 16 64 32 C 88 48 108 64 128 64 L 0 64 Z" 
             fill="#facc15"
           />
           {/* White part */}
           <path 
-            d="M 0 32 Q 32 0 64 32 T 128 32 L 128 0 L 0 0 Z" 
+            d="M 0 0 C 20 0 40 16 64 32 C 88 48 108 64 128 64 L 128 0 L 0 0 Z" 
             fill="white"
           />
         </svg>
