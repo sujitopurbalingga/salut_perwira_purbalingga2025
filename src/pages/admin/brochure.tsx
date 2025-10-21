@@ -155,11 +155,27 @@ const AdminBrochure = () => {
   };
 
   const handleSave = () => {
-    if (!formData.title || !formData.file_url) {
-      setMessage('Judul dan file brosur wajib diisi');
+    // Clear previous messages
+    setMessage('');
+    
+    // Enhanced validation
+    if (!formData.title || formData.title.trim() === '') {
+      setMessage('Judul brosur wajib diisi');
       setTimeout(() => setMessage(''), 3000);
       return;
     }
+    
+    if (!formData.file_url || formData.file_url.trim() === '') {
+      setMessage('File brosur wajib diisi');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    console.log('Form validation passed:', {
+      title: formData.title,
+      file_url: formData.file_url,
+      is_active: formData.is_active
+    });
 
     saveMutation.mutate(formData);
   };
@@ -213,10 +229,12 @@ const AdminBrochure = () => {
         .from('brochures')
         .getPublicUrl(filePath);
 
-      setFormData({ ...formData, file_url: publicUrl });
+      // Update form data with the uploaded file URL
+      setFormData(prev => ({ ...prev, file_url: publicUrl }));
       setMessage('File berhasil diunggah');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
+      console.error('Upload error:', error);
       setMessage('Gagal mengunggah file');
       setTimeout(() => setMessage(''), 3000);
     } finally {
@@ -267,30 +285,34 @@ const AdminBrochure = () => {
               )}
               
               <div>
-                <Label htmlFor="title">Judul Brosur</Label>
+                <Label htmlFor="title">Judul Brosur *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Masukkan judul brosur"
+                  required
                 />
               </div>
 
               <div>
-                <Label>File Brosur</Label>
+                <Label>File Brosur *</Label>
                 <div className="space-y-3">
                   {formData.file_url && (
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 bg-gray-50 rounded-lg border">
                       <p className="text-sm text-gray-600 mb-2">File saat ini:</p>
-                      <a 
-                        href={formData.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
-                      >
-                        <FileText className="w-4 h-4 mr-1" />
-                        Lihat File
-                      </a>
+                      <div className="flex items-center justify-between">
+                        <a 
+                          href={formData.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm flex items-center truncate max-w-xs"
+                        >
+                          <FileText className="w-4 h-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{formData.file_url.split('/').pop()}</span>
+                        </a>
+                        <span className="text-xs text-green-600">✓ Terupload</span>
+                      </div>
                     </div>
                   )}
                   <div className="flex items-center space-x-3">
@@ -335,6 +357,7 @@ const AdminBrochure = () => {
                 <Button
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
+                  disabled={saveMutation.isPending}
                 >
                   Batal
                 </Button>
