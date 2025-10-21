@@ -221,8 +221,6 @@ const ContactSection = () => {
                   
                   <div>
                     <Label htmlFor="phone" className="font-semibold text-gray-900">Nomor Telepon</Label>
-                   
-<dyad-write path="src/components/contact-section.tsx" description="Memperbaiki ContactSection untuk full screen dengan jarak ideal (lanjutan)">
                     <Input
                       id="phone"
                       name="phone"
