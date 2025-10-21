@@ -112,7 +112,7 @@ const Navbar = () => {
   const displaySiteName = isLoading ? 'Loading...' : siteName;
 
   return (
-    <>
+    <div className="navbar-container"> {/* Wrapped in a div */}
       {/* Desktop Navigation */}
       <nav className={`hidden md:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
@@ -307,11 +307,11 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Add padding to bottom to prevent content from being hidden behind bottom nav */}
       <div className="md:hidden h-16"></div>
-    </>
+    </div>
   );
 };
 
