@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Phone, Mail, MessageSquare, Send, Clock, Loader2 } from 'lucide-react';
-import { showSuccess, showError } from '@/utils/toast';
-import { supabase, Faculty } from '@/lib/supabase';
+import { MapPin, Phone, Mail, MessageSquare, Clock, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { showSuccess, showError } from '@/utils/toast';
 import {
   Select,
   SelectContent,
@@ -18,6 +15,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+interface ContactContent {
+  id: string;
+  hero_title: string;
+  hero_subtitle: string;
+  form_title: string;
+  form_description: string;
+  submit_button: string;
+  address: string;
+  address_description: string;
+  phone: string;
+  phone_description: string;
+  email: string;
+  email_description: string;
+  map_title: string;
+  map_description: string;
+}
+
+interface Faculty {
+  id: string;
+  name: string;
+}
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +48,18 @@ const ContactSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fetch contact content from database
+  const { data: contactContent, isLoading } = useQuery({
+    queryKey: ['contact-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('contact_settings')
+        .select('*')
+        .maybeSingle();
+      return data as ContactContent;
+    }
+  });
+
   // Fetch faculties for the dropdown
   const { data: faculties, isLoading: isLoadingFaculties } = useQuery({
     queryKey: ['faculties-for-registration'],
@@ -38,7 +69,7 @@ const ContactSection = () => {
         .select('id, name')
         .eq('is_active', true)
         .order('name', { ascending: true });
-      return data as Pick<Faculty, 'id' | 'name'>[];
+      return data as Faculty[];
     }
   });
 
@@ -52,7 +83,7 @@ const ContactSection = () => {
   const handleSelectChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
-      selected_faculty: value === 'none' ? '' : value // Set to empty string if 'none' is selected
+      selected_faculty: value === 'none' ? '' : value
     }));
   };
 
@@ -67,9 +98,9 @@ const ContactSection = () => {
           full_name: formData.full_name,
           email: formData.email,
           phone: formData.phone,
-          selected_faculty: formData.selected_faculty || null, // Will be null if formData.selected_faculty is ''
+          selected_faculty: formData.selected_faculty || null,
           message: formData.message,
-          status: 'pending' // Default status
+          status: 'pending'
         });
 
       if (error) {
@@ -86,32 +117,39 @@ const ContactSection = () => {
     }
   };
 
-  const contactInfo = [
-    {
-      icon: MapPin,
-      label: "Alamat",
-      value: "Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat",
-      description: "Kunjungi kantor kami"
-    },
-    {
-      icon: Phone,
-      label: "Telepon",
-      value: "+62 812-3456-7890",
-      description: "Hubungi kami langsung"
-    },
-    {
-      icon: Mail,
-      label: "Email",
-      value: "info@salutwonomulyo.com",
-      description: "Kirim email kapan saja"
-    }
-  ];
+  // Default values if no data from database
+  const defaultContact = {
+    hero_title: 'Mari Berkolaborasi',
+    hero_subtitle: 'untuk Masyarakat',
+    form_title: 'Kirim Pesan',
+    form_description: 'Isi formulir di bawah ini dan kami akan segera merespons',
+    submit_button: 'Kirim Pesan',
+    address: 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
+    address_description: 'Kunjungi kantor kami',
+    phone: '+62 812-3456-7890',
+    phone_description: 'Hubungi kami langsung',
+    email: 'info@salutwonomulyo.com',
+    email_description: 'Kirim email kapan saja',
+    map_title: 'Map Location',
+    map_description: 'Lokasi Kami\nJl. Merdeka No. 123, Wonomulyo'
+  };
+
+  // Use database data if available, otherwise use defaults
+  const contact = contactContent || defaultContact;
 
   const officeHours = [
     { day: "Senin - Jumat", hours: "08:00 - 17:00" },
     { day: "Sabtu", hours: "09:00 - 15:00" },
     { day: "Minggu", hours: "Tutup" }
   ];
+
+  if (isLoading) {
+    return (
+      <section id="contact" className="py-24 bg-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </section>
+    );
+  }
 
   return (
     <section id="contact" className="py-24 bg-white">
@@ -122,14 +160,13 @@ const ContactSection = () => {
             Hubungi Kami
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Mari Berkolaborasi
+            {contact.hero_title}
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500">
-              untuk Masyarakat
+              {contact.hero_subtitle}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Kami siap membantu dan menjawab pertanyaan Anda. 
-            Jangan ragu untuk menghubungi kami untuk berdiskusi tentang program dan kerja sama.
+            {contact.form_description}
           </p>
         </div>
 
@@ -140,10 +177,10 @@ const ContactSection = () => {
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center text-2xl font-bold">
                   <MessageSquare className="w-6 h-6 mr-3 text-green-600" />
-                  Kirim Pesan
+                  {contact.form_title}
                 </CardTitle>
                 <p className="text-gray-600 mt-2">
-                  Isi formulir di bawah ini dan kami akan segera merespons
+                  {contact.form_description}
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -205,7 +242,6 @@ const ContactSection = () => {
                           <SelectItem value="loading" disabled>Memuat fakultas...</SelectItem>
                         ) : (
                           <>
-                            {/* Changed value from "" to "none" */}
                             <SelectItem value="none">Tidak memilih fakultas</SelectItem> 
                             {faculties?.map((faculty) => (
                               <SelectItem key={faculty.id} value={faculty.id}>
@@ -244,7 +280,7 @@ const ContactSection = () => {
                       </>
                     ) : (
                       <>
-                        Kirim Pesan
+                        {contact.submit_button}
                         <Send className="ml-2 w-4 h-4" />
                       </>
                     )}
@@ -258,29 +294,57 @@ const ContactSection = () => {
           <div className="space-y-8">
             {/* Contact Cards */}
             <div className="space-y-6">
-              {contactInfo.map((item, index) => (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-6 h-6 text-green-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-gray-900 text-lg mb-1">{item.label}</h4>
-                        <p className="text-gray-900 font-medium mb-1">{item.value}</p>
-                        <p className="text-sm text-gray-600">{item.description}</p>
-                      </div>
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-6 h-6 text-green-600" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 text-lg mb-1">Alamat</h4>
+                      <p className="text-gray-900 font-medium mb-1">{contact.address}</p>
+                      <p className="text-sm text-gray-600">{contact.address_description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 text-lg mb-1">Telepon</h4>
+                      <p className="text-gray-900 font-medium mb-1">{contact.phone}</p>
+                      <p className="text-sm text-gray-600">{contact.phone_description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 text-lg mb-1">Email</h4>
+                      <p className="text-gray-900 font-medium mb-1">{contact.email}</p>
+                      <p className="text-sm text-gray-600">{contact.email_description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Office Hours */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center text-xl font-bold">
-                  <Clock className="w-5 h-5 mr-2 text-green-600" />
+                  <Clock className="w-5 h-5 text-green-600 mr-2" />
                   Jam Operasional
                 </CardTitle>
               </CardHeader>
@@ -309,9 +373,9 @@ const ContactSection = () => {
                     <div className="p-6 text-white">
                       <div className="flex items-center mb-2">
                         <MapPin className="w-5 h-5 mr-2" />
-                        <span className="font-bold">Lokasi Kami</span>
+                        <span className="font-bold">{contact.map_title}</span>
                       </div>
-                      <p className="text-sm opacity-90">Jl. Merdeka No. 123, Wonomulyo</p>
+                      <p className="text-sm opacity-90 whitespace-pre-line">{contact.map_description}</p>
                     </div>
                   </div>
                 </div>
