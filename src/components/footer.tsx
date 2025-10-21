@@ -77,20 +77,6 @@ const Footer = () => {
     return iconMap[platform] || Facebook;
   };
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <footer className="bg-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-            <p>Memuat footer...</p>
-          </div>
-        </div>
-      </footer>
-    );
-  }
-
   // Default values if footer_content doesn't have complete data
   const defaultFooterData = {
     brand_name: footer.brand_name || 'EduCampus',

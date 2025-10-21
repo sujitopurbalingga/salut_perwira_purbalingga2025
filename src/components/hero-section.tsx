@@ -96,7 +96,7 @@ const HeroSection = () => {
             </h1>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
               Daftarnya di <span className="text-white">{siteName}</span> <br />
-              PERWIRA PURBALINGGA !
+              JAWA TENGAH!
             </h2>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-8">
