@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { MapPin, Phone, Mail, MessageSquare, Clock, Loader2, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, MessageSquare, Clock, Loader2, Send, User, GraduationCap } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { showSuccess, showError } from '@/utils/toast';
@@ -110,11 +110,11 @@ const ContactSection = () => {
         throw error;
       }
 
-      showSuccess('Pesan Anda telah terkirim! Kami akan segera menghubungi Anda.');
+      showSuccess('Pendaftaran berhasil! Kami akan segera menghubungi Anda untuk informasi selanjutnya.');
       setFormData({ full_name: '', email: '', phone: '', selected_faculty: '', message: '' });
     } catch (error: any) {
-      console.error('Error submitting contact form:', error);
-      showError('Terjadi kesalahan saat mengirim pesan: ' + error.message);
+      console.error('Error submitting registration form:', error);
+      showError('Terjadi kesalahan saat mengirim pendaftaran: ' + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -124,9 +124,9 @@ const ContactSection = () => {
   const defaultContact = {
     hero_title: 'Mari Berkolaborasi',
     hero_subtitle: 'untuk Masyarakat',
-    form_title: 'Kirim Pesan',
-    form_description: 'Isi formulir di bawah ini dan kami akan segera merespons',
-    submit_button: 'Kirim Pesan',
+    form_title: 'Formulir Pendaftaran',
+    form_description: 'Isi formulir pendaftaran di bawah ini dan kami akan segera menghubungi Anda',
+    submit_button: 'Daftar Sekarang',
     address: 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
     address_description: 'Kunjungi kantor kami',
     phone: '+62 812-3456-7890',
@@ -160,7 +160,7 @@ const ContactSection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 px-4 py-2 border-green-200 text-green-700 bg-green-50">
-            Hubungi Kami
+            Formulir Pendaftaran
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             {contact.hero_title}
@@ -174,12 +174,12 @@ const ContactSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16">
-          {/* Contact Form */}
+          {/* Registration Form */}
           <div>
             <Card className="shadow-xl border-0">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center text-2xl font-bold">
-                  <MessageSquare className="w-6 h-6 mr-3 text-green-600" />
+                  <User className="w-6 h-6 mr-3 text-green-600" />
                   {contact.form_title}
                 </CardTitle>
                 <p className="text-gray-600 mt-2">
@@ -188,37 +188,36 @@ const ContactSection = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="full_name" className="font-semibold text-gray-900">Nama Lengkap</Label>
-                      <Input
-                        id="full_name"
-                        name="full_name"
-                        type="text"
-                        value={formData.full_name}
-                        onChange={handleChange}
-                        required
-                        placeholder="Masukkan nama Anda"
-                        className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email" className="font-semibold text-gray-900">Email</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        placeholder="email@example.com"
-                        className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="full_name" className="font-semibold text-gray-900">Nama Lengkap *</Label>
+                    <Input
+                      id="full_name"
+                      name="full_name"
+                      type="text"
+                      value={formData.full_name}
+                      onChange={handleChange}
+                      required
+                      placeholder="Masukkan nama lengkap Anda"
+                      className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    />
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone" className="font-semibold text-gray-900">Nomor Telepon (Opsional)</Label>
+                    <Label htmlFor="email" className="font-semibold text-gray-900">Email*</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      placeholder="email@example.com"
+                      className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="phone" className="font-semibold text-gray-900">Nomor Telepon</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -231,21 +230,21 @@ const ContactSection = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="selected_faculty" className="font-semibold text-gray-900">Fakultas yang Diminati (Opsional)</Label>
+                    <Label htmlFor="selected_faculty" className="font-semibold text-gray-900">Program Studi yang Diminati</Label>
                     <Select
                       value={formData.selected_faculty}
                       onValueChange={handleSelectChange}
                       disabled={isLoadingFaculties}
                     >
                       <SelectTrigger className="w-full mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500">
-                        <SelectValue placeholder="Pilih Fakultas" />
+                        <SelectValue placeholder="Pilih Program Studi" />
                       </SelectTrigger>
                       <SelectContent>
                         {isLoadingFaculties ? (
-                          <SelectItem value="loading" disabled>Memuat fakultas...</SelectItem>
+                          <SelectItem value="loading" disabled>Memuat program studi...</SelectItem>
                         ) : (
                           <>
-                            <SelectItem value="none">Tidak memilih fakultas</SelectItem> 
+                            <SelectItem value="none">Belum memilih</SelectItem> 
                             {faculties?.map((faculty) => (
                               <SelectItem key={faculty.id} value={faculty.id}>
                                 {faculty.name}
@@ -258,17 +257,22 @@ const ContactSection = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="message" className="font-semibold text-gray-900">Pesan</Label>
+                    <Label htmlFor="message" className="font-semibold text-gray-900">Pesan atau Pertanyaan</Label>
                     <Textarea
                       id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      required
-                      placeholder="Tulis pesan Anda di sini..."
-                      rows={5}
+                      placeholder="Tulis pesan atau pertanyaan Anda di sini... (Opsional)"
+                      rows={4}
                       className="mt-2 border-gray-300 focus:border-green-500 focus:ring-green-500"
                     />
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Informasi:</strong> Data Anda akan kami proses dan kami akan menghubungi Anda untuk informasi selanjutnya mengenai proses pendaftaran.
+                    </p>
                   </div>
 
                   <Button 
@@ -279,7 +283,7 @@ const ContactSection = () => {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Mengirim...
+                        Memproses Pendaftaran...
                       </>
                     ) : (
                       <>

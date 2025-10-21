@@ -6,6 +6,39 @@ import { ArrowRight, Download } from 'lucide-react';
 import Character3DDisplay from './character-3d-display';
 
 const HeroSection = () => {
+  const handleDaftarSekarang = () => {
+    // Scroll ke contact section dimana formulir pendaftaran berada
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+      
+      // Fokus ke field nama setelah scroll selesai
+      setTimeout(() => {
+        const nameField = document.getElementById('full_name');
+        if (nameField) {
+          nameField.focus();
+        }
+      }, 800); // Delay untuk memastikan scroll selesai
+    }
+  };
+
+  const handleDownloadBrosur = () => {
+    // Scroll ke section brosur atau download langsung
+    const brosurSection = document.querySelector('[data-brosur-section]');
+    if (brosurSection) {
+      brosurSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    } else {
+      // Jika tidak ada section brosur, scroll ke contact section
+      handleDaftarSekarang();
+    }
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Gradient */}
@@ -38,6 +71,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-8">
               <Button 
                 size="lg" 
+                onClick={handleDaftarSekarang}
                 className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
               >
                 Daftar Sekarang
@@ -46,6 +80,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
+                onClick={handleDownloadBrosur}
                 className="bg-white hover:bg-gray-50 text-blue-600 border-white font-bold px-8 py-4 rounded-full text-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
               >
                 <Download className="mr-2 h-5 w-5" />
