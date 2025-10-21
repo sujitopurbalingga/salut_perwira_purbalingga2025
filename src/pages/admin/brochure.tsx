@@ -188,7 +188,17 @@ const AdminBrochure = () => {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+
+    console.log('File selected:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified
+    });
 
     // Check file type (PDF, DOC, DOCX, JPG, PNG, JPEG)
     const allowedTypes = [
@@ -200,43 +210,105 @@ const AdminBrochure = () => {
       'image/png'
     ];
 
+    console.log('File type validation:', {
+      fileType: file.type,
+      allowedTypes,
+      isAllowed: allowedTypes.includes(file.type)
+    });
+
     if (!allowedTypes.includes(file.type)) {
-      setMessage('Harap upload file PDF, DOC, DOCX, JPG, PNG, atau JPEG');
+      const errorMessage = `File type tidak didukung: ${file.type}. Harap upload file PDF, DOC, DOCX, JPG, PNG, atau JPEG`;
+      console.error('File type validation failed:', errorMessage);
+      setMessage(errorMessage);
       setTimeout(() => setMessage(''), 3000);
       return;
     }
 
     // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setMessage('Ukuran file maksimal 10MB');
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    console.log('File size validation:', {
+      fileSize: file.size,
+      maxSize,
+      isValid: file.size <= maxSize
+    });
+
+    if (file.size > maxSize) {
+      const errorMessage = `Ukuran file terlalu besar: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maksimal 10MB`;
+      console.error('File size validation failed:', errorMessage);
+      setMessage(errorMessage);
       setTimeout(() => setMessage(''), 3000);
       return;
     }
 
     setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `brochure-${Date.now()}.${fileExt}`;
-    const filePath = `brochures/${fileName}`;
+    setMessage('Mengupload file...');
 
     try {
-      const { error: uploadError } = await supabase.storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `brochure-${Date.now()}.${fileExt}`;
+      const filePath = `brochures/${fileName}`;
+
+      console.log('Starting upload:', {
+        fileName,
+        filePath,
+        fileExt
+      });
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('brochures')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      console.log('Upload result:', {
+        uploadData,
+        uploadError
+      });
 
+      if (uploadError) {
+        console.error('Upload error details:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      if (!uploadData) {
+        throw new Error('Upload returned no data');
+      }
+
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('brochures')
         .getPublicUrl(filePath);
+
+      console.log('Public URL generated:', publicUrl);
+
+      if (!publicUrl) {
+        throw new Error('Failed to generate public URL');
+      }
 
       // Update form data with the uploaded file URL
       setFormData(prev => ({ ...prev, file_url: publicUrl }));
       setMessage('File berhasil diunggah');
       setTimeout(() => setMessage(''), 3000);
+
+      console.log('Upload successful:', {
+        fileName,
+        publicUrl
+      });
+
     } catch (error) {
-      console.error('Upload error:', error);
-      setMessage('Gagal mengunggah file');
-      setTimeout(() => setMessage(''), 3000);
+      console.error('Complete upload error:', error);
+      let errorMessage = 'Gagal mengunggah file';
+      
+      if (error instanceof Error) {
+        errorMessage += `: ${error.message}`;
+      } else {
+        errorMessage += ': Terjadi kesalahan tidak diketahui';
+      }
+      
+      setMessage(errorMessage);
+      setTimeout(() => setMessage(''), 5000);
     } finally {
       setUploading(false);
     }
