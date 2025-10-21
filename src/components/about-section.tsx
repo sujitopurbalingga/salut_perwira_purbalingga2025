@@ -5,9 +5,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { GraduationCap, Users, Award, BookOpen, Target, Globe, Loader2, Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase, AboutContent, Feature, Stat } from '@/lib/supabase'; // Import Feature and Stat
+import { supabase, AboutContent } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+
+interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface Stat {
+  number: string;
+  label: string;
+}
 
 interface DetailContent {
   title: string;
@@ -19,8 +31,19 @@ const AboutSection = () => {
   const [selectedDetail, setSelectedDetail] = useState<DetailContent | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
-  // Default hardcoded values for features and stats if not present in DB
-  const defaultFeatures: Feature[] = [
+  const { data: aboutContent, isLoading } = useQuery({
+    queryKey: ['about-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('about')
+        .select('*')
+        .single();
+      return data as AboutContent;
+    }
+  });
+
+  // Default features and stats (will be replaced with database data if available)
+  const features: Feature[] = [
     {
       id: '1',
       title: 'Pendidikan Berkualitas',
@@ -47,27 +70,12 @@ const AboutSection = () => {
     }
   ];
 
-  const defaultStats: Stat[] = [
-    { id: '1', number: "5000+", label: "Mahasiswa Aktif" },
-    { id: '2', number: "50+", label: "Program Studi" },
-    { id: '3', number: "200+", label: "Dosen Profesional" },
-    { id: '4', number: "95%", label: "Tingkat Kelulusan" }
+  const stats: Stat[] = [
+    { number: "5000+", label: "Mahasiswa Aktif" },
+    { number: "50+", label: "Program Studi" },
+    { number: "200+", label: "Dosen Profesional" },
+    { number: "95%", label: "Tingkat Kelulusan" }
   ];
-
-  const { data: aboutContent, isLoading } = useQuery({
-    queryKey: ['about-public'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('about')
-        .select('*')
-        .maybeSingle(); // Use maybeSingle to handle cases where no data exists
-      return data as AboutContent;
-    }
-  });
-
-  // Use data from aboutContent or fall back to defaults
-  const currentFeatures = aboutContent?.features || defaultFeatures;
-  const currentStats = aboutContent?.stats || defaultStats;
 
   const getIconComponent = (iconName: string) => {
     const iconMap: Record<string, React.ComponentType<any>> = {
@@ -127,7 +135,7 @@ const AboutSection = () => {
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {currentFeatures.map((feature, index) => {
+          {features.map((feature, index) => {
             const colors = getColorClasses(index);
             const IconComponent = getIconComponent(feature.icon);
             
@@ -229,8 +237,8 @@ const AboutSection = () => {
             <p className="text-blue-100">Angka yang berbicara tentang kualitas kami</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {currentStats.map((stat, index) => (
-              <div key={stat.id} className="text-center">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold mb-1">{stat.number}</div>
                 <div className="text-blue-100">{stat.label}</div>
               </div>
