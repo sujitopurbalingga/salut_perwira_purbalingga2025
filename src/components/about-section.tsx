@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, AboutContent } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { getLucideIcon } from '@/lib/utils';
 
 interface Feature {
   id: string;
@@ -38,12 +37,13 @@ const AboutSection = () => {
       const { data } = await supabase
         .from('about')
         .select('*')
-        .maybeSingle();
+        .single();
       return data as AboutContent;
     }
   });
 
-  const defaultFeatures: Feature[] = [
+  // Default features and stats (will be replaced with database data if available)
+  const features: Feature[] = [
     {
       id: '1',
       title: 'Pendidikan Berkualitas',
@@ -70,19 +70,23 @@ const AboutSection = () => {
     }
   ];
 
-  const defaultStats: Stat[] = [
+  const stats: Stat[] = [
     { number: "5000+", label: "Mahasiswa Aktif" },
     { number: "50+", label: "Program Studi" },
     { number: "200+", label: "Dosen Profesional" },
     { number: "95%", label: "Tingkat Kelulusan" }
   ];
 
-  const features: Feature[] = (aboutContent?.features as Feature[] | undefined) || defaultFeatures;
-  const stats: Stat[] = (aboutContent?.stats as Stat[] | undefined) || defaultStats;
-
   const getIconComponent = (iconName: string) => {
-    const IconComponent = getLucideIcon(iconName);
-    return IconComponent || GraduationCap;
+    const iconMap: Record<string, React.ComponentType<any>> = {
+      GraduationCap,
+      Users,
+      Award,
+      BookOpen,
+      Target,
+      Globe
+    };
+    return iconMap[iconName] || GraduationCap;
   };
 
   const getColorClasses = (index: number) => {

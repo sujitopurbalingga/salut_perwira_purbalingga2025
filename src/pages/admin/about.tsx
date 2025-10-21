@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, AboutContent } from '@/lib/supabase';
-import { getLucideIcon } from '@/lib/utils'; // Import getLucideIcon
 
 interface Feature {
   id: string;
@@ -54,8 +53,39 @@ const AdminAbout = () => {
     history: ''
   });
 
-  const [features, setFeatures] = useState<Feature[]>([]);
-  const [stats, setStats] = useState<Stat[]>([]);
+  const [features, setFeatures] = useState<Feature[]>([
+    {
+      id: '1',
+      title: 'Pendidikan Berkualitas',
+      description: 'Program studi terakreditasi dengan kurikulum modern dan relevan',
+      icon: 'GraduationCap'
+    },
+    {
+      id: '2',
+      title: 'Dosen Profesional',
+      description: 'Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing',
+      icon: 'Users'
+    },
+    {
+      id: '3',
+      title: 'Prestasi Membanggakan',
+      description: 'Berbagai prestasi akademik dan non-akademik tingkat nasional',
+      icon: 'Award'
+    },
+    {
+      id: '4',
+      title: 'Fasilitas Lengkap',
+      description: 'Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern',
+      icon: 'BookOpen'
+    }
+  ]);
+
+  const [stats, setStats] = useState<Stat[]>([
+    { id: '1', number: '5000+', label: 'Mahasiswa Aktif' },
+    { id: '2', number: '50+', label: 'Program Studi' },
+    { id: '3', number: '200+', label: 'Dosen Profesional' },
+    { id: '4', number: '95%', label: 'Tingkat Kelulusan' }
+  ]);
 
   const [editingFeature, setEditingFeature] = useState<Feature | null>(null);
   const [editingStat, setEditingStat] = useState<Stat | null>(null);
@@ -79,23 +109,21 @@ const AdminAbout = () => {
   // Update or Insert about content
   const saveMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const contentToSave = {
-        ...data,
-        features: features, // Save features
-        stats: stats, // Save stats
-        updated_at: new Date().toISOString()
-      };
-
       if (aboutContent?.id) {
         const { error } = await supabase
           .from('about')
-          .update(contentToSave)
+          .update({
+            ...data,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', aboutContent.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('about')
-          .insert(contentToSave);
+          .insert({
+            ...data,
+          });
         if (error) throw error;
       }
     },
@@ -120,43 +148,6 @@ const AdminAbout = () => {
         vision: aboutContent.vision || '',
         history: aboutContent.history || ''
       });
-      // Load features and stats from database
-      setFeatures((aboutContent.features as Feature[] | undefined) || []);
-      setStats((aboutContent.stats as Stat[] | undefined) || []);
-    } else {
-      // Set default hardcoded values if no content exists yet (for initial setup)
-      setFeatures([
-        {
-          id: '1',
-          title: 'Pendidikan Berkualitas',
-          description: 'Program studi terakreditasi dengan kurikulum modern dan relevan',
-          icon: 'GraduationCap'
-        },
-        {
-          id: '2',
-          title: 'Dosen Profesional',
-          description: 'Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing',
-          icon: 'Users'
-        },
-        {
-          id: '3',
-          title: 'Prestasi Membanggakan',
-          description: 'Berbagai prestasi akademik dan non-akademik tingkat nasional',
-          icon: 'Award'
-        },
-        {
-          id: '4',
-          title: 'Fasilitas Lengkap',
-          description: 'Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern',
-          icon: 'BookOpen'
-        }
-      ]);
-      setStats([
-        { id: '1', number: '5000+', label: 'Mahasiswa Aktif' },
-        { id: '2', number: '50+', label: 'Program Studi' },
-        { id: '3', number: '200+', label: 'Dosen Profesional' },
-        { id: '4', number: '95%', label: 'Tingkat Kelulusan' }
-      ]);
     }
   }, [aboutContent]);
 
@@ -178,7 +169,7 @@ const AdminAbout = () => {
       setFeatures(prev => [...prev, newFeature]);
     },
     onSuccess: () => {
-      setMessage('Fitur berhasil ditambahkan! Jangan lupa klik Simpan.');
+      setMessage('Fitur berhasil ditambahkan!');
       setNewFeature({ title: '', description: '', icon: 'GraduationCap' });
       setTimeout(() => setMessage(''), 3000);
     }
@@ -189,7 +180,7 @@ const AdminAbout = () => {
       setFeatures(prev => prev.map(f => f.id === feature.id ? feature : f));
     },
     onSuccess: () => {
-      setMessage('Fitur berhasil diperbarui! Jangan lupa klik Simpan.');
+      setMessage('Fitur berhasil diperbarui!');
       setEditingFeature(null);
       setTimeout(() => setMessage(''), 3000);
     }
@@ -200,7 +191,7 @@ const AdminAbout = () => {
       setFeatures(prev => prev.filter(f => f.id !== id));
     },
     onSuccess: () => {
-      setMessage('Fitur berhasil dihapus! Jangan lupa klik Simpan.');
+      setMessage('Fitur berhasil dihapus!');
       setEditingFeature(null);
       setTimeout(() => setMessage(''), 3000);
     }
@@ -216,7 +207,7 @@ const AdminAbout = () => {
       setStats(prev => [...prev, newStat]);
     },
     onSuccess: () => {
-      setMessage('Statistik berhasil ditambahkan! Jangan lupa klik Simpan.');
+      setMessage('Statistik berhasil ditambahkan!');
       setNewStat({ number: '', label: '' });
       setTimeout(() => setMessage(''), 3000);
     }
@@ -227,7 +218,7 @@ const AdminAbout = () => {
       setStats(prev => prev.map(s => s.id === stat.id ? stat : s));
     },
     onSuccess: () => {
-      setMessage('Statistik berhasil diperbarui! Jangan lupa klik Simpan.');
+      setMessage('Statistik berhasil diperbarui!');
       setEditingStat(null);
       setTimeout(() => setMessage(''), 3000);
     }
@@ -238,7 +229,7 @@ const AdminAbout = () => {
       setStats(prev => prev.filter(s => s.id !== id));
     },
     onSuccess: () => {
-      setMessage('Statistik berhasil dihapus! Jangan lupa klik Simpan.');
+      setMessage('Statistik berhasil dihapus!');
       setEditingStat(null);
       setTimeout(() => setMessage(''), 3000);
     }
@@ -292,20 +283,14 @@ const AdminAbout = () => {
     }
   };
 
-  const iconOptions = [
-    { value: 'GraduationCap', label: 'Graduation Cap' },
-    { value: 'Users', label: 'Users' },
-    { value: 'Award', label: 'Award' },
-    { value: 'BookOpen', label: 'Book Open' },
-    { value: 'Target', label: 'Target' },
-    { value: 'Globe', label: 'Globe' },
-    { value: 'Briefcase', label: 'Briefcase' },
-    { value: 'MessageSquare', label: 'Message Square' },
-  ];
-
   const getIconComponent = (iconName: string) => {
-    const IconComponent = getLucideIcon(iconName);
-    return IconComponent || GraduationCap;
+    const iconMap: Record<string, React.ComponentType<any>> = {
+      GraduationCap,
+      Users,
+      Award,
+      BookOpen
+    };
+    return iconMap[iconName] || GraduationCap;
   };
 
   const getColorClasses = (index: number) => {
@@ -371,33 +356,6 @@ const AdminAbout = () => {
                     <p className="text-gray-600 whitespace-pre-wrap">{formData.history}</p>
                   </div>
                 )}
-                
-                <h3 className="text-xl font-bold pt-4">Fitur Unggulan</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {features.map((feature, index) => {
-                    const colors = getColorClasses(index);
-                    const IconComponent = getIconComponent(feature.icon);
-                    return (
-                      <div key={feature.id} className="flex items-start space-x-4 p-4 border rounded-lg">
-                        <IconComponent className={`w-6 h-6 ${colors.text} flex-shrink-0`} />
-                        <div>
-                          <h4 className="font-semibold">{feature.title}</h4>
-                          <p className="text-sm text-gray-600">{feature.description}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <h3 className="text-xl font-bold pt-4">Statistik</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {stats.map((stat) => (
-                    <div key={stat.id} className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold">{stat.number}</div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -516,64 +474,13 @@ const AdminAbout = () => {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center space-x-2">
               <Award className="w-5 h-5 text-blue-600" />
-              <span>Fitur Unggulan ({features.length})</span>
+              <span>Fitur Unggulan</span>
             </span>
             {isEditing && (
-              <Dialog open={!!newFeature.title} onOpenChange={(open) => !open && setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setNewFeature({ title: '', description: '', icon: 'GraduationCap' })} disabled={addFeatureMutation.isPending} size="sm">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Tambah Fitur
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Tambah Fitur Baru</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="new-feature-title">Judul</Label>
-                      <Input
-                        id="new-feature-title"
-                        value={newFeature.title}
-                        onChange={(e) => setNewFeature(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="Masukkan judul fitur"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="new-feature-description">Deskripsi</Label>
-                      <Textarea
-                        id="new-feature-description"
-                        value={newFeature.description}
-                        onChange={(e) => setNewFeature(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Masukkan deskripsi fitur"
-                        rows={3}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="new-feature-icon">Icon</Label>
-                      <select
-                        id="new-feature-icon"
-                        value={newFeature.icon}
-                        onChange={(e) => setNewFeature(prev => ({ ...prev, icon: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        {iconOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
-                        Batal
-                      </Button>
-                      <Button onClick={handleAddFeature} disabled={addFeatureMutation.isPending}>
-                        Tambah
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button onClick={handleAddFeature} disabled={addFeatureMutation.isPending} size="sm">
+                <Plus className="w-4 h-4 mr-1" />
+                Tambah Fitur
+              </Button>
             )}
           </CardTitle>
         </CardHeader>
@@ -590,67 +497,16 @@ const AdminAbout = () => {
                       <IconComponent className={`w-8 h-8 ${colors.text}`} />
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{feature.description}</p>
+                    <p className="text-gray-600 text-sm mb-4">{feature.description}</p>
                     {isEditing && (
                       <div className="flex justify-center space-x-2">
-                        <Dialog open={editingFeature?.id === feature.id} onOpenChange={(open) => !open && setEditingFeature(null)}>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingFeature(feature)}
-                            >
-                              Edit
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Edit Fitur</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="feature-title">Judul</Label>
-                                <Input
-                                  id="feature-title"
-                                  value={editingFeature?.title || ''}
-                                  onChange={(e) => setEditingFeature(prev => prev ? { ...prev, title: e.target.value } : null)}
-                                  placeholder="Masukkan judul fitur"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="feature-description">Deskripsi</Label>
-                                <Textarea
-                                  id="feature-description"
-                                  value={editingFeature?.description || ''}
-                                  onChange={(e) => setEditingFeature(prev => prev ? { ...prev, description: e.target.value } : null)}
-                                  placeholder="Masukkan deskripsi fitur"
-                                  rows={3}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="feature-icon">Icon</Label>
-                                <select
-                                  id="feature-icon"
-                                  value={editingFeature?.icon || 'GraduationCap'}
-                                  onChange={(e) => setEditingFeature(prev => prev ? { ...prev, icon: e.target.value } : null)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                >
-                                  {iconOptions.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => setEditingFeature(null)}>
-                                  Batal
-                                </Button>
-                                <Button onClick={handleUpdateFeature} disabled={updateFeatureMutation.isPending}>
-                                  Simpan
-                                </Button>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditingFeature(feature)}
+                        >
+                          Edit
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
@@ -675,106 +531,32 @@ const AdminAbout = () => {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center space-x-2">
               <Users className="w-5 h-5 text-green-600" />
-              <span>Statistik & Pencapaian ({stats.length})</span>
+              <span>Statistik & Pencapaian</span>
             </span>
             {isEditing && (
-              <Dialog open={!!newStat.number} onOpenChange={(open) => !open && setNewStat({ number: '', label: '' })}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setNewStat({ number: '', label: '' })} disabled={addStatMutation.isPending} size="sm">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Tambah Statistik
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Tambah Statistik Baru</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="new-stat-number">Angka</Label>
-                      <Input
-                        id="new-stat-number"
-                        value={newStat.number}
-                        onChange={(e) => setNewStat(prev => ({ ...prev, number: e.target.value }))}
-                        placeholder="Contoh: 5000+"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="new-stat-label">Label</Label>
-                      <Input
-                        id="new-stat-label"
-                        value={newStat.label}
-                        onChange={(e) => setNewStat(prev => ({ ...prev, label: e.target.value }))}
-                        placeholder="Contoh: Mahasiswa Aktif"
-                      />
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setNewStat({ number: '', label: '' })}>
-                        Batal
-                      </Button>
-                      <Button onClick={handleAddStat} disabled={addStatMutation.isPending}>
-                        Tambah
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button onClick={handleAddStat} disabled={addStatMutation.isPending} size="sm">
+                <Plus className="w-4 h-4 mr-1" />
+                Tambah Statistik
+              </Button>
             )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat) => (
+            {stats.map((stat, index) => (
               <Card key={stat.id} className="border-0 shadow-lg text-center">
                 <CardContent className="p-6">
                   <div className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</div>
                   <div className="text-gray-600">{stat.label}</div>
                   {isEditing && (
                     <div className="flex justify-center space-x-2 mt-4">
-                      <Dialog open={editingStat?.id === stat.id} onOpenChange={(open) => !open && setEditingStat(null)}>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setEditingStat(stat)}
-                          >
-                            Edit
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Edit Statistik</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div>
-                              <Label htmlFor="stat-number">Angka</Label>
-                              <Input
-                                id="stat-number"
-                                value={editingStat?.number || ''}
-                                onChange={(e) => setEditingStat(prev => prev ? { ...prev, number: e.target.value } : null)}
-                                placeholder="Contoh: 5000+"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="stat-label">Label</Label>
-                              <Input
-                                id="stat-label"
-                                value={editingStat?.label || ''}
-                                onChange={(e) => setEditingStat(prev => prev ? { ...prev, label: e.target.value } : null)}
-                                placeholder="Contoh: Mahasiswa Aktif"
-                              />
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                              <Button variant="outline" onClick={() => setEditingStat(null)}>
-                                Batal
-                              </Button>
-                              <Button onClick={handleUpdateStat} disabled={updateStatMutation.isPending}>
-                                Simpan
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingStat(stat)}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         variant="destructive"
                         size="sm"
@@ -798,6 +580,184 @@ const AdminAbout = () => {
           Terakhir diperbarui: {new Date(aboutContent.updated_at).toLocaleString('id-ID')}
         </div>
       )}
+
+      {/* Edit Feature Dialog */}
+      <Dialog open={!!editingFeature} onOpenChange={() => setEditingFeature(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Fitur</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="feature-title">Judul</Label>
+              <Input
+                id="feature-title"
+                value={editingFeature?.title || ''}
+                onChange={(e) => setEditingFeature(prev => prev ? { ...prev, title: e.target.value } : null)}
+                placeholder="Masukkan judul fitur"
+              />
+            </div>
+            <div>
+              <Label htmlFor="feature-description">Deskripsi</Label>
+              <Textarea
+                id="feature-description"
+                value={editingFeature?.description || ''}
+                onChange={(e) => setEditingFeature(prev => prev ? { ...prev, description: e.target.value } : null)}
+                placeholder="Masukkan deskripsi fitur"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="feature-icon">Icon</Label>
+              <select
+                id="feature-icon"
+                value={editingFeature?.icon || 'GraduationCap'}
+                onChange={(e) => setEditingFeature(prev => prev ? { ...prev, icon: e.target.value } : null)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="GraduationCap">GraduationCap</option>
+                <option value="Users">Users</option>
+                <option value="Award">Award</option>
+                <option value="BookOpen">BookOpen</option>
+              </select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingFeature(null)}>
+                Batal
+              </Button>
+              <Button onClick={handleUpdateFeature} disabled={updateFeatureMutation.isPending}>
+                Simpan
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Feature Dialog */}
+      <Dialog open={!!newFeature.title} onOpenChange={(open) => !open && setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tambah Fitur Baru</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-feature-title">Judul</Label>
+              <Input
+                id="new-feature-title"
+                value={newFeature.title}
+                onChange={(e) => setNewFeature(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Masukkan judul fitur"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-feature-description">Deskripsi</Label>
+              <Textarea
+                id="new-feature-description"
+                value={newFeature.description}
+                onChange={(e) => setNewFeature(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Masukkan deskripsi fitur"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-feature-icon">Icon</Label>
+              <select
+                id="new-feature-icon"
+                value={newFeature.icon}
+                onChange={(e) => setNewFeature(prev => ({ ...prev, icon: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="GraduationCap">GraduationCap</option>
+                <option value="Users">Users</option>
+                <option value="Award">Award</option>
+                <option value="BookOpen">BookOpen</option>
+              </select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setNewFeature({ title: '', description: '', icon: 'GraduationCap' })}>
+                Batal
+              </Button>
+              <Button onClick={handleAddFeature} disabled={addFeatureMutation.isPending}>
+                Tambah
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Stat Dialog */}
+      <Dialog open={!!editingStat} onOpenChange={() => setEditingStat(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Statistik</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="stat-number">Angka</Label>
+              <Input
+                id="stat-number"
+                value={editingStat?.number || ''}
+                onChange={(e) => setEditingStat(prev => prev ? { ...prev, number: e.target.value } : null)}
+                placeholder="Contoh: 5000+"
+              />
+            </div>
+            <div>
+              <Label htmlFor="stat-label">Label</Label>
+              <Input
+                id="stat-label"
+                value={editingStat?.label || ''}
+                onChange={(e) => setEditingStat(prev => prev ? { ...prev, label: e.target.value } : null)}
+                placeholder="Contoh: Mahasiswa Aktif"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditingStat(null)}>
+                Batal
+              </Button>
+              <Button onClick={handleUpdateStat} disabled={updateStatMutation.isPending}>
+                Simpan
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Stat Dialog */}
+      <Dialog open={!!newStat.number} onOpenChange={(open) => !open && setNewStat({ number: '', label: '' })}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tambah Statistik Baru</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-stat-number">Angka</Label>
+              <Input
+                id="new-stat-number"
+                value={newStat.number}
+                onChange={(e) => setNewStat(prev => ({ ...prev, number: e.target.value }))}
+                placeholder="Contoh: 5000+"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-stat-label">Label</Label>
+              <Input
+                id="new-stat-label"
+                value={newStat.label}
+                onChange={(e) => setNewStat(prev => ({ ...prev, label: e.target.value }))}
+                placeholder="Contoh: Mahasiswa Aktif"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setNewStat({ number: '', label: '' })}>
+                Batal
+              </Button>
+              <Button onClick={handleAddStat} disabled={addStatMutation.isPending}>
+                Tambah
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
