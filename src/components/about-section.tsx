@@ -7,6 +7,18 @@ import { GraduationCap, Users, Award, BookOpen, Target, Globe, Loader2 } from 'l
 import { useQuery } from '@tanstack/react-query';
 import { supabase, AboutContent } from '@/lib/supabase';
 
+interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface Stat {
+  number: string;
+  label: string;
+}
+
 const AboutSection = () => {
   const { data: aboutContent, isLoading } = useQuery({
     queryKey: ['about-public'],
@@ -19,36 +31,64 @@ const AboutSection = () => {
     }
   });
 
-  // Hardcoded features and stats (as per initial plan, can be made dynamic later if requested)
-  const features = [
+  // Default features and stats (will be replaced with database data if available)
+  const features: Feature[] = [
     {
-      icon: GraduationCap,
-      title: "Pendidikan Berkualitas",
-      description: "Program studi terakreditasi dengan kurikulum modern dan relevan"
+      id: '1',
+      title: 'Pendidikan Berkualitas',
+      description: 'Program studi terakreditasi dengan kurikulum modern dan relevan',
+      icon: 'GraduationCap'
     },
     {
-      icon: Users,
-      title: "Dosen Profesional",
-      description: "Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing"
+      id: '2',
+      title: 'Dosen Profesional',
+      description: 'Tenaga pengajar berpengalaman dan ahli di bidangnya masing-masing',
+      icon: 'Users'
     },
     {
-      icon: Award,
-      title: "Prestasi Membanggakan",
-      description: "Berbagai prestasi akademik dan non-akademik tingkat nasional"
+      id: '3',
+      title: 'Prestasi Membanggakan',
+      description: 'Berbagai prestasi akademik dan non-akademik tingkat nasional',
+      icon: 'Award'
     },
     {
-      icon: BookOpen,
-      title: "Fasilitas Lengkap",
-      description: "Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern"
+      id: '4',
+      title: 'Fasilitas Lengkap',
+      description: 'Laboratorium, perpustakaan, dan fasilitas pendukung pembelajaran modern',
+      icon: 'BookOpen'
     }
   ];
 
-  const stats = [
+  const stats: Stat[] = [
     { number: "5000+", label: "Mahasiswa Aktif" },
     { number: "50+", label: "Program Studi" },
     { number: "200+", label: "Dosen Profesional" },
     { number: "95%", label: "Tingkat Kelulusan" }
   ];
+
+  const getIconComponent = (iconName: string) => {
+    const iconMap: Record<string, React.ComponentType<any>> = {
+      GraduationCap,
+      Users,
+      Award,
+      BookOpen,
+      Target,
+      Globe
+    };
+    return iconMap[iconName] || GraduationCap;
+  };
+
+  const getColorClasses = (index: number) => {
+    const colors = [
+      { bg: "bg-blue-100", text: "text-blue-600", border: "border-blue-200", badge: "bg-blue-600" },
+      { bg: "bg-green-100", text: "text-green-600", border: "border-green-200", badge: "bg-green-600" },
+      { bg: "bg-purple-100", text: "text-purple-600", border: "border-purple-200", badge: "bg-purple-600" },
+      { bg: "bg-orange-100", text: "text-orange-600", border: "border-orange-200", badge: "bg-orange-600" },
+      { bg: "bg-red-100", text: "text-red-600", border: "border-red-200", badge: "bg-red-600" },
+      { bg: "bg-yellow-100", text: "text-yellow-600", border: "border-yellow-200", badge: "bg-yellow-600" }
+    ];
+    return colors[index % colors.length];
+  };
 
   if (isLoading) {
     return (
@@ -79,17 +119,22 @@ const AboutSection = () => {
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {features.map((feature, index) => (
-            <Card key={index} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <CardContent className="p-0 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {features.map((feature, index) => {
+            const colors = getColorClasses(index);
+            const IconComponent = getIconComponent(feature.icon);
+            
+            return (
+              <Card key={feature.id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-0 text-center">
+                  <div className={`w-16 h-16 ${colors.bg} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <IconComponent className={`w-8 h-8 ${colors.text}`} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Dynamic About Content (Visi, Misi, Sejarah) */}
