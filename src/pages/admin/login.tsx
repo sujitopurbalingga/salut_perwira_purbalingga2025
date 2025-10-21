@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/admin/auth-provider';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -17,9 +17,50 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error checking session:', error);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        if (session?.user) {
+          console.log('User already authenticated:', session.user.email);
+          // Check if user has admin role
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile?.role === 'admin') {
+            navigate('/admin/dashboard', { replace: true });
+          } else {
+            // User is not admin, sign them out
+            await supabase.auth.signOut();
+            setIsCheckingAuth(false);
+          }
+        } else {
+          setIsCheckingAuth(false);
+        }
+      } catch (err) {
+        console.error('Error in checkExistingSession:', err);
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkExistingSession();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +93,30 @@ const AdminLogin = () => {
       setError('Terjadi kesalahan saat mengirim reset password');
     }
   };
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white/80">Memeriksa autentikasi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is already authenticated and is admin, redirect to dashboard
+  if (user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-white mx-auto mb-4" />
+          <p className="text-white/80">Mengalihkan ke dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
