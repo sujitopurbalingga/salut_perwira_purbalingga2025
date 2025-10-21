@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, FileText, Loader2, Eye, MessageSquare } from 'lucide-react'; // Tambah MessageSquare icon
+import { Download, FileText, Loader2, Eye, MessageSquare } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
@@ -12,7 +12,7 @@ interface Brochure {
   id: string;
   title: string;
   file_url: string;
-  thumbnail_url?: string; // Added thumbnail_url
+  thumbnail_url?: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -21,7 +21,6 @@ interface Brochure {
 interface ContactContent {
   id: string;
   phone: string;
-  // ... other fields, only phone is needed here
 }
 
 const BrochureSection = () => {
@@ -78,7 +77,7 @@ const BrochureSection = () => {
 
   if (isLoadingBrochures || isLoadingContact) {
     return (
-      <section data-brosur-section className="py-24 bg-gray-50 flex items-center justify-center">
+      <section data-brosur-section className="py-16 md:py-24 bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </section>
     );
@@ -90,42 +89,42 @@ const BrochureSection = () => {
   }
 
   return (
-    <section data-brosur-section className="py-24 bg-gray-50">
+    <section data-brosur-section className="py-16 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <Badge className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200">
             Brosur
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Download Brosur
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
               Informasi Lengkap
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Dapatkan informasi lengkap tentang program studi, biaya kuliah, dan proses pendaftaran
           </p>
         </div>
 
         {/* Brochures Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {brochures.map((brochure) => (
-            <Card key={brochure.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-blue-600" />
+            <Card key={brochure.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
+              <CardHeader className="pb-4 p-4 md:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                   </div>
-                  <Badge className="bg-green-100 text-green-800">
+                  <Badge className="bg-green-100 text-green-800 text-xs">
                     Tersedia
                   </Badge>
                 </div>
-                <CardTitle className="text-xl font-semibold text-gray-900 mt-4">
+                <CardTitle className="text-lg md:text-xl font-semibold text-gray-900 mt-2 md:mt-4 line-clamp-2">
                   {brochure.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 md:p-6 pt-0">
                 <div className="aspect-[3/4] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
                   {brochure.thumbnail_url ? (
                     <img 
@@ -134,26 +133,26 @@ const BrochureSection = () => {
                       className="w-full h-full object-cover" 
                     />
                   ) : (
-                    <FileText className="w-16 h-16 text-blue-300" />
+                    <FileText className="w-12 h-12 md:w-16 md:h-16 text-blue-300" />
                   )}
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs md:text-sm text-gray-600">
                   Dokumen informasi lengkap tentang pendaftaran dan program studi
                 </p>
-                <div className="flex space-x-3">
+                <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                   <Button
                     onClick={() => handlePreview(brochure.file_url)}
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 text-xs md:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     Preview
                   </Button>
                   <Button
                     onClick={() => handleDownload(brochure.file_url, brochure.title)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs md:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
+                    <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                     Download
                   </Button>
                 </div>
@@ -163,10 +162,10 @@ const BrochureSection = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
-          <div className="bg-blue-600 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">Butuh Informasi Lebih Lanjut?</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+        <div className="text-center mt-8 md:mt-12">
+          <div className="bg-blue-600 rounded-2xl p-6 md:p-8 text-white">
+            <h3 className="text-xl md:text-2xl font-bold mb-4">Butuh Informasi Lebih Lanjut?</h3>
+            <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-sm md:text-base">
               Hubungi kami langsung atau isi formulir pendaftaran untuk mendapatkan bantuan dari tim kami
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -177,16 +176,16 @@ const BrochureSection = () => {
                     contactSection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-3 rounded-full"
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 md:px-8 py-3 rounded-full text-sm md:text-base"
               >
                 Daftar Sekarang
               </Button>
               <Button
-                onClick={handleContactViaWhatsApp} // Menggunakan handler baru
+                onClick={handleContactViaWhatsApp}
                 variant="outline"
-                className="border-white text-blue-600 hover:bg-white hover:text-blue-700 font-bold px-8 py-3 rounded-full"
+                className="border-white text-blue-600 hover:bg-white hover:text-blue-700 font-bold px-6 md:px-8 py-3 rounded-full text-sm md:text-base"
               >
-                <MessageSquare className="w-4 h-4 mr-2" /> {/* Tambah icon WhatsApp */}
+                <MessageSquare className="w-4 h-4 mr-2" />
                 Hubungi Kami
               </Button>
             </div>

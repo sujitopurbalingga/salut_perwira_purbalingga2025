@@ -76,56 +76,58 @@ const ServicesSection = () => {
 
   if (isLoading) {
     return (
-      <section id="services" className="py-24 bg-gray-50 flex items-center justify-center">
+      <section id="services" className="py-16 md:py-24 bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </section>
     );
   }
 
   return (
-    <section id="services" className="py-24 bg-gray-50">
+    <section id="services" className="py-16 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <Badge className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200">
             Layanan Kami
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Program Pendidikan
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
               Terlengkap
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Berbagai program pendidikan yang disesuaikan dengan kebutuhan dan minat Anda
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {services?.map((service, index) => {
             const colors = getColorClasses(index);
             const IconComponent = getLucideIcon(service.icon_name || '') || LucideIcons.Briefcase;
 
             return (
-              <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg flex flex-col">
-                <CardHeader className="pb-4 flex-grow">
-                  <div className={`w-16 h-16 ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+              <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg flex flex-col overflow-hidden">
+                <CardHeader className="pb-4 pt-6 flex-grow">
+                  <div className={`w-12 h-12 md:w-16 md:h-16 ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto sm:mx-0`}>
                     {service.image_url ? (
                       <img src={service.image_url} alt={service.title} className="w-full h-full object-cover rounded-xl" />
                     ) : (
-                      <IconComponent className={`w-8 h-8 ${colors.text}`} />
+                      <IconComponent className={`w-6 h-6 md:w-8 md:h-8 ${colors.text}`} />
                     )}
                   </div>
-                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <CardTitle className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-center sm:text-left">
                     {service.title}
                   </CardTitle>
-                  <p className="text-gray-600 line-clamp-3">{service.description}</p> {/* Keep line-clamp for card preview */}
+                  <p className="text-gray-600 text-sm md:text-base mt-2 line-clamp-3 text-center sm:text-left">
+                    {service.description}
+                  </p>
                 </CardHeader>
-                <CardContent className="pt-0 mt-auto">
+                <CardContent className="pt-0 mt-auto px-6 pb-6">
                   <Button 
                     variant="outline" 
-                    className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors`}
+                    className={`w-full ${colors.border} ${colors.text} hover:${colors.bg} transition-colors text-sm md:text-base`}
                     onClick={() => handleViewDetail(service)}
                   >
                     Pelajari Lebih Lanjut
@@ -139,14 +141,14 @@ const ServicesSection = () => {
 
       {/* Service Detail Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
-            <DialogTitle>{selectedService?.title}</DialogTitle>
+            <DialogTitle className="text-xl md:text-2xl">{selectedService?.title}</DialogTitle>
             {selectedService?.image_url && (
               <img src={selectedService.image_url} alt={selectedService.title} className="w-full h-48 object-cover rounded-lg mt-4" />
             )}
           </DialogHeader>
-          <DialogDescription className="text-gray-700 whitespace-pre-wrap">
+          <DialogDescription className="text-gray-700 whitespace-pre-wrap text-base">
             {selectedService?.description}
           </DialogDescription>
           {selectedService?.icon_name && (

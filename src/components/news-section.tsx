@@ -25,7 +25,7 @@ const NewsSection = () => {
     }
   });
 
-  const featuredNews = newsItems?.find(item => item.is_published); // Assuming the first published item is featured
+  const featuredNews = newsItems?.find(item => item.is_published);
   const regularNews = newsItems?.filter(item => item.id !== featuredNews?.id) || [];
 
   const handleReadMore = (newsItem: News) => {
@@ -35,36 +35,36 @@ const NewsSection = () => {
 
   if (isLoading) {
     return (
-      <section id="news" className="py-24 bg-gray-50 flex items-center justify-center">
+      <section id="news" className="py-16 md:py-24 bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </section>
     );
   }
 
   return (
-    <section id="news" className="py-24 bg-gray-50">
+    <section id="news" className="py-16 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <Badge className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200">
             Berita Terbaru
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Informasi dan
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500">
               Kegiatan Kampus
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Dapatkan informasi terkini tentang kegiatan akademik, prestasi mahasiswa, dan program kampus
           </p>
         </div>
 
         {/* Featured News */}
         {featuredNews && (
-          <Card className="mb-12 overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <Card className="mb-8 md:mb-12 overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
             <div className="grid lg:grid-cols-2">
-              <div className="relative h-64 lg:h-auto">
+              <div className="relative h-48 lg:h-auto">
                 <img
                   src={featuredNews.image_url || "https://via.placeholder.com/768x1024"}
                   alt={featuredNews.title}
@@ -74,7 +74,7 @@ const NewsSection = () => {
                   <Badge className="bg-blue-600 text-white">Featured</Badge>
                 </div>
               </div>
-              <div className="p-8 lg:p-12">
+              <div className="p-6 lg:p-12">
                 <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
@@ -82,18 +82,17 @@ const NewsSection = () => {
                   </div>
                   <div className="flex items-center">
                     <User className="w-4 h-4 mr-1" />
-                    {/* Author name is not directly available, using a placeholder */}
                     Admin
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                   {featuredNews.title}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-gray-600 mb-6 leading-relaxed text-sm md:text-base">
                   {featuredNews.excerpt || featuredNews.content.substring(0, 150) + '...'}
                 </p>
                 <Button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm md:text-base"
                   onClick={() => handleReadMore(featuredNews)}
                 >
                   Baca Selengkapnya
@@ -105,7 +104,7 @@ const NewsSection = () => {
         )}
 
         {/* Regular News Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {regularNews.map((item) => (
             <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="relative h-48 overflow-hidden">
@@ -115,26 +114,26 @@ const NewsSection = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 p-4 md:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center text-xs text-gray-500">
                     <Calendar className="w-3 h-3 mr-1" />
                     <span className="mr-3">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
                     <User className="w-3 h-3 mr-1" />
-                    <span>Admin</span> {/* Placeholder for author */}
+                    <span>Admin</span>
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                   {item.title}
                 </h3>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4 line-clamp-3">
+              <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
+                <p className="text-gray-600 mb-4 line-clamp-2 text-sm md:text-base">
                   {item.excerpt || item.content.substring(0, 150) + '...'}
                 </p>
                 <Button 
                   variant="ghost" 
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium text-sm md:text-base"
                   onClick={() => handleReadMore(item)}
                 >
                   Baca Selengkapnya
@@ -147,7 +146,7 @@ const NewsSection = () => {
 
         {/* CTA */}
         <div className="text-center">
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-4 rounded-xl">
+          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 md:px-8 py-3 md:py-4 rounded-xl text-sm md:text-base">
             Lihat Semua Berita
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -156,10 +155,10 @@ const NewsSection = () => {
 
       {/* News Detail Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
             <div className="flex items-center justify-between w-full pr-6">
-              <DialogTitle className="text-2xl font-bold text-gray-900 pr-4">
+              <DialogTitle className="text-xl md:text-2xl font-bold text-gray-900 pr-4">
                 {selectedNews?.title}
               </DialogTitle>
               <Button
@@ -188,7 +187,7 @@ const NewsSection = () => {
           </DialogHeader>
           
           {selectedNews?.image_url && (
-            <div className="w-full h-64 md:h-96 overflow-hidden rounded-lg mb-6">
+            <div className="w-full h-48 md:h-64 lg:h-96 overflow-hidden rounded-lg mb-6">
               <img
                 src={selectedNews.image_url}
                 alt={selectedNews.title}
@@ -204,7 +203,7 @@ const NewsSection = () => {
               </div>
             )}
             
-            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm md:text-base">
               {selectedNews?.content}
             </div>
           </div>
