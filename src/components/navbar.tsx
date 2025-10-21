@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Home, Info, Briefcase, Building, FileText, MessageSquare } from 'lucide-react';
+import { Menu, X, Home, Info, Briefcase, Building, FileText, MessageSquare, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -111,8 +111,35 @@ const Navbar = () => {
   // Show loading state while fetching
   const displaySiteName = isLoading ? 'Loading...' : siteName;
 
+  // Function to get logo component
+  const getLogoComponent = () => {
+    // If we have a valid logo URL and it's not loading, show the image
+    if (!isLoading && logoUrl && logoUrl.trim() !== '') {
+      return (
+        <img 
+          src={logoUrl} 
+          alt="Logo" 
+          className="w-8 h-8 rounded-lg mr-3 transition-all duration-300 object-contain bg-white shadow-sm"
+          onError={(e) => {
+            // Fallback to icon if image fails to load
+            console.error('Logo failed to load:', logoUrl);
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const iconContainer = target.nextElementSibling as HTMLElement;
+            if (iconContainer) {
+              iconContainer.style.display = 'flex';
+            }
+          }}
+        />
+      );
+    }
+    
+    // Always show the icon fallback
+    return null;
+  };
+
   return (
-    <div className="navbar-container"> {/* Wrapped in a div */}
+    <div className="navbar-container">
       {/* Desktop Navigation */}
       <nav className={`hidden md:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
@@ -150,19 +177,19 @@ const Navbar = () => {
           <div className="flex justify-between h-full">
             <div className="flex items-center">
               <Link to="/" className="flex-shrink-0 flex items-center">
-                {logoUrl ? (
-                  <img 
-                    src={logoUrl} 
-                    alt="Logo" 
-                    className="w-8 h-8 rounded-lg mr-3 transition-all duration-300 object-contain"
-                  />
-                ) : (
-                  <div className={`w-8 h-8 rounded-lg mr-3 transition-all duration-300 ${
+                {getLogoComponent()}
+                {/* Icon fallback - always rendered but hidden if image is available */}
+                <div 
+                  className={`w-8 h-8 rounded-lg mr-3 transition-all duration-300 flex items-center justify-center ${
+                    !isLoading && logoUrl && logoUrl.trim() !== '' ? 'hidden' : 'flex'
+                  } ${
                     isScrolled 
                       ? 'bg-gradient-to-br from-indigo-500 to-purple-600' 
                       : 'bg-gradient-to-br from-indigo-500 to-purple-600'
-                  }`}></div>
-                )}
+                  }`}
+                >
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
                 <span className={`text-xl font-bold transition-colors duration-300 ${
                   isScrolled ? 'text-gray-900' : 'text-gray-900'
                 }`}>
@@ -237,15 +264,15 @@ const Navbar = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
-              {logoUrl ? (
-                <img 
-                  src={logoUrl} 
-                  alt="Logo" 
-                  className="w-8 h-8 rounded-lg mr-2 object-contain"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-2"></div>
-              )}
+              {getLogoComponent()}
+              {/* Icon fallback - always rendered but hidden if image is available */}
+              <div 
+                className={`w-8 h-8 rounded-lg mr-2 flex items-center justify-center ${
+                  !isLoading && logoUrl && logoUrl.trim() !== '' ? 'hidden' : 'flex'
+                } bg-gradient-to-br from-indigo-500 to-purple-600`}
+              >
+                <GraduationCap className="w-5 h-5 text-white" />
+              </div>
               <span className="text-lg font-bold text-gray-900">
                 {displaySiteName}
               </span>
