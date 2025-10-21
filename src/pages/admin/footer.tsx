@@ -33,16 +33,14 @@ interface FooterContent {
   id: string;
   brand_name: string;
   brand_description: string;
+  address: string;
+  phone: string;
+  email: string;
   quick_links: Array<{
     id: string;
     name: string;
     href: string;
   }>;
-  contact_info: {
-    address: string;
-    phone: string;
-    email: string;
-  };
   social_links: Array<{
     id: string;
     platform: string;
@@ -158,9 +156,9 @@ const AdminFooter = () => {
       setFormData({
         brand_name: footerContent.brand_name || 'SALUT PERWIRA PURBALINGGA',
         brand_description: footerContent.brand_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas dan siap bersaing di era global.',
-        address: footerContent.contact_info?.address || 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
-        phone: footerContent.contact_info?.phone || '(0281) 123456',
-        email: footerContent.contact_info?.email || 'info@salutperwira.ac.id',
+        address: footerContent.address || 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
+        phone: footerContent.phone || '(0281) 123456',
+        email: footerContent.email || 'info@salutperwira.ac.id',
         newsletter_title: footerContent.newsletter_title || 'Newsletter',
         newsletter_description: footerContent.newsletter_description || 'Dapatkan informasi terbaru tentang pendaftaran dan program kami',
         copyright_text: footerContent.copyright_text || '© 2024 SALUT PERWIRA PURBALINGGA. Semua Hak Dilindungi.'
