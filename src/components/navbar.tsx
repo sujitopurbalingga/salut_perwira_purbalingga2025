@@ -41,7 +41,7 @@ const Navbar = () => {
   const { data: siteSettings, isLoading, error } = useQuery({
     queryKey: ['site-settings-public'],
     queryFn: async () => {
-      console.log('Fetching site settings for navbar...');
+      console.log('=== FETCHING SITE SETTINGS FOR NAVBAR ===');
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
@@ -52,7 +52,9 @@ const Navbar = () => {
         throw error;
       }
       
-      console.log('Site settings fetched:', data);
+      console.log('Site settings fetched successfully:', data);
+      console.log('Logo URL:', data?.logo_url);
+      console.log('Site Name:', data?.site_name);
       return data as SiteSettings;
     },
     staleTime: 0, // No stale time - always fetch fresh data
@@ -122,19 +124,21 @@ const Navbar = () => {
 
   // Debug logging
   useEffect(() => {
-    console.log('Navbar state:', {
-      isLoading,
-      hasLogoUrl: !!logoUrl,
-      logoUrl,
-      siteName,
-      error
-    });
-  }, [isLoading, logoUrl, siteName, error]);
+    console.log('=== NAVBAR STATE UPDATE ===');
+    console.log('isLoading:', isLoading);
+    console.log('hasLogoUrl:', !!logoUrl);
+    console.log('logoUrl:', logoUrl);
+    console.log('siteName:', siteName);
+    console.log('displaySiteName:', displaySiteName);
+    console.log('error:', error);
+    console.log('=============================');
+  }, [isLoading, logoUrl, siteName, displaySiteName, error]);
 
   // Function to get logo component
   const getLogoComponent = () => {
     // If we have a valid logo URL and it's not loading, show the image
     if (!isLoading && logoUrl && logoUrl.trim() !== '') {
+      console.log('Rendering logo image:', logoUrl);
       return (
         <img 
           src={logoUrl} 

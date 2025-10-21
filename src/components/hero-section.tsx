@@ -57,10 +57,19 @@ const HeroSection = () => {
   const { data: siteSettings, isLoading } = useQuery({
     queryKey: ['site-settings-hero'],
     queryFn: async () => {
-      const { data } = await supabase
+      console.log('=== FETCHING SITE SETTINGS FOR HERO ===');
+      const { data, error } = await supabase
         .from('site_settings')
         .select('*')
         .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching site settings for hero:', error);
+        throw error;
+      }
+      
+      console.log('Site settings for hero fetched:', data);
+      console.log('Site Name:', data?.site_name);
       return data as SiteSettings;
     },
     staleTime: 0, // No stale time - always fetch fresh data
@@ -75,6 +84,16 @@ const HeroSection = () => {
 
   // Show loading state while fetching
   const displaySiteName = isLoading ? 'Loading...' : siteName;
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('=== HERO SECTION STATE ===');
+    console.log('isLoading:', isLoading);
+    console.log('siteSettings:', siteSettings);
+    console.log('siteName:', siteName);
+    console.log('displaySiteName:', displaySiteName);
+    console.log('=======================');
+  }, [isLoading, siteSettings, siteName, displaySiteName]);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">

@@ -27,17 +27,37 @@ interface FooterContent {
   copyright_text: string;
 }
 
+interface SiteSettings {
+  id: string;
+  site_name: string;
+  site_description: string;
+  logo_url: string;
+  favicon_url: string;
+  theme: 'light' | 'dark' | 'auto';
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+}
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   // Fetch footer content from database with very short cache time
-  const { data: footerContent, isLoading } = useQuery({
+  const { data: footerContent, isLoading: isLoadingFooter } = useQuery({
     queryKey: ['footer-public'],
     queryFn: async () => {
-      const { data } = await supabase
+      console.log('=== FETCHING FOOTER CONTENT ===');
+      const { data, error } = await supabase
         .from('footer_settings')
         .select('*')
         .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching footer content:', error);
+        throw error;
+      }
+      
+      console.log('Footer content fetched:', data);
       return data as FooterContent;
     },
     staleTime: 0, // No stale time - always fetch fresh data
@@ -48,14 +68,22 @@ const Footer = () => {
   });
 
   // Fallback to site settings if footer_settings doesn't have brand_name
-  const { data: siteSettings } = useQuery({
+  const { data: siteSettings, isLoading: isLoadingSite } = useQuery({
     queryKey: ['site-settings-for-footer'],
     queryFn: async () => {
-      const { data } = await supabase
+      console.log('=== FETCHING SITE SETTINGS FOR FOOTER ===');
+      const { data, error } = await supabase
         .from('site_settings')
-        .select('site_name, site_description')
+        .select('site_name, site_description, logo_url')
         .maybeSingle();
-      return data;
+      
+      if (error) {
+        console.error('Error fetching site settings for footer:', error);
+        throw error;
+      }
+      
+      console.log('Site settings for footer fetched:', data);
+      return data as SiteSettings;
     },
     staleTime: 0, // No stale time - always fetch fresh data
     cacheTime: 1000, // Cache for 1 second only
@@ -73,6 +101,17 @@ const Footer = () => {
   // Use database data if available, otherwise use fallback
   const footer = footerContent || fallbackBrand;
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log('=== FOOTER STATE UPDATE ===');
+    console.log('isLoadingFooter:', isLoadingFooter);
+    console.log('isLoadingSite:', isLoadingSite);
+    console.log('footerContent:', footerContent);
+    console.log('siteSettings:', siteSettings);
+    console.log('footer.brand_name:', footer.brand_name);
+    console.log('========================');
+  }, [isLoadingFooter, isLoadingSite, footerContent, siteSettings, footer.brand_name]);
+
   const getSocialIcon = (platform: string) => {
     const iconMap: Record<string, React.ComponentType<any>> = {
       Facebook,
@@ -84,7 +123,7 @@ const Footer = () => {
   };
 
   // Show loading state while fetching
-  if (isLoading) {
+  if (isLoadingFooter || isLoadingSite) {
     return (
       <footer className="bg-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
