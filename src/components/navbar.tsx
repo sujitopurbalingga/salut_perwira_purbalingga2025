@@ -39,7 +39,7 @@ const Navbar = () => {
       for (const section of sections) {
         const element = document.querySelector(section);
         if (element) {
-          const { offsetTop, offsetHeight } = element;
+          const { offsetTop, offsetHeight } = element as HTMLElement; // <-- Cast to HTMLElement
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
             break;
@@ -60,9 +60,9 @@ const Navbar = () => {
     setIsMenuOpen(false);
     
     // Smooth scroll to section
-    const element = document.querySelector(href);
-    if (element) {
-      const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 80; // 80px for navbar height
+    const htmlElement = document.querySelector(href) as HTMLElement;
+    if (htmlElement) {
+      const offsetTop = htmlElement.getBoundingClientRect().top + window.pageYOffset - 80; // 80px for navbar height
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth'
