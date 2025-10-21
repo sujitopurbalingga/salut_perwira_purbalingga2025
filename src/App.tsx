@@ -23,6 +23,7 @@ import AdminFaculties from './pages/admin/faculties';
 import AdminNews from './pages/admin/news';
 import AdminRegistrations from './pages/admin/registrations';
 import AdminBrochure from './pages/admin/brochure';
+import AdminContact from './pages/admin/contact';
 
 // Protected Route Component
 import ProtectedRoute from './components/admin/protected-route';
@@ -98,6 +99,7 @@ function App() {
                   <Route path="news" element={<AdminNews />} />
                   <Route path="registrations" element={<AdminRegistrations />} />
                   <Route path="brochure" element={<AdminBrochure />} />
+                  <Route path="contact" element={<AdminContact />} />
                   <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
                 </Route>
               </Routes>

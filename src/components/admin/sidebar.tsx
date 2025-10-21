@@ -14,7 +14,8 @@ import {
   Menu, 
   X,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from './auth-provider';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,11 @@ const menuItems: MenuItem[] = [
     title: 'Brosur',
     icon: <FileText className="w-5 h-5" />,
     path: '/admin/brochure',
+  },
+  {
+    title: 'Hubungi Kami',
+    icon: <MessageSquare className="w-5 h-5" />,
+    path: '/admin/contact',
   },
 ];
 
