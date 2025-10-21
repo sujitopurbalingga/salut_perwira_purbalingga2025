@@ -12,6 +12,7 @@ interface Brochure {
   id: string;
   title: string;
   file_url: string;
+  thumbnail_url?: string; // Added thumbnail_url
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -125,8 +126,16 @@ const BrochureSection = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="aspect-[3/4] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-16 h-16 text-blue-300" />
+                <div className="aspect-[3/4] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
+                  {brochure.thumbnail_url ? (
+                    <img 
+                      src={brochure.thumbnail_url} 
+                      alt={brochure.title} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <FileText className="w-16 h-16 text-blue-300" />
+                  )}
                 </div>
                 <p className="text-sm text-gray-600">
                   Dokumen informasi lengkap tentang pendaftaran dan program studi

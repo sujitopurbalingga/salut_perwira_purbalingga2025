@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, Plus, Edit, Trash2, FileText, Download, Upload, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Plus, Edit, Trash2, FileText, Download, Upload, Eye, EyeOff, Image as ImageIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
@@ -15,6 +15,7 @@ interface Brochure {
   id: string;
   title: string;
   file_url: string;
+  thumbnail_url?: string; // Added thumbnail_url
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -26,10 +27,12 @@ const AdminBrochure = () => {
   const [formData, setFormData] = useState({
     title: '',
     file_url: '',
+    thumbnail_url: '', // Initialize thumbnail_url
     is_active: true
   });
   const [message, setMessage] = useState('');
-  const [uploading, setUploading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -78,10 +81,10 @@ const AdminBrochure = () => {
   // Delete brochure
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // First get the brochure to get the file URL
+      // First get the brochure to get the file URL and thumbnail URL
       const { data: brochure } = await supabase
         .from('brochure')
-        .select('file_url')
+        .select('file_url, thumbnail_url')
         .eq('id', id)
         .single();
 
@@ -92,6 +95,15 @@ const AdminBrochure = () => {
           await supabase.storage
             .from('brochures')
             .remove([`brochures/${filePath}`]);
+        }
+      }
+      // Delete thumbnail from storage if it exists
+      if (brochure?.thumbnail_url) {
+        const thumbnailPath = brochure.thumbnail_url.split('/').pop();
+        if (thumbnailPath) {
+          await supabase.storage
+            .from('brochures') // Assuming thumbnails are in the same bucket
+            .remove([`brochures/${thumbnailPath}`]);
         }
       }
 
@@ -140,6 +152,7 @@ const AdminBrochure = () => {
     setFormData({
       title: '',
       file_url: '',
+      thumbnail_url: '',
       is_active: true
     });
   };
@@ -149,6 +162,7 @@ const AdminBrochure = () => {
     setFormData({
       title: brochure.title,
       file_url: brochure.file_url,
+      thumbnail_url: brochure.thumbnail_url || '',
       is_active: brochure.is_active
     });
     setIsDialogOpen(true);
@@ -174,6 +188,7 @@ const AdminBrochure = () => {
     console.log('Form validation passed:', {
       title: formData.title,
       file_url: formData.file_url,
+      thumbnail_url: formData.thumbnail_url,
       is_active: formData.is_active
     });
 
@@ -240,7 +255,7 @@ const AdminBrochure = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingFile(true);
     setMessage('Mengupload file...');
 
     try {
@@ -310,7 +325,58 @@ const AdminBrochure = () => {
       setMessage(errorMessage);
       setTimeout(() => setMessage(''), 5000);
     } finally {
-      setUploading(false);
+      setUploadingFile(false);
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type (only images)
+    if (!file.type.startsWith('image/')) {
+      setMessage('Thumbnail harus berupa file gambar (JPG, PNG, GIF)');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setMessage(`Ukuran thumbnail terlalu besar: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maksimal 5MB`);
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    setUploadingThumbnail(true);
+    setMessage('Mengupload thumbnail...');
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `brochure-thumbnail-${Date.now()}.${fileExt}`;
+      const filePath = `brochures/${fileName}`; // Store thumbnails in the same 'brochures' bucket
+
+      const { error: uploadError } = await supabase.storage
+        .from('brochures')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('brochures')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, thumbnail_url: publicUrl }));
+      setMessage('Thumbnail berhasil diunggah');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error: any) {
+      setMessage('Gagal mengunggah thumbnail: ' + error.message);
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setUploadingThumbnail(false);
     }
   };
 
@@ -392,9 +458,9 @@ const AdminBrochure = () => {
                       type="button"
                       variant="outline"
                       onClick={() => document.getElementById('brochure-file-upload')?.click()}
-                      disabled={uploading}
+                      disabled={uploadingFile}
                     >
-                      {uploading ? (
+                      {uploadingFile ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
                         <Upload className="w-4 h-4 mr-2" />
@@ -411,6 +477,46 @@ const AdminBrochure = () => {
                   </div>
                   <p className="text-xs text-gray-500">
                     Format: PDF, DOC, DOCX, JPG, PNG, JPEG (Maks: 10MB)
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <Label>Thumbnail Brosur (Opsional)</Label>
+                <div className="space-y-3">
+                  {formData.thumbnail_url && (
+                    <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <img 
+                        src={formData.thumbnail_url} 
+                        alt="Brochure Thumbnail" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('brochure-thumbnail-upload')?.click()}
+                      disabled={uploadingThumbnail}
+                    >
+                      {uploadingThumbnail ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                      )}
+                      {formData.thumbnail_url ? 'Ganti Thumbnail' : 'Upload Thumbnail'}
+                    </Button>
+                    <input
+                      id="brochure-thumbnail-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailUpload}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Format: JPG, PNG, GIF (Maks: 5MB)
                   </p>
                 </div>
               </div>
@@ -435,7 +541,7 @@ const AdminBrochure = () => {
                 </Button>
                 <Button
                   onClick={handleSave}
-                  disabled={saveMutation.isPending || uploading}
+                  disabled={saveMutation.isPending || uploadingFile || uploadingThumbnail}
                 >
                   {saveMutation.isPending ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -460,8 +566,12 @@ const AdminBrochure = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    {brochure.thumbnail_url ? (
+                      <img src={brochure.thumbnail_url} alt={brochure.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <FileText className="w-6 h-6 text-blue-600" />
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold">{brochure.title}</h3>

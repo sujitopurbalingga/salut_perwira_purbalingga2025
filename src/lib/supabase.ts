@@ -161,6 +161,7 @@ export interface Brochure {
   id: string;
   title: string;
   file_url: string;
+  thumbnail_url?: string; // New field
   is_active: boolean;
   created_at: string;
   updated_at: string;
