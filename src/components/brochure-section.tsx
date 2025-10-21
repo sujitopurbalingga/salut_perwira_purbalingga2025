@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, FileText, Loader2, Eye } from 'lucide-react';
+import { Download, FileText, Loader2, Eye, MessageSquare } from 'lucide-react'; // Tambah MessageSquare icon
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
@@ -17,9 +17,15 @@ interface Brochure {
   updated_at: string;
 }
 
+interface ContactContent {
+  id: string;
+  phone: string;
+  // ... other fields, only phone is needed here
+}
+
 const BrochureSection = () => {
   // Fetch brochures from database
-  const { data: brochures, isLoading } = useQuery({
+  const { data: brochures, isLoading: isLoadingBrochures } = useQuery({
     queryKey: ['brochures-public'],
     queryFn: async () => {
       const { data } = await supabase
@@ -28,6 +34,18 @@ const BrochureSection = () => {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
       return data as Brochure[];
+    }
+  });
+
+  // Fetch contact settings for phone number
+  const { data: contactSettings, isLoading: isLoadingContact } = useQuery({
+    queryKey: ['contact-settings-public'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('contact_settings')
+        .select('phone')
+        .maybeSingle();
+      return data as ContactContent;
     }
   });
 
@@ -47,7 +65,17 @@ const BrochureSection = () => {
     window.open(fileUrl, '_blank');
   };
 
-  if (isLoading) {
+  const handleContactViaWhatsApp = () => {
+    const phoneNumber = contactSettings?.phone?.replace(/\D/g, ''); // Remove non-digits
+    const message = encodeURIComponent("Halo, saya tertarik dengan informasi lebih lanjut mengenai SALUT PERWIRA PURBALINGGA.");
+    if (phoneNumber) {
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    } else {
+      alert("Nomor WhatsApp tidak tersedia.");
+    }
+  };
+
+  if (isLoadingBrochures || isLoadingContact) {
     return (
       <section data-brosur-section className="py-24 bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
@@ -145,15 +173,11 @@ const BrochureSection = () => {
                 Daftar Sekarang
               </Button>
               <Button
-                onClick={() => {
-                  const contactSection = document.getElementById('contact');
-                  if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
+                onClick={handleContactViaWhatsApp} // Menggunakan handler baru
                 variant="outline"
                 className="border-white text-blue-600 hover:bg-white hover:text-blue-700 font-bold px-8 py-3 rounded-full"
               >
+                <MessageSquare className="w-4 h-4 mr-2" /> {/* Tambah icon WhatsApp */}
                 Hubungi Kami
               </Button>
             </div>
