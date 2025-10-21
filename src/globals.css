@@ -98,11 +98,31 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
+    /* Ensure full width */
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+  }
+
+  html {
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
+    /* Ensure full width */
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 700;
+  }
+
+  /* Ensure no horizontal scroll on any element */
+  * {
+    box-sizing: border-box;
   }
 }
 
@@ -243,4 +263,32 @@ html {
 
 .blue-light {
   background-color: #4A90FF;
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+  /* Ensure full viewport width on mobile */
+  body, html {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  /* Prevent horizontal scroll on all elements */
+  * {
+    max-width: 100%;
+  }
+  
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Fix any potential overflow issues */
+  .overflow-hidden-mobile {
+    overflow-x: hidden;
+  }
 }

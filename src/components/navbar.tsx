@@ -156,7 +156,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - Fixed position, always visible */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex justify-around items-center h-16 px-2">
           {bottomNavItems.map((item) => {
@@ -168,7 +168,7 @@ const Navbar = () => {
                 key={item.name}
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item.href)}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ${
+                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 flex-1 ${
                   isActive
                     ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -184,7 +184,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Top Bar (Minimal) */}
+      {/* Mobile Top Bar (Minimal) - Fixed position */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
