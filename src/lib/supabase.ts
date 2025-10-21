@@ -79,6 +79,20 @@ export interface LandingSettings {
   updated_at: string;
 }
 
+// New interfaces for Features and Stats
+export interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export interface Stat {
+  id: string;
+  number: string;
+  label: string;
+}
+
 // New/Updated types for content management
 export interface AboutContent {
   id: string;
@@ -88,6 +102,8 @@ export interface AboutContent {
   vision?: string; // New field
   history?: string; // New field
   image_url?: string;
+  features?: Feature[]; // Add this
+  stats?: Stat[];     // Add this
   created_at: string;
   updated_at: string;
 }
