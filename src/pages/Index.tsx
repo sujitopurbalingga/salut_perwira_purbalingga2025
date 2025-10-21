@@ -15,13 +15,27 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <main>
-        <HeroSection key="hero-section" />
-        <AboutSection />
-        <ServicesSection />
-        <FacultiesSection />
-        <NewsSection />
-        <BrochureSection />
-        <ContactSection />
+        <section id="home">
+          <HeroSection key="hero-section" />
+        </section>
+        <section id="about">
+          <AboutSection />
+        </section>
+        <section id="services">
+          <ServicesSection />
+        </section>
+        <section id="faculties">
+          <FacultiesSection />
+        </section>
+        <section id="news">
+          <NewsSection />
+        </section>
+        <section id="brochure">
+          <BrochureSection />
+        </section>
+        <section id="contact">
+          <ContactSection />
+        </section>
       </main>
       <Footer />
       <MadeWithDyad />
