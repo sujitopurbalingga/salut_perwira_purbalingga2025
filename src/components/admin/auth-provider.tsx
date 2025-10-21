@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { AuthError } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface User {
@@ -31,72 +30,119 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authCheckCount, setAuthCheckCount] = useState(0);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const checkSessionAndProfile = async (sessionUser: any) => {
-      if (sessionUser) {
-        try {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', sessionUser.id)
-            .single();
+  const MAX_AUTH_CHECKS = 3; // Maksimal 3 kali cek untuk mencegah loop
 
-          if (profileError) {
-            console.error('Error getting profile:', profileError);
-            // Continue with default role if profile not found
-          }
-
-          setUser({
-            id: sessionUser.id,
-            email: sessionUser.email!,
-            role: profile?.role || 'user'
-          });
-          queryClient.invalidateQueries(); // Invalidate queries to refetch data for the new user
-        } catch (error) {
-          console.error('Error in checkSessionAndProfile:', error);
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-        queryClient.invalidateQueries(); // Invalidate queries on logout/no session
-      }
+  const checkSessionAndProfile = async (sessionUser: any) => {
+    if (authCheckCount >= MAX_AUTH_CHECKS) {
+      console.log('Max auth checks reached, stopping');
       setLoading(false);
-    };
+      return;
+    }
 
-    // Check for existing session on initial load
-    const initialSessionCheck = async () => {
+    setAuthCheckCount(prev => prev + 1);
+
+    try {
+      if (sessionUser) {
+        console.log('User found in session:', sessionUser.email);
+        
+        // Check profile with timeout
+        const profileTimeout = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Profile check timeout')), 5000);
+        });
+
+        const profilePromise = supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', sessionUser.id)
+          .single();
+
+        const { data: profile, error: profileError } = await Promise.race([profilePromise, profileTimeout]);
+
+        if (profileError) {
+          console.error('Error getting profile:', profileError);
+          // Continue with default role if profile not found
+        }
+
+        setUser({
+          id: sessionUser.id,
+          email: sessionUser.email!,
+          role: profile?.role || 'user'
+        });
+      } else {
+        console.log('No user in session');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error in checkSessionAndProfile:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
+
+    const initializeAuth = async () => {
+      if (!isMounted) return;
+
       try {
+        // Clear any existing timeout
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+
+        // Set timeout to prevent hanging
+        timeoutId = setTimeout(() => {
+          if (loading) {
+            console.log('Auth check timeout, setting loading to false');
+            setLoading(false);
+          }
+        }, 10000); // 10 seconds timeout
+
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error('Error getting initial session:', error);
           setLoading(false);
           return;
         }
+
         await checkSessionAndProfile(session?.user);
       } catch (error) {
-        console.error('Error in initialSessionCheck:', error);
-        setLoading(false);
+        console.error('Error in initializeAuth:', error);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    initialSessionCheck();
+    initializeAuth();
 
-    // Listen for auth changes
+    // Listen for auth changes with cleanup
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        setLoading(true); // Set loading true while processing auth change
-        await checkSessionAndProfile(session?.user);
+        if (isMounted) {
+          setLoading(true);
+          await checkSessionAndProfile(session?.user);
+        }
       }
     );
 
-    // Cleanup subscription
+    // Cleanup
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
-  }, [queryClient]);
+  }, [authCheckCount]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -144,7 +190,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return { success: false, error: 'Anda tidak memiliki akses admin' };
         }
         
-        // Invalidate queries after successful admin login
+        // Reset auth check count on successful login
+        setAuthCheckCount(0);
         queryClient.invalidateQueries();
       }
 
@@ -159,8 +206,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await supabase.auth.signOut();
       setUser(null);
-      queryClient.invalidateQueries(); // Invalidate queries after logout
-      queryClient.removeQueries(); // Clear all queries
+      setAuthCheckCount(0);
+      queryClient.invalidateQueries();
+      queryClient.removeQueries();
     } catch (error) {
       console.error('Logout error:', error);
     }

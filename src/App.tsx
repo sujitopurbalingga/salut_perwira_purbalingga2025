@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
@@ -32,14 +32,44 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      refetchOnWindowFocus: true,
-      staleTime: 0, // Force refetch for debugging
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false, // Nonaktifkan refetch otomatis untuk mencegah loop
+      refetchOnMount: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
     },
   },
 });
 
 function App() {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize app with protection against infinite loops
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Give a small delay to ensure everything is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Memulai aplikasi...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>

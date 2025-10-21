@@ -18,13 +18,22 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [checkCount, setCheckCount] = useState(0);
   
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already authenticated
+  // Check if user is already authenticated with protection against infinite loops
   useEffect(() => {
+    const MAX_CHECKS = 3;
+    
     const checkExistingSession = async () => {
+      if (checkCount >= MAX_CHECKS) {
+        console.log('Max auth checks reached, stopping');
+        setIsCheckingAuth(false);
+        return;
+      }
+
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -36,12 +45,25 @@ const AdminLogin = () => {
 
         if (session?.user) {
           console.log('User already authenticated:', session.user.email);
-          // Check if user has admin role
-          const { data: profile } = await supabase
+          
+          // Check if user has admin role with timeout
+          const profileTimeout = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Profile check timeout')), 3000);
+          });
+
+          const profilePromise = supabase
             .from('profiles')
             .select('role')
             .eq('id', session.user.id)
             .single();
+
+          const { data: profile, error: profileError } = await Promise.race([profilePromise, profileTimeout]);
+
+          if (profileError) {
+            console.error('Error checking admin role:', profileError);
+            setIsCheckingAuth(false);
+            return;
+          }
 
           if (profile?.role === 'admin') {
             navigate('/admin/dashboard', { replace: true });
@@ -59,23 +81,32 @@ const AdminLogin = () => {
       }
     };
 
-    checkExistingSession();
-  }, [navigate]);
+    // Add delay between checks to prevent rapid polling
+    const timer = setTimeout(() => {
+      checkExistingSession();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [checkCount, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const result = await login(email, password);
-    
-    if (result.success) {
-      navigate('/admin/dashboard');
-    } else {
-      setError(result.error || 'Login gagal');
+    try {
+      const result = await login(email, password);
+      
+      if (result.success) {
+        navigate('/admin/dashboard');
+      } else {
+        setError(result.error || 'Login gagal');
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan saat login');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleResetPassword = async () => {
@@ -94,13 +125,28 @@ const AdminLogin = () => {
     }
   };
 
+  // Force refresh if stuck
+  const handleForceRefresh = () => {
+    setCheckCount(0);
+    setIsCheckingAuth(true);
+  };
+
   // Show loading state while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <Loader2 className="w-8 h-8 animate-spin text-white mx-auto mb-4" />
-          <p className="text-white/80">Memeriksa autentikasi...</p>
+          <h3 className="text-xl font-semibold text-white mb-2">Memeriksa autentikasi...</h3>
+          <p className="text-white/80 mb-4">
+            Mohon tunggu sebentar sedang memverifikasi sesi Anda
+          </p>
+          <button
+            onClick={handleForceRefresh}
+            className="text-white/80 hover:text-white underline text-sm"
+          >
+            Coba lagi
+          </button>
         </div>
       </div>
     );
