@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useCharacter3D } from '@/hooks/useCharacter3D';
 import { Loader2, ImageIcon, AlertCircle, RefreshCw } from 'lucide-react';
+import { supabase } from '@/lib/supabase'; // Added missing import
 
 interface Character3DDisplayProps {
   className?: string;
