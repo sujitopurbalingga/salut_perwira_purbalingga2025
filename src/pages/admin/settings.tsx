@@ -275,32 +275,29 @@ const AdminSettings = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900">Memuat Pengaturan...</h2>
-        </div>
+      <div className="p-6 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
-          Pengaturan
-        </h1>
-        <p className="text-gray-500 text-lg">Kelola pengaturan website dan akun admin</p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Pengaturan</h1>
+        <p className="text-gray-500">Kelola pengaturan website dan akun admin</p>
       </div>
 
       {message && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-            <p className="text-green-800">{message}</p>
-          </div>
-        </div>
+        <Alert className={message.includes('berhasil') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+          {message.includes('berhasil') ? (
+            <CheckCircle className="h-4 w-4" />
+          ) : (
+            <AlertCircle className="h-4 w-4" />
+          )}
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
       )}
 
       {/* Site Settings */}

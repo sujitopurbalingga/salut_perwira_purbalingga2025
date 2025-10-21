@@ -124,10 +124,10 @@ const AdminDashboard = () => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900">Memuat Dashboard...</h2>
+      <div className="p-8">
+        <div className="flex items-center justify-center space-x-2">
+          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <h2 className="text-2xl font-bold">Memuat Dashboard...</h2>
         </div>
       </div>
     );
@@ -136,18 +136,18 @@ const AdminDashboard = () => {
   // Show error state
   if (error) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="text-center max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button 
-            onClick={() => refetch()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Muat Ulang
-          </button>
+      <div className="p-8">
+        <div className="flex items-center space-x-2 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <h2 className="text-2xl font-bold">Error</h2>
         </div>
+        <p className="mt-4 text-gray-600">{error}</p>
+        <button 
+          onClick={() => refetch()}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Muat Ulang
+        </button>
       </div>
     );
   }
@@ -162,71 +162,60 @@ const AdminDashboard = () => {
         <p className="text-gray-500 text-lg">Selamat datang di panel administrasi</p>
       </div>
 
-      {message && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center">
-            <AlertCircle className="h-4 w-4 text-green-600 mr-2" />
-            <p className="text-green-800">{message}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Grid - Responsive */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {statsCards.map((stat, index) => (
           <div
             key={stat.title}
             className="hover:scale-105 transition-transform duration-200"
           >
-            <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                  </div>
+                  <div className={`p-4 rounded-2xl ${stat.bgColor}`}>
                     <div className={stat.iconColor}>
                       {stat.icon}
                     </div>
                   </div>
-                  <div>
-                    <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                    <p className="text-sm text-gray-600">{stat.title}</p>
-                  </div>
                 </div>
-              </div>
-              <div className="h-1 bg-gradient-to-r ${stat.color} rounded-full"></div>
-            </div>
+              </CardContent>
+              <div className={`h-1 bg-gradient-to-r ${stat.color}`} />
+            </Card>
           </div>
         ))}
       </div>
 
-      {/* Recent Activity - Responsive */}
+      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <Card className="border-0 shadow-lg">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center text-xl font-semibold">
-                <Activity className="w-5 h-5 text-indigo-600 mr-2" />
-                <span>Pendaftaran Terbaru</span>
+              <CardTitle className="flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-indigo-600" />
+                <span className="text-xl font-semibold">Pendaftaran Terbaru</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               {stats?.recentRegistrations && stats.recentRegistrations.length > 0 ? (
                 <div className="space-y-4">
                   {stats.recentRegistrations.map((registration: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <p className="font-semibold text-gray-900">{registration.full_name}</p>
-                          <p className="text-sm text-gray-600">{registration.email}</p>
-                        </div>
+                        <p className="font-medium text-gray-900">{registration.full_name}</p>
+                        <p className="text-sm text-gray-500">{registration.email}</p>
                       </div>
                       <div className="text-right">
-                        <span className={`
-                          text-xs px-2 py-1 rounded-full
-                          ${registration.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}
-                        `}>
+                        <Badge 
+                          variant={registration.status === 'pending' ? 'secondary' : 
+                                  registration.status === 'approved' ? 'default' : 'destructive'}
+                        >
                           {registration.status === 'pending' ? 'Menunggu' :
                            registration.status === 'approved' ? 'Disetujui' : 'Ditolak'}
-                        </span>
+                        </Badge>
                         <p className="text-xs text-gray-400 mt-1">
                           {new Date(registration.created_at).toLocaleDateString('id-ID')}
                         </p>
@@ -235,10 +224,9 @@ const AdminDashboard = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                   <p className="text-gray-500">Belum ada pendaftaran</p>
-                  <p className="text-sm text-gray-400">Klik "Tambah Pendaftaran" untuk membuat pendaftaran pertama</p>
                 </div>
               )}
             </CardContent>
@@ -248,9 +236,9 @@ const AdminDashboard = () => {
         <div>
           <Card className="border-0 shadow-lg">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center text-xl font-semibold">
-                <TrendingUp className="w-5 h-5 text-green-600 mr-2" />
-                <span>Aktivitas Hari Ini</span>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-green-600" />
+                <span className="text-xl font-semibold">Aktivitas Hari Ini</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
