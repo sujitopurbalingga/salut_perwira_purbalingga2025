@@ -38,7 +38,7 @@ const Navbar = () => {
 
       for (const section of sections) {
         const element = document.querySelector(section);
-        if (element instanceof HTMLElement) { // Type assertion to HTMLElement
+        if (element) {
           const { offsetTop, offsetHeight } = element;
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
@@ -61,7 +61,7 @@ const Navbar = () => {
     
     // Smooth scroll to section
     const element = document.querySelector(href);
-    if (element instanceof HTMLElement) { // Type assertion to HTMLElement
+    if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 80; // 80px for navbar height
       window.scrollTo({
         top: offsetTop,

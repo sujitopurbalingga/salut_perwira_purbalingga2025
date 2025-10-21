@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } => '@/components/ui/badge';
 import { Calendar, User, Clock, ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, News } from '@/lib/supabase';
