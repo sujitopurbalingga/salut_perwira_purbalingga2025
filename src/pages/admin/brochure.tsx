@@ -174,9 +174,18 @@ const AdminBrochure = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file type (PDF preferred)
-    if (!file.type.includes('pdf') && !file.type.includes('document')) {
-      setMessage('Harap upload file PDF atau dokumen');
+    // Check file type (PDF, DOC, DOCX, JPG, PNG, JPEG)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/jpg',
+      'image/png'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setMessage('Harap upload file PDF, DOC, DOCX, JPG, PNG, atau JPEG');
       setTimeout(() => setMessage(''), 3000);
       return;
     }
@@ -301,13 +310,13 @@ const AdminBrochure = () => {
                     <input
                       id="brochure-file-upload"
                       type="file"
-                      accept=".pdf,.doc,.docx"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
                       onChange={handleFileUpload}
                       className="hidden"
                     />
                   </div>
                   <p className="text-xs text-gray-500">
-                    Format: PDF, DOC, DOCX (Maks: 10MB)
+                    Format: PDF, DOC, DOCX, JPG, PNG, JPEG (Maks: 10MB)
                   </p>
                 </div>
               </div>
