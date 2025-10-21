@@ -1,14 +1,18 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { Calendar, User, Clock, ArrowRight, Loader2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, News } from '@/lib/supabase';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const NewsSection = () => {
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ['news-public'],
     queryFn: async () => {
@@ -23,6 +27,11 @@ const NewsSection = () => {
 
   const featuredNews = newsItems?.find(item => item.is_published); // Assuming the first published item is featured
   const regularNews = newsItems?.filter(item => item.id !== featuredNews?.id) || [];
+
+  const handleReadMore = (newsItem: News) => {
+    setSelectedNews(newsItem);
+    setIsDetailDialogOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -76,21 +85,17 @@ const NewsSection = () => {
                     {/* Author name is not directly available, using a placeholder */}
                     Admin
                   </div>
-                  {/* Read time is not in DB, omitting */}
-                  {/* <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {featuredNews.readTime}
-                  </div> */}
                 </div>
-                {/* Category is not in DB, omitting */}
-                {/* <Badge variant="secondary" className="mb-4">{featuredNews.category}</Badge> */}
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   {featuredNews.title}
                 </h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   {featuredNews.excerpt || featuredNews.content.substring(0, 150) + '...'}
                 </p>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                  onClick={() => handleReadMore(featuredNews)}
+                >
                   Baca Selengkapnya
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -112,12 +117,11 @@ const NewsSection = () => {
               </div>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-3">
-                  {/* Category is not in DB, omitting */}
-                  {/* <Badge variant="secondary" className="text-xs">{item.category}</Badge> */}
                   <div className="flex items-center text-xs text-gray-500">
-                    {/* Read time is not in DB, omitting */}
-                    {/* <Clock className="w-3 h-3 mr-1" />
-                    {item.readTime} */}
+                    <Calendar className="w-3 h-3 mr-1" />
+                    <span className="mr-3">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
+                    <User className="w-3 h-3 mr-1" />
+                    <span>Admin</span> {/* Placeholder for author */}
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -125,16 +129,14 @@ const NewsSection = () => {
                 </h3>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  <span className="mr-3">{new Date(item.published_at || item.created_at).toLocaleDateString('id-ID')}</span>
-                  <User className="w-4 h-4 mr-1" />
-                  <span>Admin</span> {/* Placeholder for author */}
-                </div>
                 <p className="text-gray-600 mb-4 line-clamp-3">
                   {item.excerpt || item.content.substring(0, 150) + '...'}
                 </p>
-                <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium">
+                <Button 
+                  variant="ghost" 
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 font-medium"
+                  onClick={() => handleReadMore(item)}
+                >
                   Baca Selengkapnya
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -151,6 +153,77 @@ const NewsSection = () => {
           </Button>
         </div>
       </div>
+
+      {/* News Detail Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between w-full pr-6">
+              <DialogTitle className="text-2xl font-bold text-gray-900 pr-4">
+                {selectedNews?.title}
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsDetailDialogOpen(false)}
+                className="rounded-full"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center">
+                <Calendar className="w-4 h-4 mr-1" />
+                {selectedNews && new Date(selectedNews.published_at || selectedNews.created_at).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </div>
+              <div className="flex items-center">
+                <User className="w-4 h-4 mr-1" />
+                Admin
+              </div>
+            </div>
+          </DialogHeader>
+          
+          {selectedNews?.image_url && (
+            <div className="w-full h-64 md:h-96 overflow-hidden rounded-lg mb-6">
+              <img
+                src={selectedNews.image_url}
+                alt={selectedNews.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="prose prose-lg max-w-none">
+            {selectedNews?.excerpt && (
+              <div className="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6 italic">
+                <p className="text-gray-700">{selectedNews.excerpt}</p>
+              </div>
+            )}
+            
+            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {selectedNews?.content}
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-500">
+                Dipublikasi pada {selectedNews && new Date(selectedNews.published_at || selectedNews.created_at).toLocaleString('id-ID')}
+              </p>
+              <Button
+                onClick={() => setIsDetailDialogOpen(false)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
