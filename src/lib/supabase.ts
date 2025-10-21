@@ -88,6 +88,17 @@ export interface AboutContent {
   vision?: string; // New field
   history?: string; // New field
   image_url?: string;
+  features?: Array<{ // New field
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+  }>;
+  stats?: Array<{ // New field
+    id: string;
+    number: string;
+    label: string;
+  }>;
   created_at: string;
   updated_at: string;
 }
