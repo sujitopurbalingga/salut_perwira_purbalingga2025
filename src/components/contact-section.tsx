@@ -126,7 +126,7 @@ const ContactSection = () => {
     hero_subtitle: 'untuk Masyarakat',
     form_title: 'Formulir Pendaftaran',
     form_description: 'Isi formulir pendaftaran di bawah ini dan kami akan segera menghubungi Anda',
-    submit_button: 'Daftar Sekarang',
+    submit_button: 'Daftar',
     address: 'Jl. Merdeka No. 123, Wonomulyo, Sulawesi Barat',
     address_description: 'Kunjungi kantor kami',
     phone: '+62 812-3456-7890',
@@ -189,7 +189,7 @@ const ContactSection = () => {
               <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <Label htmlFor="full_name" className="font-semibold text-gray-900">Nama Lengkap *</Label>
+                    <Label htmlFor="full_name" className="font-semibold text-gray-900">Nama Lengkap*</Label>
                     <Input
                       id="full_name"
                       name="full_name"
