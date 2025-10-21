@@ -8,12 +8,11 @@ import NewsSection from '@/components/news-section';
 import BrochureSection from '@/components/brochure-section';
 import ContactSection from '@/components/contact-section';
 import Footer from '@/components/footer';
-import BottomNavigation from '@/components/bottom-navigation'; // Import Bottom Navigation
 import { MadeWithDyad } from '@/components/made-with-dyad';
 
 const Index = () => {
   return (
-    <div className="min-h-screen pb-16 md:pb-0"> {/* Tambahkan padding bawah untuk mobile */}
+    <div className="min-h-screen">
       <Navbar />
       <main>
         <section id="home">
@@ -39,7 +38,6 @@ const Index = () => {
         </section>
       </main>
       <Footer />
-      <BottomNavigation /> {/* Tambahkan Bottom Navigation */}
       <MadeWithDyad />
     </div>
   );
