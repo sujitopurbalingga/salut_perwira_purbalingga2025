@@ -39,35 +39,33 @@ const Footer = () => {
         .select('*')
         .maybeSingle();
       return data as FooterContent;
-    }
+    },
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // 1 minute
   });
 
-  // Default values if no data from database
-  const defaultFooter = {
-    brand_name: 'EduCampus',
-    brand_description: 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas dan siap bersaing di era global.',
-    address: 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
-    phone: '(0281) 123456',
-    email: 'info@educampus.ac.id',
-    quick_links: [
-      { id: '1', name: 'Tentang Kami', href: '#about' },
-      { id: '2', name: 'Layanan', href: '#services' },
-      { id: '3', name: 'Fakultas', href: '#faculties' },
-      { id: '4', name: 'Berita', href: '#news' }
-    ],
-    social_links: [
-      { id: '1', platform: 'Facebook', href: '#' },
-      { id: '2', platform: 'Twitter', href: '#' },
-      { id: '3', platform: 'Instagram', href: '#' },
-      { id: '4', platform: 'Youtube', href: '#' }
-    ],
-    newsletter_title: 'Newsletter',
-    newsletter_description: 'Dapatkan informasi terbaru tentang pendaftaran dan program kami',
-    copyright_text: `© ${currentYear} EduCampus. Semua Hak Dilindungi.`
+  // Fallback to site settings if footer_settings doesn't have brand_name
+  const { data: siteSettings } = useQuery({
+    queryKey: ['site-settings-for-footer'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('site_name, site_description')
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  });
+
+  // Use site settings as fallback for brand name if footer_settings doesn't exist
+  const fallbackBrand = {
+    brand_name: siteSettings?.site_name || 'EduCampus',
+    brand_description: siteSettings?.site_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas.'
   };
 
-  // Use database data if available, otherwise use defaults
-  const footer = footerContent || defaultFooter;
+  // Use database data if available, otherwise use fallback
+  const footer = footerContent || fallbackBrand;
 
   const getSocialIcon = (platform: string) => {
     const iconMap: Record<string, React.ComponentType<any>> = {
@@ -93,6 +91,30 @@ const Footer = () => {
     );
   }
 
+  // Default values if footer_content doesn't have complete data
+  const defaultFooterData = {
+    brand_name: footer.brand_name || 'EduCampus',
+    brand_description: footer.brand_description || 'Universitas terkemuka yang berkomitmen untuk mencetak lulusan berkualitas.',
+    address: footer.address || 'Jl. Pendidikan No. 123, Wonomulyo, Sulawesi Barat',
+    phone: footer.phone || '(0281) 123456',
+    email: footer.email || 'info@educampus.ac.id',
+    quick_links: footer.quick_links || [
+      { id: '1', name: 'Tentang Kami', href: '#about' },
+      { id: '2', name: 'Layanan', href: '#services' },
+      { id: '3', name: 'Fakultas', href: '#faculties' },
+      { id: '4', name: 'Berita', href: '#news' }
+    ],
+    social_links: footer.social_links || [
+      { id: '1', platform: 'Facebook', href: '#' },
+      { id: '2', platform: 'Twitter', href: '#' },
+      { id: '3', platform: 'Instagram', href: '#' },
+      { id: '4', platform: 'Youtube', href: '#' }
+    ],
+    newsletter_title: footer.newsletter_title || 'Newsletter',
+    newsletter_description: footer.newsletter_description || 'Dapatkan informasi terbaru tentang pendaftaran dan program kami',
+    copyright_text: footer.copyright_text || `© ${currentYear} EduCampus. Semua Hak Dilindungi.`
+  };
+
   return (
     <footer className="bg-blue-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -101,17 +123,19 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-                <span className="text-blue-900 font-bold text-lg">EC</span>
+                <span className="text-blue-900 font-bold text-lg">
+                  {defaultFooterData.brand_name.substring(0, 2).toUpperCase()}
+                </span>
               </div>
-              <span className="text-xl font-bold">{footer.brand_name}</span>
+              <span className="text-xl font-bold">{defaultFooterData.brand_name}</span>
             </div>
             <p className="text-blue-200 mb-6 leading-relaxed">
-              {footer.brand_description}
+              {defaultFooterData.brand_description}
             </p>
             
             {/* Social Links */}
             <div className="flex space-x-3">
-              {footer.social_links.map((social) => {
+              {defaultFooterData.social_links.map((social) => {
                 const IconComponent = getSocialIcon(social.platform);
                 return (
                   <a
@@ -133,7 +157,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold mb-6">Link Cepat</h3>
             <ul className="space-y-3">
-              {footer.quick_links.map((link) => (
+              {defaultFooterData.quick_links.map((link) => (
                 <li key={link.id}>
                   <a
                     href={link.href}
@@ -152,24 +176,24 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                <span className="text-blue-200">{footer.address}</span>
+                <span className="text-blue-200">{defaultFooterData.address}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <Phone className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                <span className="text-blue-200">{footer.phone}</span>
+                <span className="text-blue-200">{defaultFooterData.phone}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                <span className="text-blue-200">{footer.email}</span>
+                <span className="text-blue-200">{defaultFooterData.email}</span>
               </div>
             </div>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-bold mb-6">{footer.newsletter_title}</h3>
+            <h3 className="text-lg font-bold mb-6">{defaultFooterData.newsletter_title}</h3>
             <p className="text-blue-200 mb-4">
-              {footer.newsletter_description}
+              {defaultFooterData.newsletter_description}
             </p>
             <form className="flex" onSubmit={(e) => e.preventDefault()}>
               <input
@@ -192,7 +216,7 @@ const Footer = () => {
         <div className="border-t border-blue-800 mt-8 pt-8">
           <div className="text-center">
             <p className="text-blue-200">
-              {footer.copyright_text}
+              {defaultFooterData.copyright_text}
             </p>
           </div>
         </div>

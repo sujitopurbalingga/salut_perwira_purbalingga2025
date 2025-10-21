@@ -4,6 +4,20 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
 import Character3DDisplay from './character-3d-display';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+
+interface SiteSettings {
+  id: string;
+  site_name: string;
+  site_description: string;
+  logo_url: string;
+  favicon_url: string;
+  theme: 'light' | 'dark' | 'auto';
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+}
 
 const HeroSection = () => {
   const handleDaftarSekarang = () => {
@@ -39,6 +53,23 @@ const HeroSection = () => {
     }
   };
 
+  // Fetch site settings from database
+  const { data: siteSettings, isLoading } = useQuery({
+    queryKey: ['site-settings-hero'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .maybeSingle();
+      return data as SiteSettings;
+    },
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // 1 minute
+  });
+
+  // Dynamic site name from database
+  const siteName = siteSettings?.site_name || 'EduCampus';
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Gradient */}
@@ -64,7 +95,7 @@ const HeroSection = () => {
               Terbuka ?
             </h1>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-400">
-              Daftarnya di <span className="text-white">EduCampus</span> <br />
+              Daftarnya di <span className="text-white">{siteName}</span> <br />
               PERWIRA PURBALINGGA !
             </h2>
             

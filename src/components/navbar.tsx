@@ -4,12 +4,40 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Home, Info, Briefcase, Building, FileText, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+
+interface SiteSettings {
+  id: string;
+  site_name: string;
+  site_description: string;
+  logo_url: string;
+  favicon_url: string;
+  theme: 'light' | 'dark' | 'auto';
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+}
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+
+  // Fetch site settings from database
+  const { data: siteSettings, isLoading } = useQuery({
+    queryKey: ['site-settings-navbar'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .maybeSingle();
+      return data as SiteSettings;
+    },
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // 1 minute
+  });
 
   const navigation = [
     { name: 'Beranda', href: '#home', icon: Home },
@@ -73,6 +101,11 @@ const Navbar = () => {
     }
   };
 
+  // Dynamic site name from database
+  const siteName = siteSettings?.site_name || 'EduCampus';
+  // Dynamic logo URL from database
+  const logoUrl = siteSettings?.logo_url;
+
   return (
     <>
       {/* Desktop Navigation */}
@@ -112,14 +145,22 @@ const Navbar = () => {
           <div className="flex justify-between h-full">
             <div className="flex items-center">
               <Link to="/" className="flex-shrink-0 flex items-center">
-                <div className={`w-8 h-8 rounded-lg mr-3 transition-all duration-300 ${
-                  isScrolled 
-                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600' 
-                    : 'bg-gradient-to-br from-indigo-500 to-purple-600'
-                }`}></div>
+                {logoUrl ? (
+                  <img 
+                    src={logoUrl} 
+                    alt="Logo" 
+                    className="w-8 h-8 rounded-lg mr-3 transition-all duration-300 object-contain"
+                  />
+                ) : (
+                  <div className={`w-8 h-8 rounded-lg mr-3 transition-all duration-300 ${
+                    isScrolled 
+                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600' 
+                      : 'bg-gradient-to-br from-indigo-500 to-purple-600'
+                  }`}></div>
+                )}
                 <span className={`text-xl font-bold transition-colors duration-300 ${
                   isScrolled ? 'text-gray-900' : 'text-gray-900'
-                }`}>EduCampus</span>
+                }`}>{siteName}</span>
               </Link>
             </div>
 
@@ -189,8 +230,16 @@ const Navbar = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-2"></div>
-              <span className="text-lg font-bold text-gray-900">EduCampus</span>
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="Logo" 
+                  className="w-8 h-8 rounded-lg mr-2 object-contain"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-2"></div>
+              )}
+              <span className="text-lg font-bold text-gray-900">{siteName}</span>
             </Link>
             <Button 
               asChild

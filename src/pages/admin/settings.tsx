@@ -87,7 +87,8 @@ const AdminSettings = () => {
         .select('*')
         .maybeSingle();
       return data as SiteSettings;
-    }
+    },
+    staleTime: 1000, // Set to refresh quickly
   });
 
   // Update form data when settings change
@@ -118,7 +119,14 @@ const AdminSettings = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
-      setMessage('Pengaturan berhasil disimpan!');
+      // Also invalidate other queries that might use this data
+      queryClient.invalidateQueries({ queryKey: ['site-settings-navbar'] });
+      queryClient.invalidateQueries({ queryKey: ['site-settings-hero'] });
+      queryClient.invalidateQueries({ queryKey: ['site-settings-for-footer'] });
+      queryClient.invalidateQueries({ queryKey: ['footer-public'] });
+      queryClient.invalidateQueries({ queryKey: ['site-settings-hero'] });
+      
+      setMessage('Pengaturan berhasil disimpan! Perubahan akan terlihat di seluruh website.');
       setTimeout(() => setMessage(''), 3000);
     },
     onError: (error) => {
